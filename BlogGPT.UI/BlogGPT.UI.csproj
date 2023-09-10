@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>015f7557-5f03-410b-9ed4-60ed0a2e8729</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlogGPT.Application\BlogGPT.Application.csproj" />
+    <ProjectReference Include="..\BlogGPT.Infrastructure\BlogGPT.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
