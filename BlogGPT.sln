@@ -5,13 +5,13 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1A37F6A7-2852-41D4-BA08-C84C799D2C99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogGPT.UI", "BlogGPT.UI\BlogGPT.UI.csproj", "{D2959744-EA35-4C50-9DD7-281B98A1C2D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogGPT.UI", "BlogGPT.UI\BlogGPT.UI.csproj", "{D2959744-EA35-4C50-9DD7-281B98A1C2D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogGPT.Infrastructure", "BlogGPT.Infrastructure\BlogGPT.Infrastructure.csproj", "{C08A9F38-FC57-4D62-82B8-7E75EC6E8B24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogGPT.Infrastructure", "BlogGPT.Infrastructure\BlogGPT.Infrastructure.csproj", "{C08A9F38-FC57-4D62-82B8-7E75EC6E8B24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogGPT.Application", "BlogGPT.Application\BlogGPT.Application.csproj", "{9FA020A7-E6D1-46C6-B122-B4D12EF0EBDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogGPT.Application", "BlogGPT.Application\BlogGPT.Application.csproj", "{9FA020A7-E6D1-46C6-B122-B4D12EF0EBDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogGPT.Domain", "BlogGPT.Domain\BlogGPT.Domain.csproj", "{EC738BD1-F873-4A13-A293-6C855F40C81B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogGPT.Domain", "BlogGPT.Domain\BlogGPT.Domain.csproj", "{EC738BD1-F873-4A13-A293-6C855F40C81B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
