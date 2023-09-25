@@ -14,7 +14,6 @@
     <Folder Include="Common\Interfaces\Authentication\" />
     <Folder Include="Common\Interfaces\Persistence\" />
     <Folder Include="Services\Authentication\" />
-    <Folder Include="Services\Authentication\" />
   </ItemGroup>
 
   <ItemGroup>
