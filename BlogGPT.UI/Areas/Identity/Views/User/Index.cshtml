@@ -1,0 +1,45 @@
+@model UserListModel
+@using BlogGPT.Application.Common.Models;
+@using BlogGPT.UI.Models
+@{
+    ViewData["Title"] = "Danh sách các thành viên";
+}
+<h2>@ViewData["Title"]</h2>
+<partial name="_StatusMessage"></partial>
+<p>Tổng số thành viên: @Model.TotalUsers</p>
+
+<table class="table">
+    <tr>
+        <th>Tên user</th>
+        <th>Vai trò (role)</th>
+        <th>Tác vụ</th>
+    </tr>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>
+                @if (string.IsNullOrEmpty(user.RoleNames))
+                {
+                    <a class="text-dark" asp-action="AddRole" asp-route-id="@user.Id">+ Thêm roles</a>
+                }
+                else
+                {
+                    <a asp-action="AddRole" asp-route-id="@user.Id">@user.RoleNames</a>
+                }
+            </td>
+            <td>
+                <a class="btn btn-success btn-sm" asp-action="SetPassword" asp-route-id="@user.Id">Đặt mật khẩu</a>
+            </td>
+        </tr>
+    }
+</table>
+@{
+    var paginatedModel = new PaginatedModel()
+    {
+        PageNumber = Model.PageNumber,
+        TotalPages = Model.TotalPages,
+    };
+}
+
+<partial name="_Paging" model="@paginatedModel" />

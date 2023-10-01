@@ -1,16 +1,17 @@
-﻿using BlogGPT.Domain.Common;
-
-namespace BlogGPT.Domain.Entities
+﻿namespace BlogGPT.Domain.Entities
 {
-    public class Category : BaseEntity
+    public class Category : BaseAuditableEntity
     {
-        public string Name { get; set; } = default!;
-        public string Slug { get; set; } = default!;
-        public string AuthorId { get; set; } = default!;
+        public required string Name { get; set; }
+
+        public required string Slug { get; set; }
+
         public int? ParentId { get; set; }
-        public User Author { get; set; } = default!;
-        public Category? Parent {  get; set; }
+
+        public Category? Parent { get; set; }
+
         public ICollection<Category>? ChildrenCategories { get; set; }
-        public ICollection<ArticleCategory>? ArticleCategories { get; set; }
+
+        public ICollection<PostCategory>? PostCategories { get; set; }
     }
 }

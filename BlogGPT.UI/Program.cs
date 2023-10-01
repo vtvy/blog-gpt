@@ -1,11 +1,17 @@
-using BlogGPT.Application;
+ï»¿using BlogGPT.Application;
 using BlogGPT.Infrastructure;
+using BlogGPT.UI;
+using BlogGPT.UI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add console to view logs
+builder.Logging.AddConsole();
+
 // Add services to the container.
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddUIServices();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -18,45 +24,25 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 //app.UseRouting();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
-   name: "default",
-   pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.UseStatusCodePages(handleError =>
-{
-    handleError.Run(async context =>
-    {
-        await context.Response.WriteAsync(
-            @$"<html lang=""en"">
-                <head>
-                    <meta charset=""UTF-8"" />
-                    <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"" />
-                    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
-                    <title>Bootstrap 5 404 Error Page</title>
-                    <link href=""/lib/bootstrap/dist/css/bootstrap.min.css"" rel=""stylesheet"">
-                </head>
-                <body>
-                    <div class=""d-flex align-items-center justify-content-center vh-100"">
-                        <div class=""text-center"">
-                            <h1 class=""display-1 fw-bold"">404</h1>
-                            <p class=""fs-3""> <span class=""text-danger"">Opps!</span> Page not found.</p>
-                            <p class=""lead"">
-                                The page you’re looking for does not exist.
-                              </p>
-                            <a href=""/"" class=""btn btn-primary"">Go Home</a>
-                        </div>
-                    </div>
-                </body>
-               </html>"
-            );
-    });
-});
+app.MapAreaControllerRoute(
+    name: "default",
+    areaName: "Identity",
+    pattern: "{area:Identity}/{controller=Home}/{action=Index}/{id?}");
+
+app.AddExceptionHandler();
 
 app.Run();

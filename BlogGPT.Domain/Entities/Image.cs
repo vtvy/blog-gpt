@@ -1,12 +1,9 @@
-﻿using BlogGPT.Domain.Common;
-
-namespace BlogGPT.Domain.Entities
+﻿namespace BlogGPT.Domain.Entities
 {
-    public class Image : BaseEntity
+    public class Image : BaseAuditableEntity
     {
-        public string Name { get; set; } = default!;
-        public string Url = default!;
-        public string AuthorId { get; set; } = default!;
-        public User Author { get; set; } = default!;
+        public required string Name { get; set; }
+
+        public required string Url { get; set; }
     }
 }
