@@ -1,6 +1,9 @@
-﻿using BlogGPT.Domain.Constants;
+﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
+using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
+using BlogGPT.UI.Models.Category;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,10 +15,13 @@ namespace BlogGPT.UI.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, IMediator mediator)
         {
             _context = context;
+            _mediator = mediator;
         }
 
         // GET: Categories
@@ -80,17 +86,20 @@ namespace BlogGPT.UI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ParentId,Title,Content,Slug")] Category category)
+        public async Task<IActionResult> Create(Models.Category.CreateCategoryModel command)
         {
-            if (ModelState.IsValid)
-            {
-                if (category.ParentId == -1) category.ParentId = null;
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewBag.ParentId = new SelectList(_context.Categories, "Id", "Slug", category.ParentId);
-            return View(category);
+
+            var result = await _mediator.Send(command);
+            //if (ModelState.IsValid)
+            //{
+            //    if (category.ParentId == -1) category.ParentId = null;
+            //    _context.Add(category);
+            //    await _context.SaveChangesAsync();
+            //    return RedirectToAction(nameof(Index));
+            //}
+            //ViewBag.ParentId = new SelectList(_context.Categories, "Id", "Slug", category.ParentId);
+
+            return View();
         }
 
         // GET: Categories/Edit/5

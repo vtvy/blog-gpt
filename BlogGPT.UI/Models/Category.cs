@@ -3,41 +3,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogGPT.UI.Models
 {
-
-    [Table("Category")] // Model  to table Cate
     public class Category
     {
-
-        [Key]
         public int Id { get; set; }
 
-        // Category cha (FKey)
         [Display(Name = "Danh mục cha")]
         public int? ParentId { get; set; }
 
-        // Tiều đề Category
         [Required(ErrorMessage = "Phải có tên danh mục")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} dài {1} đến {2}")]
         [Display(Name = "Tên danh mục")]
-        public string Title { get; set; }
+        public string Name { get; set; }
 
-        // Nội dung, thông tin chi tiết về Category
-        [DataType(DataType.Text)]
-        [Display(Name = "Nội dung danh mục")]
-        public string Content { set; get; }
-
-        //chuỗi Url
         [Required(ErrorMessage = "Need url")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} dài {1} đến {2}")]
         [RegularExpression(@"^[a-z0-9-]*$", ErrorMessage = "Chỉ dùng các ký tự [a-z0-9-]")]
         [Display(Name = "Url")]
         public string Slug { set; get; }
 
-        // Các Category con
-        public ICollection<Category> CategoryChildren { get; set; }
+        public ICollection<Category> ChildrenCategories { get; set; }
 
         [Display(Name = "Danh mục cha")]
-        [ForeignKey("ParentId")]
         public Category ParentCategory { set; get; }
 
         public List<PostCategory> PostCategories { get; set; }
@@ -63,9 +49,9 @@ namespace BlogGPT.UI.Models
             foreach (var c in lis)
             {
                 if (c.Id == CategoryId) return c;
-                if (c.CategoryChildren != null)
+                if (c.ChildrenCategories != null)
                 {
-                    var c_in_child = Find(c.CategoryChildren, CategoryId);
+                    var c_in_child = Find(c.ChildrenCategories, CategoryId);
 
                     if (c_in_child != null)
                         return c_in_child;
@@ -79,7 +65,7 @@ namespace BlogGPT.UI.Models
         {
             lists ??= new List<int>();
 
-            childcates ??= CategoryChildren;
+            childcates ??= ChildrenCategories;
 
             if (childcates == null)
                 return lists;
@@ -87,7 +73,7 @@ namespace BlogGPT.UI.Models
             foreach (var item in childcates)
             {
                 lists.Add(item.Id);
-                ChildCategoryIDs(item.CategoryChildren, lists);
+                ChildCategoryIDs(item.ChildrenCategories, lists);
             }
 
             return lists;
