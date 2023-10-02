@@ -1,12 +1,10 @@
+using BlogGPT.UI.Models.PostCategory;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlogGPT.UI.Models
+namespace BlogGPT.UI.Models.Post
 {
-    [Table("Post")]
-    public class Post
+    public class PostModel
     {
-        [Key]
         public int PostId { set; get; }
 
         [Required(ErrorMessage = "Phải có tiêu đề bài viết")]
@@ -28,20 +26,9 @@ namespace BlogGPT.UI.Models
         [Display(Name = "Xuất bản")]
         public bool Published { set; get; }
 
-        public List<PostCategory> PostCategories { get; set; }
+        public List<PostCategoryModel> PostCategories { get; set; }
 
         [Display(Name = "Tác giả")]
         public string AuthorId { set; get; }
-        //[ForeignKey("AuthorId")]
-        //[Display(Name = "Tác giả")]
-        //public BlogUser Author { set; get; }
-
-
-
-        [Display(Name = "Ngày tạo")]
-        public DateTime CreatedAt { set; get; }
-
-        [Display(Name = "Ngày cập nhật")]
-        public DateTime LastModifiedAt { set; get; }
     }
 }

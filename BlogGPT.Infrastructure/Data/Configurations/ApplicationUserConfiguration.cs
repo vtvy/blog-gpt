@@ -1,5 +1,4 @@
-﻿using BlogGPT.Domain.Constants;
-using BlogGPT.Infrastructure.Identity;
+﻿using BlogGPT.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +8,15 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.Property(u => u.Avatar).HasMaxLength(Lengths.Large);
+            builder.Property(user => user.Avatar).HasMaxLength(Lengths.Large);
+
+            builder.HasMany(user => user.Images).WithOne(image => image.Author).HasForeignKey(image => image.AuthorId);
+
+            builder.HasMany(user => user.Categories).WithOne(category => category.Author).HasForeignKey(category => category.AuthorId);
+
+            builder.HasMany(user => user.Posts).WithOne(post => post.Author).HasForeignKey(post => post.AuthorId);
+
+            builder.HasMany(user => user.Feedbacks).WithOne(feedback => feedback.Author).HasForeignKey(feedback => feedback.AuthorId);
         }
     }
 }

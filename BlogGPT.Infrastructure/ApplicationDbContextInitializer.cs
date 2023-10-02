@@ -1,6 +1,6 @@
 ﻿using BlogGPT.Domain.Constants;
+using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
-using BlogGPT.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

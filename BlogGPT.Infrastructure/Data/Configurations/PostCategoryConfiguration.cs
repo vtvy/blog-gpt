@@ -8,8 +8,9 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<PostCategory> builder)
         {
-            builder.HasKey(ac => new { ac.PostId, ac.CategoryId });
-            builder.Navigation(ac => ac.Category).AutoInclude();
+            builder.HasKey(postCategory => new { postCategory.PostId, postCategory.CategoryId });
+
+            builder.Navigation(postCategory => postCategory.Category).AutoInclude();
         }
     }
 }

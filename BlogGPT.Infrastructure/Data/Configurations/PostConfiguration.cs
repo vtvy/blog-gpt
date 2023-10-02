@@ -1,5 +1,4 @@
-﻿using BlogGPT.Domain.Constants;
-using BlogGPT.Domain.Entities;
+﻿using BlogGPT.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,11 +8,22 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Post> builder)
         {
-            builder.Property(a => a.Title).HasMaxLength(Lengths.Medium);
-            builder.Property(a => a.Description).HasMaxLength(Lengths.XL);
-            builder.HasMany(a => a.PostCategories).WithOne(ac => ac.Post).HasForeignKey(ac => ac.PostId);
-            builder.Navigation(a => a.Thumbnail).AutoInclude();
-            builder.Navigation(a => a.PostCategories).AutoInclude();
+            builder.Property(post => post.Title).HasMaxLength(Lengths.Medium);
+
+            builder.Property(post => post.Description).HasMaxLength(Lengths.XL);
+
+            builder.Property(post => post.LastModifiedBy).HasMaxLength(Lengths.XL);
+
+            builder.Property(post => post.Slug).HasMaxLength(Lengths.Large);
+            builder.HasIndex(post => post.Slug).IsUnique();
+
+            builder.HasMany(post => post.PostCategories).WithOne(ac => ac.Post).HasForeignKey(ac => ac.PostId);
+
+            builder.Navigation(post => post.Thumbnail).AutoInclude();
+
+            builder.Navigation(post => post.Author).AutoInclude();
+
+            builder.Navigation(post => post.PostCategories).AutoInclude();
         }
     }
 }

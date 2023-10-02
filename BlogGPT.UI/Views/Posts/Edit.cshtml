@@ -1,4 +1,5 @@
-﻿@model BlogGPT.UI.Models.CreatePostModel
+﻿@using BlogGPT.UI.Models.Post;
+@model CreatePostModel
 
 @{
     ViewData["Title"] = "Create";
@@ -14,7 +15,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <input type="hidden" asp-for="PostId"/>
+            @* <input type="hidden" asp-for="PostId"/> *@
 
             <div class="form-group mt-4">
                 <label asp-for="CategoryIDs" class="control-label"></label>

@@ -1,4 +1,4 @@
-using BlogGPT.Infrastructure.Identity;
+using BlogGPT.Domain.Entities;
 
 namespace BlogGPT.UI.Areas.Identity.Models.User
 {

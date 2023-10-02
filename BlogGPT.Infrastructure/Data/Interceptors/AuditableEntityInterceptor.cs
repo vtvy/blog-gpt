@@ -42,17 +42,17 @@ namespace BlogGPT.Infrastructure.Data.Interceptors
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = _user.Id;
-                    entry.Entity.CreatedAt = _dateTime.UtcNow;
+                    entry.Entity.CreatedAt = _dateTime.Now;
+                    entry.Entity.AuthorId = _user.Id;
 
+                    entry.Entity.LastModifiedAt = _dateTime.Now;
                     entry.Entity.LastModifiedBy = _user.Id;
-                    entry.Entity.LastModifiedAt = _dateTime.UtcNow;
                 }
 
                 if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
                 {
+                    entry.Entity.LastModifiedAt = _dateTime.Now;
                     entry.Entity.LastModifiedBy = _user.Id;
-                    entry.Entity.LastModifiedAt = _dateTime.UtcNow;
                 }
             }
         }

@@ -1,9 +1,7 @@
-﻿using BlogGPT.Application.Common.Services;
-using BlogGPT.Domain.Constants;
+﻿using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
-using BlogGPT.Infrastructure.Identity;
-using BlogGPT.UI.Models;
+using BlogGPT.UI.Models.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +14,12 @@ namespace BlogGPT.UI.Controllers
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        //private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [TempData]
@@ -96,7 +95,7 @@ namespace BlogGPT.UI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Slug,Content,Published,CategoryIDs")] Models.CreatePostModel post)
+        public async Task<IActionResult> Create([Bind("Title,Description,Slug,Content,Published,CategoryIDs")] CreatePostModel post)
         {
 
 
@@ -121,7 +120,7 @@ namespace BlogGPT.UI.Controllers
             //    {
             //        foreach (int CategoryID in post.CategoryIDs)
             //        {
-            //            _context.Add(new PostCategory { CategoryID = CategoryID, Post = post });
+            //            _context.Add(new PostCategory { CategoryId = CategoryID, Post = post });
             //        }
             //    }
 
@@ -132,8 +131,7 @@ namespace BlogGPT.UI.Controllers
             //    Status = "Create a blog post successfully!";
             //    return RedirectToAction(nameof(Index));
             //}
-            //return View(post);
-            return View();
+            return View(post);
         }
 
         // GET: Posts/Edit/5
@@ -154,7 +152,7 @@ namespace BlogGPT.UI.Controllers
             //    return NotFound();
             //}
 
-            //var editPost = new CreatePostModel()
+            //var editPost = new CreatePost()
             //{
             //    Id = post.Id,
             //    Title = post.Title,
@@ -258,6 +256,7 @@ namespace BlogGPT.UI.Controllers
             }
 
             var post = await _context.Posts
+                .Include(p => p.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
@@ -297,24 +296,25 @@ namespace BlogGPT.UI.Controllers
         public async Task<IActionResult> UploadAsync(IFormFile file)
         {
             string imgPath;
-            string stroredPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "wwwroot/files"));
+            string storedPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "wwwroot/files"));
             if (file.Length > 0)
             {
-                if (!Directory.Exists(stroredPath))
+                if (!Directory.Exists(storedPath))
                 {
-                    Directory.CreateDirectory(stroredPath);
+                    Directory.CreateDirectory(storedPath);
                 }
                 imgPath = DateTime.Now.ToString("yyyyMMddTHHmmss") + file.FileName;
-                string fullPath = Path.Combine(stroredPath, imgPath);
+                string fullPath = Path.Combine(storedPath, imgPath);
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
+                imgPath = $@"{storedPath}/{imgPath}";
+
                 return Ok(new { imgPath });
             }
-            imgPath = $"{stroredPath}/thumnail.png";
+            imgPath = $"{storedPath}/thumnail.png";
             return Ok(new { imgPath });
-
         }
     }
 }

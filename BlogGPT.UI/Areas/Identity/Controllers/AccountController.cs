@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using BlogGPT.Application.Common.Services;
-using BlogGPT.Infrastructure.Identity;
+using BlogGPT.Domain.Entities;
 using BlogGPT.UI.Areas.Identity.Models.Account;
 using BlogGPT.UI.Extensions;
 using Microsoft.AspNetCore.Authorization;

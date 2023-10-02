@@ -1,4 +1,4 @@
-using BlogGPT.Infrastructure.Identity;
+using BlogGPT.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel;
 

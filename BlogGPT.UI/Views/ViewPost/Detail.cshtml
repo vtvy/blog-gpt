@@ -1,13 +1,14 @@
-﻿@model Post
-@using BlogGPT.UI.Components
-@using BlogGPT.UI.Models.Category
+﻿@model PostModel
+@using BlogGPT.UI.Components;
+@using BlogGPT.UI.Models.Category;
+@using BlogGPT.UI.Models.Post;
 
 @{
-    List<Category> categories = ViewBag.categories as List<Category>;
-    Category category = ViewBag.category as Category;
+    List<CategoryModel> categories = ViewBag.categories as List<CategoryModel>;
+    CategoryModel category = ViewBag.category as CategoryModel;
     ViewData["Title"] = Model.Title;
 
-    IQueryable<Post> otherPosts = ViewBag.otherPosts as IQueryable<Post>;
+    IQueryable<PostModel> otherPosts = ViewBag.otherPosts as IQueryable<PostModel>;
 }
 
 <nav aria-label="breadcrumb">

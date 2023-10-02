@@ -2,6 +2,7 @@
 using BlogGPT.Application.Common.Interfaces.Identity;
 using BlogGPT.Application.Common.Interfaces.Services;
 using BlogGPT.Domain.Constants;
+using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
 using BlogGPT.Infrastructure.Data.Interceptors;
 using BlogGPT.Infrastructure.Identity;

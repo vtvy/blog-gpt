@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using BlogGPT.Domain.Constants;
+using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
-using BlogGPT.Infrastructure.Identity;
 using BlogGPT.UI.Areas.Identity.Models.User;
 using BlogGPT.UI.Extensions;
 using Microsoft.AspNetCore.Authorization;

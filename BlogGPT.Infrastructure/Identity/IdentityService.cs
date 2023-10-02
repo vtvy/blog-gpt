@@ -1,5 +1,6 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Identity;
 using BlogGPT.Application.Common.Models;
+using BlogGPT.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

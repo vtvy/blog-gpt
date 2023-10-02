@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using BlogGPT.UI.Models.PostCategory;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.Models.Category
 {
-    public class Category
+    public class CategoryModel
     {
         public int Id { get; set; }
 
@@ -21,16 +21,16 @@ namespace BlogGPT.UI.Models.Category
         [Display(Name = "Url")]
         public string Slug { set; get; }
 
-        public ICollection<Category> ChildrenCategories { get; set; }
+        public ICollection<CategoryModel> ChildrenCategories { get; set; }
 
         [Display(Name = "Danh mục cha")]
-        public Category ParentCategory { set; get; }
+        public CategoryModel ParentCategory { set; get; }
 
-        public List<PostCategory> PostCategories { get; set; }
+        public List<PostCategoryModel> PostCategories { get; set; }
 
-        public List<Category> ListParents()
+        public List<CategoryModel> ListParents()
         {
-            List<Category> li = new();
+            List<CategoryModel> li = new();
             var parent = ParentCategory;
             while (parent != null)
             {
@@ -44,7 +44,7 @@ namespace BlogGPT.UI.Models.Category
         }
 
 
-        public static Category Find(ICollection<Category> lis, int CategoryId)
+        public static CategoryModel Find(ICollection<CategoryModel> lis, int CategoryId)
         {
             foreach (var c in lis)
             {
@@ -61,7 +61,7 @@ namespace BlogGPT.UI.Models.Category
         }
 
 
-        public List<int> ChildCategoryIDs(ICollection<Category> childcates = null, List<int> lists = null)
+        public List<int> ChildCategoryIDs(ICollection<CategoryModel> childcates = null, List<int> lists = null)
         {
             lists ??= new List<int>();
 

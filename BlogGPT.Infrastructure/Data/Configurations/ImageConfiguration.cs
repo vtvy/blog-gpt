@@ -1,5 +1,4 @@
-﻿using BlogGPT.Domain.Constants;
-using BlogGPT.Domain.Entities;
+﻿using BlogGPT.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,8 +8,11 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Image> builder)
         {
-            builder.Property(i => i.Name).HasMaxLength(Lengths.Medium);
-            builder.Property(i => i.Url).HasMaxLength(Lengths.Large);
+            builder.Property(image => image.Name).HasMaxLength(Lengths.Medium);
+
+            builder.Property(image => image.LastModifiedBy).HasMaxLength(Lengths.XL);
+
+            builder.Property(image => image.Url).HasMaxLength(Lengths.Large);
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿@model List<Post>
+﻿@model List<PostModel>
 
 @using BlogGPT.UI.Components;
+@using BlogGPT.UI.Models.Post;
 @using BlogGPT.UI.Models.Category;
 @{
-    List<Category> categories = ViewBag.categories as List<Category>;
-    Category category = ViewBag.category as Category;
+    List<CategoryModel> categories = ViewBag.categories as List<CategoryModel>;
+    CategoryModel category = ViewBag.category as CategoryModel;
     ViewData["Title"] = (category != null) ? category.Name :
                         "Bài viết trong tất cả các danh mục";
 }

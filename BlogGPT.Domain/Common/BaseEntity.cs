@@ -8,12 +8,13 @@ namespace BlogGPT.Domain.Common
 
         public DateTime CreatedAt { get; set; }
 
-        public string? CreatedBy { get; set; }
+        public ApplicationUser? Author { get; set; }
+
+        public string? AuthorId { get; set; }
 
         public DateTime LastModifiedAt { get; set; }
 
         public string? LastModifiedBy { get; set; }
-
 
         private readonly List<BaseEvent> _domainEvents = new();
 

@@ -1,5 +1,6 @@
 ﻿@using BlogGPT.Infrastructure.Identity;
-@inject SignInManager<BlogGPT.Infrastructure.Identity.ApplicationUser> SignInManager
+@using BlogGPT.Domain.Entities;
+@inject SignInManager<BlogGPT.Domain.Entities.ApplicationUser> SignInManager
 
 @model RegisterViewModel
 @{
