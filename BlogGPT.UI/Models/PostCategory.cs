@@ -13,8 +13,8 @@ namespace BlogGPT.UI.Models
         [ForeignKey("PostID")]
         public Post Post { set; get; }
 
-        [ForeignKey("CategoryID")]
-        public Category Category { set; get; }
+        //[ForeignKey("CategoryID")]
+        //public Category Category { set; get; }
 
     }
 }

@@ -13,17 +13,17 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="ClaimType" class="control-label"></label>
                 <input asp-for="ClaimType" class="form-control" />
                 <span asp-validation-for="ClaimType" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="ClaimValue" class="control-label"></label>
                 <input asp-for="ClaimValue" class="form-control" />
                 <span asp-validation-for="ClaimValue" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-4">
                 @if (ViewBag.userclaim != null)
                 {
                     <input type="submit" value="Cập nhật" class="btn btn-primary" />

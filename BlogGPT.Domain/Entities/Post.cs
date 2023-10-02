@@ -1,6 +1,6 @@
 ﻿namespace BlogGPT.Domain.Entities
 {
-    public class Post : BaseAuditableEntity
+    public class Post : BaseEntity
     {
         public required string Title { get; set; }
 

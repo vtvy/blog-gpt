@@ -1,4 +1,4 @@
-﻿@model blog.Models.CreatePostModel
+﻿@model BlogGPT.UI.Models.CreatePostModel
 
 @{
     ViewData["Title"] = "Create";
@@ -6,39 +6,41 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create a new blog</h1>
+<h1>Edit a post</h1>
 <hr />
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
+            <input type="hidden" asp-for="PostId"/>
+
+            <div class="form-group mt-4">
                 <label asp-for="CategoryIDs" class="control-label"></label>
                 <select asp-for="CategoryIDs" multiple="multiple" asp-items="selectList" class="w-100"></select>
                 <span asp-validation-for="CategoryIDs" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="Slug" class="control-label"></label>
                 <input asp-for="Slug" class="form-control" />
                 <span asp-validation-for="Slug" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group mt-4">
                 <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
@@ -49,8 +51,9 @@
                     <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
                 </label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Edit" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -74,7 +77,7 @@
         });
         tinymce.init({
             selector: '#Content',
-            plugins: 
+            plugins:
                 "lists advlist autolink link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table directionality emoticons"
             ,
             toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
@@ -90,20 +93,19 @@
                 input.addEventListener('change', async (e) => {
                     const file = e.target.files[0];
                     const formData = new FormData();
-                    formData.append("file",file);
+                    formData.append("file", file);
                     try {
-                        const response = await fetch("Upload", {
+                        const response = await fetch("../Upload", {
                             method: 'POST',
                             body: formData
                         }).then(r => r.json())
-                          .then(res => {
-                            return res;
-                          }).catch(err => err);
-                        let imgPath = response.imgPath;
-                        let caption = response.results.captions[0].text;
-                        callback(imgPath, { alt: caption });
+                            .then(res => {
+                                return res;
+                            }).catch(err => err);
+                        let imgPath = "/files/" + response.imgPath;
+                        callback(imgPath, { alt: file.name });
                     } catch (error) {
-                        console.error('Error:', error);
+                        alert(error);
                     }
                 });
                 input.click();

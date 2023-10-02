@@ -1,7 +1,7 @@
+using BlogGPT.UI.Models.Category;
 using Microsoft.AspNetCore.Mvc;
-using blog.Models;
 
-namespace blog.Components
+namespace BlogGPT.UI.Components
 {
         [ViewComponent]
         public class CategorySidebar : ViewComponent

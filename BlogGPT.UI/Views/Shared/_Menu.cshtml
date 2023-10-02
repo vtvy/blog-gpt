@@ -2,7 +2,7 @@
 @inject IAuthorizationService authorService
 
 @{
-    var isAuthor = await authorService.AuthorizeAsync(this.User, "ViewManageMenu");
+    var isAuthor = await authorService.AuthorizeAsync(this.User, "CanManageCategory");
 }
 
 @if (isAuthor.Succeeded) {

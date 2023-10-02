@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Authentication
 @model LoginViewModel
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<BlogGPT.Infrastructure.Identity.ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Đăng nhập";
@@ -17,21 +17,21 @@
                 <h4>Sử dụng tài khoản đã đăng ký để đăng nhập</h4>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <label asp-for="UserNameOrEmail" class="control-label"></label>
                     <div class="col-md-10">
                         <input asp-for="UserNameOrEmail" class="form-control" />
                         <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <label asp-for="Password" class="control-label"></label>
                     <div class="col-md-10">
                         <input asp-for="Password" class="form-control" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <div class="col-md-offset-2 col-md-10">
                         <div class="checkbox">
                             <label asp-for="RememberMe">
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-4">
                     <div class="col-md-offset-2 col-md-10">
                         <button type="submit" class="btn btn-primary">Đăng nhập</button>
                     </div>

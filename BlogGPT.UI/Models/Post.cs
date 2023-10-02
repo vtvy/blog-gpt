@@ -11,14 +11,14 @@ namespace BlogGPT.UI.Models
 
         [Required(ErrorMessage = "Phải có tiêu đề bài viết")]
         [Display(Name = "Tiêu đề")]
-        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} dài {1} đến {2}")]
+        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} from {1} to {2}")]
         public string Title { set; get; }
 
         [Display(Name = "Mô tả ngắn")]
         public string Description { set; get; }
 
         [Display(Name = "Chuỗi định danh (url)", Prompt = "Nhập hoặc để trống tự phát sinh theo Title")]
-        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} dài {1} đến {2}")]
+        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} from {1} to {2}")]
         [RegularExpression(@"^[a-z0-9-]*$", ErrorMessage = "Chỉ dùng các ký tự [a-z0-9-]")]
         public string Slug { set; get; }
 
@@ -32,9 +32,9 @@ namespace BlogGPT.UI.Models
 
         [Display(Name = "Tác giả")]
         public string AuthorId { set; get; }
-        [ForeignKey("AuthorId")]
-        [Display(Name = "Tác giả")]
-        public BlogUser Author { set; get; }
+        //[ForeignKey("AuthorId")]
+        //[Display(Name = "Tác giả")]
+        //public BlogUser Author { set; get; }
 
 
 

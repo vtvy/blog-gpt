@@ -1,6 +1,6 @@
 ﻿namespace BlogGPT.Domain.Entities
 {
-    public class Image : BaseAuditableEntity
+    public class Image : BaseEntity
     {
         public required string Name { get; set; }
 

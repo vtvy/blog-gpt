@@ -38,7 +38,7 @@ namespace BlogGPT.Infrastructure.Data.Interceptors
         {
             if (context == null) return;
 
-            foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
+            foreach (var entry in context.ChangeTracker.Entries<BaseEntity>())
             {
                 if (entry.State == EntityState.Added)
                 {

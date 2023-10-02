@@ -1,4 +1,4 @@
-﻿@model IEnumerable<blog.Models.Category>
+﻿@model IEnumerable<BlogGPT.UI.Models.Category.Category>
 
 @{
     ViewData["Title"] = "Categories";
@@ -14,7 +14,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Slug)
@@ -32,13 +32,13 @@
 
 
 @{
-    async Task ShowCategory(Category category, int level)
+    async Task ShowCategory(BlogGPT.UI.Models.Category.Category category, int level)
     {
         string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;---&nbsp;&nbsp;", level));
         <tr>
             <td>
                 @Html.Raw(@prefix)
-                <a asp-action="Details" asp-route-id="@category.Id">@Html.DisplayFor(modelItem =>category.Title)</a>
+                <a asp-action="Details" asp-route-id="@category.Id">@Html.DisplayFor(modelItem =>category.Name)</a>
 
             </td>
             <td>
@@ -49,9 +49,9 @@
                 <a asp-action="Delete" asp-route-id="@category.Id">Delete</a>
             </td>
         </tr>
-        if(category.CategoryChildren?.Count > 0)
+        if(category.ChildrenCategories?.Count > 0)
         {
-            foreach (var childCategory in category.CategoryChildren)
+            foreach (var childCategory in category.ChildrenCategories)
             {
                 await ShowCategory(childCategory, ++level);
             }

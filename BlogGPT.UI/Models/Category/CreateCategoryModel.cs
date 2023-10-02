@@ -1,13 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.Models.Category
 {
     public class CreateCategoryModel
     {
+        [Display(Name = "Parent category")]
         public int? ParentId { get; set; }
 
-        [Required(ErrorMessage = "Phải có tên danh mục")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} dài {1} đến {2}")]
+        [Display(Name = "Category name")]
+        [Required(ErrorMessage = "Category Name is required")]
+        [StringLength(100, ErrorMessage = "{0} must less than {1}")]
         public string Name { get; set; } = string.Empty;
+
+        private class Mapping : Profile
+        {
+            public Mapping()
+            {
+                CreateMap<CreateCategoryModel, CreateCategoryCommand>();
+            }
+        }
     }
 }

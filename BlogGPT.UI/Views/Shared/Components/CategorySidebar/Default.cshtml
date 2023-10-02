@@ -1,5 +1,5 @@
-@using blog.Components
-@model blog.Components.CategorySidebar.CategorySidebarData
+@using BlogGPT.UI.Components
+@model BlogGPT.UI.Components.CategorySidebar.CategorySidebarData
 @{
     int level = Model.level;
 }
@@ -21,14 +21,14 @@
             var cssActive = (category.Slug == Model.categoryslug) ? "active" : null;
             <li>
                 <a class="@cssActive" asp-controller="ViewPost" asp-action="Index" asp-route-categoryslug="@category.Slug">
-                    @category.Title
+                    @category.Name
                 </a>
-                @if (category.CategoryChildren?.Count > 0)
+                @if (category.ChildrenCategories?.Count > 0)
                 {
-                    @await Component.InvokeAsync("blog.Components.CategorySidebar",
+                    @await Component.InvokeAsync("BlogGPT.UI.Components.CategorySidebar",
         new CategorySidebar.CategorySidebarData()
         {
-        Categories = category.CategoryChildren.ToList(),
+        Categories = category.ChildrenCategories.ToList(),
         level = level + 1,
         categoryslug = ViewBag.categoryslug
         })

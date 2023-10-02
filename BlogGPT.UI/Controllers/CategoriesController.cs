@@ -1,27 +1,25 @@
 ﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
-using BlogGPT.Domain.Constants;
-using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
 using BlogGPT.UI.Models.Category;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogGPT.UI.Controllers
 {
-    [Authorize(Roles = Roles.Administrator)]
+    //[Authorize(Roles = Roles.Administrator)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context, IMediator mediator)
+        public CategoriesController(ApplicationDbContext context, IMediator mediator, IMapper mapper)
         {
             _context = context;
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         // GET: Categories
@@ -59,25 +57,25 @@ namespace BlogGPT.UI.Controllers
         // GET: Categories/Create
         public async Task<IActionResult> Create()
         {
-            var categoriesQuery = (from cate in _context.Categories select cate)
-                     .Include(cate => cate.Parent)
-                     .Include(cate => cate.ChildrenCategories);
+            //var categoriesQuery = (from cate in _context.Categories select cate)
+            //         .Include(cate => cate.Parent)
+            //         .Include(cate => cate.ChildrenCategories);
 
-            var categories = (await categoriesQuery.ToListAsync())
-                             .Where(cate => cate.Parent == null)
-                             .ToList();
+            //var categories = (await categoriesQuery.ToListAsync())
+            //                 .Where(cate => cate.Parent == null)
+            //                 .ToList();
 
-            categories.Insert(0, new Category()
-            {
-                Name = "Not having parent category",
-                Slug = ""
-            });
+            //categories.Insert(0, new Domain.Entities.Category()
+            //{
+            //    Name = "Not having parent category",
+            //    Slug = ""
+            //});
 
-            var selectList = new List<Category>();
+            //var selectList = new List<Domain.Entities.Category>();
 
-            CreatePrefixForSelect(categories, selectList, 0);
+            //CreatePrefixForSelect(categories, selectList, 0);
 
-            ViewData["ParentId"] = new SelectList(selectList, "Id", "Title");
+            //ViewData["ParentId"] = new SelectList(selectList, "Id", "Title");
             return View();
         }
 
@@ -86,9 +84,9 @@ namespace BlogGPT.UI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Models.Category.CreateCategoryModel command)
+        public async Task<IActionResult> Create(CreateCategoryModel category)
         {
-
+            var command = _mapper.Map<CreateCategoryCommand>(category);
             var result = await _mediator.Send(command);
             //if (ModelState.IsValid)
             //{
@@ -99,7 +97,7 @@ namespace BlogGPT.UI.Controllers
             //}
             //ViewBag.ParentId = new SelectList(_context.Categories, "Id", "Slug", category.ParentId);
 
-            return View();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Categories/Edit/5
@@ -124,14 +122,14 @@ namespace BlogGPT.UI.Controllers
                              .Where(cate => cate.Parent == null)
                              .ToList();
 
-            categories.Insert(0, new Category()
+            categories.Insert(0, new Domain.Entities.Category()
             {
                 Id = -1,
                 Name = "Not having parent category",
                 Slug = ""
             });
 
-            var selectList = new List<Category>();
+            var selectList = new List<Domain.Entities.Category>();
 
             CreatePrefixForSelect(categories, selectList, 0, category);
             ViewData["ParentId"] = new SelectList(selectList, "Id", "Title");
@@ -143,7 +141,7 @@ namespace BlogGPT.UI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ParentId,Title,Content,Slug")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ParentId,Title,Content,Slug")] Domain.Entities.Category category)
         {
             if (id != category.Id || category.ParentId == category.Id)
             {
@@ -228,13 +226,13 @@ namespace BlogGPT.UI.Controllers
             return _context.Categories.Any(e => e.Id == id);
         }
 
-        private void CreatePrefixForSelect(List<Category> rawCategories, List<Category> outCategories, int level, Category curCategory = null)
+        private void CreatePrefixForSelect(List<Domain.Entities.Category> rawCategories, List<Domain.Entities.Category> outCategories, int level, Domain.Entities.Category curCategory = null)
         {
             string prefix = string.Concat(Enumerable.Repeat("|---", level));
             foreach (var category in rawCategories)
             {
                 if (curCategory != null && category.Id == curCategory.Id) continue;
-                outCategories.Add(new Category()
+                outCategories.Add(new Domain.Entities.Category()
                 {
                     Id = category.Id,
                     Name = prefix + " " + category.Name,

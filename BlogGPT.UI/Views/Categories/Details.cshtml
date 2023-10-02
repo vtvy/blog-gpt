@@ -1,7 +1,7 @@
-﻿@model blog.Models.Category
+﻿@model BlogGPT.UI.Models.Category.Category
 
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = Model.Name;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -12,16 +12,10 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Content)
+            @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-8">
-            @Html.Raw(Model.Content)
-        </dd>
-        <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Slug)
-        </dt>
-        <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Slug)
+            @Html.Raw(Model.Name)
         </dd>
     </dl>
 </div>

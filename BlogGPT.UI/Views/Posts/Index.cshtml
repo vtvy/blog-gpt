@@ -1,4 +1,4 @@
-﻿@model IEnumerable<blog.Models.Post>
+﻿@model IEnumerable<BlogGPT.UI.Models.Post>
 @{
     ViewData["Title"] = "List of blog posts";
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -20,12 +20,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Published)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Author)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateUpdated)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -42,18 +36,12 @@
                     </a>
                     <br>
                     <small>
-                        @string.Join(", ", item.PostCategories.Select(pc => pc.Category.Title))
+                        @string.Join(", ", item.PostCategories.Select(pc => pc.CategoryID))
                     </small>
 
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Published)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Author.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateUpdated)
                 </td>
                 <td>
 

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlogGPT.UI.Models
+namespace BlogGPT.UI.Models.Category
 {
     public class Category
     {
@@ -10,13 +10,13 @@ namespace BlogGPT.UI.Models
         [Display(Name = "Danh mục cha")]
         public int? ParentId { get; set; }
 
-        [Required(ErrorMessage = "Phải có tên danh mục")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} dài {1} đến {2}")]
-        [Display(Name = "Tên danh mục")]
+        [Required(ErrorMessage = "Category Name is required")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} from {1} to {2}")]
+        [Display(Name = "Category name")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Need url")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} dài {1} đến {2}")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "{0} from {1} to {2}")]
         [RegularExpression(@"^[a-z0-9-]*$", ErrorMessage = "Chỉ dùng các ký tự [a-z0-9-]")]
         [Display(Name = "Url")]
         public string Slug { set; get; }
