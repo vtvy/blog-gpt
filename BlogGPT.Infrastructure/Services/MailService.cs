@@ -47,7 +47,7 @@ namespace BlogGPT.Infrastructure.Services
             };
             message.Body = builder.ToMessageBody();
 
-            // Use MailKit SmtpClient
+
             using var smtp = new MailKit.Net.Smtp.SmtpClient();
 
             try
@@ -58,12 +58,12 @@ namespace BlogGPT.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                logger.LogError($"Fail to send mail: {ex.Message}");
+                logger.LogError("Fail to send mail", ex.Message);
             }
 
             smtp.Disconnect(true);
 
-            logger.LogInformation($"Send mail to {email} successfully");
+            logger.LogInformation("Send mail successfully", email);
         }
     }
 }

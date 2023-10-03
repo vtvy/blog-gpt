@@ -1,7 +1,6 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Data;
 using BlogGPT.Application.Common.Interfaces.Identity;
 using BlogGPT.Application.Common.Interfaces.Services;
-using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
 using BlogGPT.Infrastructure.Data.Interceptors;
@@ -50,6 +49,27 @@ namespace BlogGPT.Infrastructure
             services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<IIdentityService, IdentityService>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.LoginPath = "/Login";
+                options.LogoutPath = "/Logout";
+                options.AccessDeniedPath = "/AccessDenied";
+            });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredUniqueChars = 0;
+
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.User.RequireUniqueEmail = true;
+
+                options.SignIn.RequireConfirmedEmail = true;
+            });
 
             services.AddAuthorization(options => options.AddPolicy(Policies.CanManageCategory, policy => policy.RequireRole(Roles.Administrator)));
 

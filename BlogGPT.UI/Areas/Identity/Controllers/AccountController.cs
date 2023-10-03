@@ -662,15 +662,11 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
             }
         }
 
-        [Route("/khongduoctruycap.html")]
+        [Route("/AccessDenied")]
         [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();
         }
-
-
-
-
     }
 }
