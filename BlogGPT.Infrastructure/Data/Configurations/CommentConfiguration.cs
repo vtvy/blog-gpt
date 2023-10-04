@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BlogGPT.Infrastructure.Data.Configurations
 {
-    public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
+    public class CommentConfiguration : IEntityTypeConfiguration<Comment>
     {
-        public void Configure(EntityTypeBuilder<Feedback> builder)
+        public void Configure(EntityTypeBuilder<Comment> builder)
         {
             builder.Property(feedback => feedback.Content).HasMaxLength(Lengths.XL);
 

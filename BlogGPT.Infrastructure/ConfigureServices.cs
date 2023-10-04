@@ -67,8 +67,6 @@ namespace BlogGPT.Infrastructure
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
                 options.User.RequireUniqueEmail = true;
-
-                options.SignIn.RequireConfirmedEmail = true;
             });
 
             services.AddAuthorization(options => options.AddPolicy(Policies.CanManageCategory, policy => policy.RequireRole(Roles.Administrator)));

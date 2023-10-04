@@ -16,7 +16,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasMany(user => user.Posts).WithOne(post => post.Author).HasForeignKey(post => post.AuthorId);
 
-            builder.HasMany(user => user.Feedbacks).WithOne(feedback => feedback.Author).HasForeignKey(feedback => feedback.AuthorId);
+            builder.HasMany(user => user.Comments).WithOne(comment => comment.Author).HasForeignKey(comment => comment.AuthorId);
         }
     }
 }

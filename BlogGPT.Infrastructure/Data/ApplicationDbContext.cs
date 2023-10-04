@@ -16,7 +16,7 @@ namespace BlogGPT.Infrastructure.Data
 
         public DbSet<Image> Images => Set<Image>();
 
-        public DbSet<Feedback> Feedbacks => Set<Feedback>();
+        public DbSet<Comment> Feedbacks => Set<Comment>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
