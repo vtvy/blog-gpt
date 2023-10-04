@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorService
+
+@{
+    var isAuthor = await authorService.AuthorizeAsync(this.User, "CanManageCategory");
+}
+
+@if (isAuthor.Succeeded) {
+    <div class="dropdown">
+        <a class="btn btn-outline-danger dropdown-toggle" href="#"
+            id="manage-db-drop-down-menu" data-toggle="dropdown">
+            Manage
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="manage-db-drop-down-menu">
+            <a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">
+                Database
+            </a>
+            <a class="dropdown-item" asp-action="Index" asp-controller="Role" asp-area="Identity">
+                Manage Roles
+            </a>
+            <a class="dropdown-item" asp-action="Index" asp-controller="User" asp-area="Identity">
+                Manage Members
+            </a>
+            <a class="dropdown-item" asp-action="Index" asp-controller="Categories">
+                Manage Catagories
+            </a>
+            <a class="dropdown-item" asp-action="Index" asp-controller="Posts">
+                Manage Posts
+            </a>
+        </div>
+    </div>
+}

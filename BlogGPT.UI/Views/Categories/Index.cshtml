@@ -1,0 +1,62 @@
+﻿@using BlogGPT.UI.ViewModels.Category;
+@model IEnumerable<IndexCategoryModel>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<h1>Categories</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary btn-sm">Create New</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr class="row">
+            <th scope="col" class="col-6">
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th scope="col" class="col-4">
+                @Html.DisplayNameFor(model => model.Slug)
+            </th>
+            <th scope="col" class="col-2">
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) 
+    {
+               await ShowCategory(item, 0);
+    }
+    </tbody>
+</table>
+
+
+@{
+    async Task ShowCategory(IndexCategoryModel category, int level)
+    {
+        string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;---&nbsp;&nbsp;", level));
+        <tr class="row">
+            <td class="col-6">
+                @Html.Raw(@prefix)
+                <a asp-action="Detail" asp-route-id="@category.Id">@Html.DisplayFor(modelItem => category.Name)</a>
+
+            </td>
+            <td class="col-4">
+                @Html.DisplayFor(modelItem => category.Slug)
+            </td>
+            <td class="col-2">
+                <a asp-action="Edit" asp-route-id="@category.Id"><button type="button" class="btn btn-info">Edit</button></a> |
+                <a asp-action="Delete" asp-route-id="@category.Id"><button type="button" class="btn btn-danger">Delete</button></a>
+            </td>
+        </tr>
+        if(category.ChildrenCategories?.Count > 0)
+        {
+            foreach (var childCategory in category.ChildrenCategories)
+            {
+                await ShowCategory(childCategory, ++level);
+            }
+        }
+    }
+}

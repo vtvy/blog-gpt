@@ -1,4 +1,4 @@
-﻿using BlogGPT.UI.Models;
+﻿using BlogGPT.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
