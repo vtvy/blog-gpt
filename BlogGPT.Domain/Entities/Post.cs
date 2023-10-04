@@ -15,5 +15,7 @@
         public bool IsPublished { get; set; }
 
         public ICollection<PostCategory>? PostCategories { get; set; }
+
+        public ICollection<Comment>? Comments { get; set; }
     }
 }

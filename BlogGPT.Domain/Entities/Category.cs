@@ -8,6 +8,8 @@
 
         public int? ParentId { get; set; }
 
+        public string? Description { get; set; }
+
         public Category? Parent { get; set; }
 
         public ICollection<Category>? ChildrenCategories { get; set; }

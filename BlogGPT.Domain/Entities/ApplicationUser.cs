@@ -10,7 +10,7 @@ namespace BlogGPT.Domain.Entities
 
         public ICollection<Image>? Images { get; set; }
 
-        public ICollection<Feedback>? Feedbacks { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
 
         public ICollection<Category>? Categories { get; set; }
     }
