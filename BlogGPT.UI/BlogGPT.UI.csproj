@@ -26,7 +26,6 @@
     <Folder Include="Areas\Identity\Views\Manage\" />
     <Folder Include="Areas\Identity\Views\User\" />
     <Folder Include="Areas\Identity\Views\Role\" />
-    <Folder Include="Views\Categories\" />
     <Folder Include="Views\Posts\" />
     <Folder Include="Views\ViewPost\" />
   </ItemGroup>

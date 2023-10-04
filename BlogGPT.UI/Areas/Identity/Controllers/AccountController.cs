@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using BlogGPT.Application.Common.Services;
+using BlogGPT.Application.Common.Extensions;
 using BlogGPT.Domain.Entities;
 using BlogGPT.UI.Areas.Identity.Models.Account;
 using BlogGPT.UI.Extensions;
@@ -61,8 +61,9 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
             {
 
                 var result = await _signInManager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, lockoutOnFailure: true);
-                // Tìm UserName theo Email, đăng nhập lại
-                if (!result.Succeeded && Utility.IsValidEmail(model.UserNameOrEmail))
+
+                // Try to sign in with email
+                if (!result.Succeeded && model.UserNameOrEmail.IsValidEmail())
                 {
                     var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
                     if (user?.UserName != null)

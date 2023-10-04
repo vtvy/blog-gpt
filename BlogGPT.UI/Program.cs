@@ -30,7 +30,7 @@ app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-//app.UseRouting();
+app.UseRouting();
 
 app.UseAuthentication();
 

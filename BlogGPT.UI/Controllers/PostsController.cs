@@ -1,7 +1,7 @@
 ﻿using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
-using BlogGPT.UI.Models.Post;
+using BlogGPT.UI.ViewModels.Post;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ namespace BlogGPT.UI.Controllers
 
 
 
-            var pagingModel = new Models.PaginatedModel()
+            var pagingModel = new ViewModels.PaginatedModel()
             {
                 PageNumber = pageNumber,
                 TotalPages = totalPages,

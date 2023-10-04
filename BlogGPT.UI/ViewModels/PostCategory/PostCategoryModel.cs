@@ -1,8 +1,8 @@
-using BlogGPT.UI.Models.Category;
-using BlogGPT.UI.Models.Post;
+using BlogGPT.UI.ViewModels.Category;
+using BlogGPT.UI.ViewModels.Post;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlogGPT.UI.Models.PostCategory
+namespace BlogGPT.UI.ViewModels.PostCategory
 {
     [Table("PostCategory")]
     public class PostCategoryModel
@@ -15,6 +15,6 @@ namespace BlogGPT.UI.Models.PostCategory
         public PostModel Post { set; get; }
 
         [ForeignKey("CategoryID")]
-        public CategoryModel Category { set; get; }
+        public IndexCategoryModel Category { set; get; }
     }
 }

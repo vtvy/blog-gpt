@@ -1,8 +1,8 @@
-﻿@model IEnumerable<BlogGPT.UI.Models.Category.CategoryModel>
+﻿@using BlogGPT.UI.ViewModels.Category;
+@model IEnumerable<IndexCategoryModel>
 
 @{
     ViewData["Title"] = "Categories";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Categories</h1>
@@ -10,16 +10,18 @@
 <p>
     <a asp-action="Create" class="btn btn-primary btn-sm">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped">
     <thead>
-        <tr>
-            <th>
+        <tr class="row">
+            <th scope="col" class="col-6">
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
+            <th scope="col" class="col-4">
                 @Html.DisplayNameFor(model => model.Slug)
             </th>
-            <th></th>
+            <th scope="col" class="col-2">
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -32,21 +34,21 @@
 
 
 @{
-    async Task ShowCategory(BlogGPT.UI.Models.Category.CategoryModel category, int level)
+    async Task ShowCategory(IndexCategoryModel category, int level)
     {
         string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;---&nbsp;&nbsp;", level));
-        <tr>
-            <td>
+        <tr class="row">
+            <td class="col-6">
                 @Html.Raw(@prefix)
-                <a asp-action="Details" asp-route-id="@category.Id">@Html.DisplayFor(modelItem =>category.Name)</a>
+                <a asp-action="Detail" asp-route-id="@category.Id">@Html.DisplayFor(modelItem => category.Name)</a>
 
             </td>
-            <td>
+            <td class="col-4">
                 @Html.DisplayFor(modelItem => category.Slug)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@category.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@category.Id">Delete</a>
+            <td class="col-2">
+                <a asp-action="Edit" asp-route-id="@category.Id"><button type="button" class="btn btn-info">Edit</button></a> |
+                <a asp-action="Delete" asp-route-id="@category.Id"><button type="button" class="btn btn-danger">Delete</button></a>
             </td>
         </tr>
         if(category.ChildrenCategories?.Count > 0)

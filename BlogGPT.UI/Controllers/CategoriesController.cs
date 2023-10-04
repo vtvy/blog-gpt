@@ -1,14 +1,18 @@
 ﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
+using BlogGPT.Application.Categories.Queries.GetAllCategory;
+using BlogGPT.Application.Categories.Queries.GetCategory;
 using BlogGPT.Infrastructure.Data;
-using BlogGPT.UI.Models.Category;
+using BlogGPT.UI.Constants;
+using BlogGPT.UI.ViewModels.Category;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogGPT.UI.Controllers
 {
-    //[Authorize(Roles = Roles.Administrator)]
+    [Authorize(Roles = Roles.Administrator)]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,35 +27,28 @@ namespace BlogGPT.UI.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            var categoriesQuery = (from cate in _context.Categories select cate)
-                                  .Include(cate => cate.Parent)
-                                  .Include(cate => cate.ChildrenCategories);
+            var categories = await _mediator.Send(new GetAllCategoryQuery());
 
-            var categories = (await categoriesQuery.ToListAsync())
-                             .ToList()
-                             .Where(cate => cate.Parent == null);
-            return View(categories);
+            var categoriesVM = _mapper.Map<IEnumerable<IndexCategoryModel>>(categories);
+
+            return View(categoriesVM);
         }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> DetailAsync(int id)
         {
-            if (id == null || _context.Categories == null)
+            var category = await _mediator.Send(new GetCategoryQuery { Id = id });
+            if (category != null)
+            {
+                var categoryVM = _mapper.Map<DetailCategoryModel>(category);
+                return View(categoryVM);
+            }
+            else
             {
                 return NotFound();
             }
-
-            var category = await _context.Categories
-                .Include(c => c.Parent)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
         }
 
         // GET: Categories/Create

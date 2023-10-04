@@ -1,14 +1,14 @@
-using BlogGPT.UI.Models.Category;
+using BlogGPT.UI.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlogGPT.UI.Components
+namespace BlogGPT.UI.Views.Shared.Components.CategorySidebar
 {
     [ViewComponent]
     public class CategorySidebar : ViewComponent
     {
         public class CategorySidebarData
         {
-            public List<CategoryModel> Categories { set; get; }
+            public List<IndexCategoryModel> Categories { set; get; }
             public int level { set; get; }
             public string categoryslug { set; get; }
         }

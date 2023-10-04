@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace BlogGPT.UI.Models.User
+namespace BlogGPT.UI.ViewModels.User
 {
     public class ApplicationUser : IdentityUser
     {

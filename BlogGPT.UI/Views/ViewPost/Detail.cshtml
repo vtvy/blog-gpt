@@ -1,11 +1,13 @@
 ﻿@model PostModel
-@using BlogGPT.UI.Components;
-@using BlogGPT.UI.Models.Category;
-@using BlogGPT.UI.Models.Post;
+@using BlogGPT.UI.ViewModels.Category;
+@using BlogGPT.UI.ViewModels.Post;
+@using BlogGPT.UI.ViewModels.Category;
+@using BlogGPT.UI.ViewModels.Post;
+@using BlogGPT.UI.Views.Shared.Components.CategorySidebar;
 
 @{
-    List<CategoryModel> categories = ViewBag.categories as List<CategoryModel>;
-    CategoryModel category = ViewBag.category as CategoryModel;
+    List<IndexCategoryModel> categories = ViewBag.categories as List<IndexCategoryModel>;
+    IndexCategoryModel category = ViewBag.category as IndexCategoryModel;
     ViewData["Title"] = Model.Title;
 
     IQueryable<PostModel> otherPosts = ViewBag.otherPosts as IQueryable<PostModel>;
@@ -16,8 +18,8 @@
         <li class="breadcrumb-item"><a href="~/">Home</a></li>
         @if (category != null)
         {
-            var li = category.ListParents();
-            foreach (var l in li)
+            @* var li = category.ListParents(); *@
+            @* foreach (var l in li)
             {
                 <li class="breadcrumb-item">
                     <a asp-action="Index" asp-route-categoryslug="@l.Slug">@l.Name</a>
@@ -25,7 +27,7 @@
             }
             <li class="breadcrumb-item">
                 <a asp-action="Index" asp-route-categoryslug="@category.Slug">@category.Name</a>
-            </li>
+            </li> *@
         }
     </ol>
 </nav>

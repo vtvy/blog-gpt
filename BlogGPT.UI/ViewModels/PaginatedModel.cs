@@ -1,4 +1,4 @@
-﻿namespace BlogGPT.UI.Models
+﻿namespace BlogGPT.UI.ViewModels
 {
     public class PaginatedModel
     {
