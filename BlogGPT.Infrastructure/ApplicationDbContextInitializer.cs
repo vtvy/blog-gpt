@@ -90,7 +90,7 @@ namespace BlogGPT.Infrastructure
                 await _userManager.CreateAsync(administrator, password);
                 if (!string.IsNullOrWhiteSpace(administratorRole.Name))
                 {
-                    await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+                    await _userManager.AddToRoleAsync(administrator, administratorRole.Name );
                 }
             }
         }
