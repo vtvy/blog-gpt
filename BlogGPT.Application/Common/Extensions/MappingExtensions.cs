@@ -1,6 +1,6 @@
 ﻿using BlogGPT.Application.Common.Models;
 
-namespace BlogGPT.Application.Common.Mappings
+namespace BlogGPT.Application.Common.Extensions
 {
     public class MappingExtensions
     {

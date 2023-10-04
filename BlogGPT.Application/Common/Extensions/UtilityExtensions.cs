@@ -1,11 +1,11 @@
 ﻿using System.Net.Mail;
 using System.Text.RegularExpressions;
 
-namespace BlogGPT.Application.Common.Services
+namespace BlogGPT.Application.Common.Extensions
 {
-    public class Utility
+    public static class UtilityExtensions
     {
-        public static string GenerateSlug(string title)
+        public static string GenerateSlug(this string title)
         {
             var slug = title.ToLower();
 
@@ -47,7 +47,7 @@ namespace BlogGPT.Application.Common.Services
 
             return slug;
         }
-        public static bool IsValidEmail(string email)
+        public static bool IsValidEmail(this string email)
         {
             var trimmedEmail = email.Trim();
 

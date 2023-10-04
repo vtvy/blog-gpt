@@ -10,7 +10,7 @@ namespace BlogGPT.Application.Common.Interfaces.Data
 
         DbSet<Image> Images { get; }
 
-        DbSet<Feedback> Feedbacks { get; }
+        DbSet<Comment> Feedbacks { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
