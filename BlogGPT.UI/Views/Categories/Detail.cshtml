@@ -18,8 +18,16 @@
             @Html.Raw(Model.Name)
         </dd>
     </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.Raw(Model.Description)
+        </dd>
+    </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class ="btn btn-info me-2" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-warning" asp-action="Index">Back to List</a>
 </div>

@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Categories.Queries.GetAllCategory;
+﻿using BlogGPT.Application.Categories.Queries;
 using BlogGPT.UI.ViewModels.PostCategory;
 
 namespace BlogGPT.UI.ViewModels.Category
@@ -10,6 +10,8 @@ namespace BlogGPT.UI.ViewModels.Category
         public int? ParentId { get; set; }
 
         public required string Name { get; set; }
+
+        public string? Description { get; set; }
 
         public required string Slug { set; get; }
 

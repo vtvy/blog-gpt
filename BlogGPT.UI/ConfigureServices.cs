@@ -19,6 +19,11 @@ namespace BlogGPT.UI
 
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
+            services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
             return services;
         }
     }

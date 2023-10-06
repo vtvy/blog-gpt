@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
+﻿using BlogGPT.Application.Categories.Commands;
 using BlogGPT.Application.Categories.Queries.GetAllCategory;
 using BlogGPT.Application.Categories.Queries.GetCategory;
 using BlogGPT.Infrastructure.Data;
@@ -47,21 +47,16 @@ namespace BlogGPT.UI.Controllers
             }
             else
             {
-                return NotFound();
+                return NotFound(); // 404
             }
         }
 
         // GET: Categories/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> CreateAsync()
         {
-            //var categoriesQuery = (from cate in _context.Categories select cate)
-            //         .Include(cate => cate.Parent)
-            //         .Include(cate => cate.ChildrenCategories);
+            var categories = await _mediator.Send(new GetAllCategoryQuery());
 
-            //var categories = (await categoriesQuery.ToListAsync())
-            //                 .Where(cate => cate.Parent == null)
-            //                 .ToList();
-
+            var categoriesVM = _mapper.Map<IEnumerable<IndexCategoryModel>>(categories);
             //categories.Insert(0, new Domain.Entities.Category()
             //{
             //    Name = "Not having parent category",

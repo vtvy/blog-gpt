@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Categories.Commands.CreateCategory;
+﻿using BlogGPT.Application.Categories.Commands;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.ViewModels.Category
@@ -12,6 +12,9 @@ namespace BlogGPT.UI.ViewModels.Category
         [Required(ErrorMessage = "Category Name is required")]
         [StringLength(100, ErrorMessage = "{0} must less than {1}")]
         public required string Name { get; set; }
+
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
 
         private class Mapping : Profile
         {

@@ -40,11 +40,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapAreaControllerRoute(
-    name: "default",
-    areaName: "Identity",
-    pattern: "{area:Identity}/{controller=Home}/{action=Index}/{id?}");
-
 app.AddExceptionHandler();
 
 app.Run();

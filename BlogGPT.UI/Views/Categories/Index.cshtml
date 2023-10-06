@@ -8,7 +8,7 @@
 <h1>Categories</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary btn-sm">Create New</a>
+    <a asp-action="Create" class="btn btn-primary btn-md">Create New</a>
 </p>
 <table class="table table-striped">
     <thead>
@@ -46,9 +46,9 @@
             <td class="col-4">
                 @Html.DisplayFor(modelItem => category.Slug)
             </td>
-            <td class="col-2">
-                <a asp-action="Edit" asp-route-id="@category.Id"><button type="button" class="btn btn-info">Edit</button></a> |
-                <a asp-action="Delete" asp-route-id="@category.Id"><button type="button" class="btn btn-danger">Delete</button></a>
+            <td class="col-2 d-flex">
+                <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@category.Id"> Edit </a>
+                <a class="btn btn-danger me-2" asp-action="Delete" asp-route-id="@category.Id"> Delete </a>
             </td>
         </tr>
         if(category.ChildrenCategories?.Count > 0)
