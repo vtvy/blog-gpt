@@ -1,6 +1,6 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Data;
 
-namespace BlogGPT.Application.Categories.Queries.GetCategory;
+namespace BlogGPT.Application.Categories.Queries;
 
 public class GetCategoryQuery : IRequest<GetCategoryVM>
 {
@@ -26,5 +26,23 @@ public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryV
         var returnCategory = _mapper.Map<GetCategoryVM>(existedCategory);
 
         return returnCategory;
+    }
+}
+public class GetCategoryVM
+{
+    public string Id { get; set; } = string.Empty;
+
+    public string Name { get; set; } = string.Empty;
+
+    public string Slug { get; set; } = string.Empty;
+
+    public GetCategoryVM? Parent { get; set; }
+
+    private class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<Category, GetCategoryVM>();
+        }
     }
 }

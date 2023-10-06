@@ -1,13 +1,16 @@
 ﻿using BlogGPT.Application.Common.Extensions;
 using BlogGPT.Application.Common.Interfaces.Data;
 
-namespace BlogGPT.Application.Categories.Commands.CreateCategory
+namespace BlogGPT.Application.Categories.Commands
 {
     public record CreateCategoryCommand : IRequest<int>
     {
         public int? ParentId { get; set; }
 
         public string Name { get; set; } = string.Empty;
+
+        public string? Description { get; set; } = string.Empty;
+
 
         private class MappingProfile : Profile
         {
@@ -35,9 +38,9 @@ namespace BlogGPT.Application.Categories.Commands.CreateCategory
         {
             var entity = _mapper.Map<Category>(command);
 
-            _context.Categories.Add(entity);
-
             await _context.SaveChangesAsync(cancellationToken);
+
+            _context.Categories.Add(entity);
 
             return entity.Id;
         }

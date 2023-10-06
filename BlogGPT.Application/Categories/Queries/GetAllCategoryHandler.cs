@@ -1,6 +1,6 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Data;
 
-namespace BlogGPT.Application.Categories.Queries.GetAllCategory
+namespace BlogGPT.Application.Categories.Queries
 {
     public record GetAllCategoryQuery : IRequest<IEnumerable<GetAllCategoryVM>>;
 
@@ -30,6 +30,24 @@ namespace BlogGPT.Application.Categories.Queries.GetAllCategory
             var returnsssCategories = categories.AsQueryable().Where(category => category.Parent == null);
 
             return categories;
+        }
+    }
+    public class GetAllCategoryVM
+    {
+        public string Id { get; set; } = string.Empty;
+
+        public string Name { get; set; } = string.Empty;
+
+        public string Slug { get; set; } = string.Empty;
+
+        public GetAllCategoryVM? Parent { get; set; }
+
+        private class MappingProfile : Profile
+        {
+            public MappingProfile()
+            {
+                CreateMap<Category, GetAllCategoryVM>();
+            }
         }
     }
 }
