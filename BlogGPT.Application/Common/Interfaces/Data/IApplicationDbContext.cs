@@ -1,6 +1,4 @@
-﻿using BlogGPT.Domain.Entities;
-
-namespace BlogGPT.Application.Common.Interfaces.Data
+﻿namespace BlogGPT.Application.Common.Interfaces.Data
 {
     public interface IApplicationDbContext
     {
@@ -10,7 +8,7 @@ namespace BlogGPT.Application.Common.Interfaces.Data
 
         DbSet<Image> Images { get; }
 
-        DbSet<Comment> Feedbacks { get; }
+        DbSet<Comment> Comments { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
