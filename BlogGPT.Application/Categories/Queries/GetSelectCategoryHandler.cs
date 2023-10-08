@@ -4,7 +4,7 @@ namespace BlogGPT.Application.Categories.Queries
 {
     public record GetSelectCategoryQuery : IRequest<IList<GetSelectCategoryVM>>;
 
-    public class GetSelectCategoryHandler
+    public class GetSelectCategoryHandler : IRequestHandler<GetSelectCategoryQuery, IList<GetSelectCategoryVM>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -26,13 +26,14 @@ namespace BlogGPT.Application.Categories.Queries
             return returnCategories;
         }
     }
+
     public class GetSelectCategoryVM
     {
-        public string Id { get; set; } = string.Empty;
+        public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
-        public IList<GetCategoryVM>? ChildrenCategories { get; set; }
+        public IList<GetSelectCategoryVM>? ChildrenCategories { get; set; }
 
         private class MappingProfile : Profile
         {

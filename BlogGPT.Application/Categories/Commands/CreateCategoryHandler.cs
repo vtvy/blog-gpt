@@ -38,6 +38,8 @@ namespace BlogGPT.Application.Categories.Commands
         {
             var entity = _mapper.Map<Category>(command);
 
+            _context.Categories.Add(entity);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             _context.Categories.Add(entity);

@@ -2,12 +2,12 @@
 
 namespace BlogGPT.Application.Categories.Queries;
 
-public class GetCategoryQuery : IRequest<GetCategoryVM>
+public class GetCategoryQuery : IRequest<GetCategoryVM?>
 {
     public required int Id { get; set; }
 }
 
-public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryVM>
+public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryVM?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -18,23 +18,22 @@ public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryV
         _mapper = mapper;
     }
 
-    public async Task<GetCategoryVM> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<GetCategoryVM?> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
     {
         var existedCategory = await _context.Categories.Include(category => category.Parent)
+                    .ProjectTo<GetCategoryVM>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(category => category.Id == request.Id, cancellationToken);
 
-        var returnCategory = _mapper.Map<GetCategoryVM>(existedCategory);
-
-        return returnCategory;
+        return existedCategory;
     }
 }
 public class GetCategoryVM
 {
-    public string Id { get; set; } = string.Empty;
+    public int Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public required string Name { get; set; }
 
-    public string Slug { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     public GetCategoryVM? Parent { get; set; }
 
