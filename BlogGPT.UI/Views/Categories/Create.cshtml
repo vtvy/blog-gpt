@@ -1,8 +1,8 @@
 ﻿@using BlogGPT.UI.ViewModels.Category;
-@model  CreateCategoryModel
+@model CreateCategoryModel
 
 @{
-    // ViewData["Title"] = "Create Category";
+    ViewData["Title"] = "Create Category";
 }
 
 <h1>Create</h1>
@@ -15,7 +15,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group mt-4">
                 <label asp-for="ParentId" class="control-label"></label>
-                <select asp-for="ParentId" class ="form-control" asp-items="ViewBag.ParentId"></select>
+                <select asp-for="ParentId" class="form-control form-select" asp-items="ViewBag.ParentId">
+                    <option value="">None</option>
+                </select>
             </div>
             <div class="form-group mt-4">
                 <label asp-for="Name" class="control-label"></label>
@@ -28,14 +30,14 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group mt-4">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary me-2" />
+                <a class="btn btn-warning" asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

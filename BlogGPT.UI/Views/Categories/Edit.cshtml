@@ -1,5 +1,5 @@
 ﻿@using BlogGPT.UI.ViewModels.Category;
-@model IndexCategoryModel
+@model EditCategoryModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -16,7 +16,9 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group mt-4">
                 <label asp-for="ParentId" class="control-label"></label>
-                <select asp-for="ParentId" class="form-control" asp-items="ViewBag.ParentId"></select>
+                <select asp-for="ParentId" class="form-control form-select" asp-items="ViewBag.ParentId">
+                    <option value="">None</option>
+                </select>
                 <span asp-validation-for="ParentId" class="text-danger"></span>
             </div>
             <div class="form-group mt-4">
@@ -25,14 +27,19 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group mt-4">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <input type="submit" value="Save" class="btn btn-primary me-2" />
+                <a asp-action="Index" class="btn btn-warning">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index" class="btn btn-warning me-2">Back to List</a>
 </div>
 
 @section Scripts {

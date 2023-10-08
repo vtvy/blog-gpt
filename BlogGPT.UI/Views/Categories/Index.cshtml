@@ -16,10 +16,10 @@
             <th scope="col" class="col-6">
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th scope="col" class="col-4">
+            <th scope="col" class="col-3">
                 @Html.DisplayNameFor(model => model.Slug)
             </th>
-            <th scope="col" class="col-2">
+            <th scope="col" class="col-3">
                 Actions
             </th>
         </tr>
@@ -43,12 +43,12 @@
                 <a asp-action="Detail" asp-route-id="@category.Id">@Html.DisplayFor(modelItem => category.Name)</a>
 
             </td>
-            <td class="col-4">
+            <td class="col-3">
                 @Html.DisplayFor(modelItem => category.Slug)
             </td>
-            <td class="col-2 d-flex">
+            <td class="col-3 d-sm-flex">
                 <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@category.Id"> Edit </a>
-                <a class="btn btn-danger me-2" asp-action="Delete" asp-route-id="@category.Id"> Delete </a>
+                <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@category.Id"> Delete </a>
             </td>
         </tr>
         if(category.ChildrenCategories?.Count > 0)

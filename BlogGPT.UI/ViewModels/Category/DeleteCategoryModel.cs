@@ -1,19 +1,19 @@
 ﻿using BlogGPT.Application.Categories.Queries;
 
-namespace BlogGPT.UI.ViewModels.Category;
-public class SelectCategoryModel
+public class DeleteCategoryModel
 {
     public int Id { get; set; }
 
     public required string Name { get; set; }
 
-    public ICollection<SelectCategoryModel>? ChildrenCategories { get; set; }
+    public string? Description { get; set; }
+
 
     private class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<GetSelectCategoryVM, SelectCategoryModel>();
+            CreateMap<GetCategoryVM, DeleteCategoryModel>();
         }
     }
 }
