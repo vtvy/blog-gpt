@@ -17,7 +17,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
             builder.Property(category => category.Slug).HasMaxLength(Lengths.Large);
             builder.HasIndex(category => category.Slug).IsUnique();
 
-            builder.HasMany(category => category.ChildrenCategories).WithOne(category => category.Parent).HasForeignKey(category => category.ParentId);
+            builder.HasMany(category => category.ChildrenCategories).WithOne(category => category.Parent).HasForeignKey(category => category.ParentId).OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(category => category.PostCategories).WithOne(postCategory => postCategory.Category).HasForeignKey(category => category.CategoryId);
 

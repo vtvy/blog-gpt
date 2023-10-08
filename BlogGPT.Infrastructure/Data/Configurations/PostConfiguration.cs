@@ -19,7 +19,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasMany(post => post.PostCategories).WithOne(postCategory => postCategory.Post).HasForeignKey(postCategory => postCategory.PostId);
 
-            builder.HasMany(comment => comment.Comments).WithOne(comment => comment.Post).HasForeignKey(ac => ac.PostId);
+            builder.HasMany(comment => comment.Comments).WithOne(comment => comment.Post).HasForeignKey(ac => ac.PostId).OnDelete(DeleteBehavior.Cascade);
 
             builder.Navigation(post => post.Thumbnail).AutoInclude();
 

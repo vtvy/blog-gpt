@@ -10,13 +10,13 @@ namespace BlogGPT.Infrastructure.Data.Configurations
         {
             builder.Property(user => user.Avatar).HasMaxLength(Lengths.Large);
 
-            builder.HasMany(user => user.Images).WithOne(image => image.Author).HasForeignKey(image => image.AuthorId);
+            builder.HasMany(user => user.Images).WithOne(image => image.Author).HasForeignKey(image => image.AuthorId).OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(user => user.Categories).WithOne(category => category.Author).HasForeignKey(category => category.AuthorId);
+            builder.HasMany(user => user.Categories).WithOne(category => category.Author).HasForeignKey(category => category.AuthorId).OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(user => user.Posts).WithOne(post => post.Author).HasForeignKey(post => post.AuthorId);
+            builder.HasMany(user => user.Posts).WithOne(post => post.Author).HasForeignKey(post => post.AuthorId).OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(user => user.Comments).WithOne(comment => comment.Author).HasForeignKey(comment => comment.AuthorId);
+            builder.HasMany(user => user.Comments).WithOne(comment => comment.Author).HasForeignKey(comment => comment.AuthorId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
