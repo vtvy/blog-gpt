@@ -1,5 +1,4 @@
 ﻿using BlogGPT.Application.Categories.Queries;
-using BlogGPT.UI.ViewModels.PostCategory;
 
 namespace BlogGPT.UI.ViewModels.Category
 {
@@ -7,17 +6,15 @@ namespace BlogGPT.UI.ViewModels.Category
     {
         public int Id { get; set; }
 
-        public int? ParentId { get; set; }
-
         public required string Name { get; set; }
+
+        public required string Slug { get; set; }
 
         public string? Description { get; set; }
 
-        public ICollection<DetailCategoryModel>? ChildrenCategories { get; set; }
+        public int? ParentId { set; get; }
 
-        public DetailCategoryModel? Parent { set; get; }
-
-        public List<PostCategoryModel>? PostCategories { get; set; }
+        public string? Parent { set; get; }
 
         private class MappingProfile : Profile
         {

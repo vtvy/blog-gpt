@@ -20,10 +20,29 @@
     </dl>
     <dl class="row">
         <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Slug)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.Raw(Model.Slug)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd class="col-sm-8">
             @Html.Raw(Model.Description)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Parent)
+        </dt>
+        <dd class="col-sm-8">
+        @if(Model.Parent != null)
+        {
+            <a asp-action="Detail" asp-route-id="@Model.ParentId">@Html.Raw(Model.Parent)</a>
+        }
         </dd>
     </dl>
 </div>

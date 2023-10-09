@@ -1,5 +1,6 @@
-﻿@using BlogGPT.UI.ViewModels.Category;
-@model IEnumerable<IndexCategoryModel>
+﻿@using BlogGPT.Application.Common.Models;
+@using BlogGPT.UI.ViewModels.Category;
+@model IEnumerable<TreeItem<IndexCategoryModel>>
 
 @{
     ViewData["Title"] = "Categories";
@@ -14,10 +15,10 @@
     <thead>
         <tr class="row">
             <th scope="col" class="col-6">
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Item.Name)
             </th>
             <th scope="col" class="col-3">
-                @Html.DisplayNameFor(model => model.Slug)
+                @Html.DisplayNameFor(model => model.Item.Slug)
             </th>
             <th scope="col" class="col-3">
                 Actions
@@ -34,28 +35,30 @@
 
 
 @{
-    async Task ShowCategory(IndexCategoryModel category, int level)
+    async Task ShowCategory(TreeItem<IndexCategoryModel> category, int level)
     {
-        string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;---&nbsp;&nbsp;", level));
+        string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", level))
+                        + (level > 0 ? "|---&nbsp;" : "");
         <tr class="row">
             <td class="col-6">
                 @Html.Raw(@prefix)
-                <a asp-action="Detail" asp-route-id="@category.Id">@Html.DisplayFor(modelItem => category.Name)</a>
+                <a asp-action="Detail" asp-route-id="@category.Item.Id">@Html.DisplayFor(modelItem => category.Item.Name)</a>
 
             </td>
             <td class="col-3">
-                @Html.DisplayFor(modelItem => category.Slug)
+                @Html.DisplayFor(modelItem => category.Item.Slug)
             </td>
             <td class="col-3 d-sm-flex">
-                <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@category.Id"> Edit </a>
-                <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@category.Id"> Delete </a>
+                <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@category.Item.Id"> Edit </a>
+                <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@category.Item.Id"> Delete </a>
             </td>
         </tr>
-        if(category.ChildrenCategories?.Count > 0)
+        if (category.Children != null)
         {
-            foreach (var childCategory in category.ChildrenCategories)
+            foreach (var childCategory in category.Children)
             {
-                await ShowCategory(childCategory, ++level);
+                var childLevel = level + 1;
+                await ShowCategory(childCategory, childLevel);
             }
         }
     }

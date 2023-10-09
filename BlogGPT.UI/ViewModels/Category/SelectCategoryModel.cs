@@ -1,4 +1,5 @@
 ﻿using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.UI.ViewModels.Category;
 public class SelectCategoryModel
@@ -14,6 +15,7 @@ public class SelectCategoryModel
         public MappingProfile()
         {
             CreateMap<GetSelectCategoryVM, SelectCategoryModel>();
+            CreateMap<TreeItem<GetSelectCategoryVM>, TreeItem<SelectCategoryModel>>();
         }
     }
 }

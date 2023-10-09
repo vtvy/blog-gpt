@@ -1,5 +1,6 @@
 ﻿using BlogGPT.Application.Categories.Commands;
 using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Common.Models;
 using BlogGPT.Infrastructure.Data;
 using BlogGPT.UI.Constants;
 using BlogGPT.UI.ViewModels.Category;
@@ -29,7 +30,7 @@ namespace BlogGPT.UI.Controllers
         {
             var categories = await _mediator.Send(new GetAllCategoryQuery());
 
-            var categoriesVM = _mapper.Map<IEnumerable<IndexCategoryModel>>(categories);
+            var categoriesVM = _mapper.Map<IEnumerable<TreeItem<IndexCategoryModel>>>(categories);
 
             return View(categoriesVM);
         }
@@ -54,7 +55,7 @@ namespace BlogGPT.UI.Controllers
         {
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var categoriesList = _mapper.Map<IList<SelectCategoryModel>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
             var selectList = new List<SelectCategoryModel>();
 
             CreatePrefixForSelect(categoriesList, selectList, 0);
@@ -78,7 +79,7 @@ namespace BlogGPT.UI.Controllers
 
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var categoriesList = _mapper.Map<IList<SelectCategoryModel>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
             var selectList = new List<SelectCategoryModel>();
 
             CreatePrefixForSelect(categoriesList, selectList, 0);
@@ -96,12 +97,9 @@ namespace BlogGPT.UI.Controllers
                 return NotFound();
             }
 
-            var categories = await _mediator.Send(new GetSelectCategoryQuery());
+            var categories = await _mediator.Send(new GetSelectCategoryQuery { Id = id });
 
-            var deleteFromSelect = categories.FirstOrDefault(c => c.Id == id);
-            if (deleteFromSelect != null) categories.Remove(deleteFromSelect);
-
-            var categoriesList = _mapper.Map<IList<SelectCategoryModel>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
 
             var selectList = new List<SelectCategoryModel>();
 
@@ -134,10 +132,7 @@ namespace BlogGPT.UI.Controllers
 
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var deleteFromSelect = categories.FirstOrDefault(c => c.Id == id);
-            if (deleteFromSelect != null) categories.Remove(deleteFromSelect);
-
-            var categoriesList = _mapper.Map<IList<SelectCategoryModel>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
 
             var selectList = new List<SelectCategoryModel>();
 
@@ -177,20 +172,22 @@ namespace BlogGPT.UI.Controllers
             return _context.Categories.Any(e => e.Id == id);
         }
 
-        private void CreatePrefixForSelect(IList<SelectCategoryModel> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
+        private void CreatePrefixForSelect(IEnumerable<TreeItem<SelectCategoryModel>> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
         {
-            string prefix = string.Concat(Enumerable.Repeat("|---", level));
+            string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;&nbsp;", level))
+                            + (level > 0 ? "|---&nbsp;" : "");
             foreach (var category in rawCategories)
             {
                 categoriesSelect.Add(new SelectCategoryModel()
                 {
-                    Id = category.Id,
-                    Name = prefix + " " + category.Name,
+                    Id = category.Item.Id,
+                    Name = prefix + category.Item.Name,
                 });
 
-                if (category.ChildrenCategories?.Count > 0)
+                if (category.Children != null)
                 {
-                    CreatePrefixForSelect(category.ChildrenCategories.ToList(), categoriesSelect, ++level);
+                    var childLevel = level + 1;
+                    CreatePrefixForSelect(category.Children, categoriesSelect, childLevel);
                 }
             }
         }
