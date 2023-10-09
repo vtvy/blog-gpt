@@ -29,7 +29,7 @@ namespace BlogGPT.Application.Categories.Queries
 
             if (request.Id != null)
             {
-                categoriesQuery = categoriesQuery.Where(c => c.Id == request.Id);
+                categoriesQuery = categoriesQuery.Where(c => c.Id != request.Id);
             }
 
             var categories = await categoriesQuery.ToListAsync(cancellationToken);

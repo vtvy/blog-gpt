@@ -8,8 +8,6 @@ public class SelectCategoryModel
 
     public required string Name { get; set; }
 
-    public ICollection<SelectCategoryModel>? ChildrenCategories { get; set; }
-
     private class MappingProfile : Profile
     {
         public MappingProfile()

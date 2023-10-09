@@ -1,6 +1,5 @@
 ﻿using BlogGPT.Application.Categories.Commands;
 using BlogGPT.Application.Categories.Queries;
-using BlogGPT.UI.ViewModels.PostCategory;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.ViewModels.Category
@@ -19,12 +18,6 @@ namespace BlogGPT.UI.ViewModels.Category
 
         [Display(Name = "Description")]
         public string? Description { get; set; }
-
-        public ICollection<DetailCategoryModel>? ChildrenCategories { get; set; }
-
-        public DetailCategoryModel? Parent { set; get; }
-
-        public List<PostCategoryModel>? PostCategories { get; set; }
 
         private class MappingProfile : Profile
         {

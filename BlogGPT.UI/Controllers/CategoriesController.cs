@@ -174,8 +174,7 @@ namespace BlogGPT.UI.Controllers
 
         private void CreatePrefixForSelect(IEnumerable<TreeItem<SelectCategoryModel>> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
         {
-            string prefix = string.Concat(Enumerable.Repeat("&nbsp;&nbsp;&nbsp;", level))
-                            + (level > 0 ? "|---&nbsp;" : "");
+            string prefix = string.Concat(Enumerable.Repeat("-----> ", level));
             foreach (var category in rawCategories)
             {
                 categoriesSelect.Add(new SelectCategoryModel()
