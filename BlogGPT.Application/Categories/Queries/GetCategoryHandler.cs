@@ -20,9 +20,9 @@ public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryV
 
     public async Task<GetCategoryVM?> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
     {
-        var existedCategory = await _context.Categories.Include(category => category.Parent)
-                    .ProjectTo<GetCategoryVM>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(category => category.Id == request.Id, cancellationToken);
+        var existedCategory = await _context.Categories
+            .ProjectTo<GetCategoryVM>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(category => category.Id == request.Id, cancellationToken);
 
         return existedCategory;
     }
@@ -33,15 +33,20 @@ public class GetCategoryVM
 
     public required string Name { get; set; }
 
+    public required string Slug { get; set; }
+
     public string? Description { get; set; }
 
-    public GetCategoryVM? Parent { get; set; }
+    public int? ParentId { get; set; }
+
+    public string? Parent { get; set; }
 
     private class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<Category, GetCategoryVM>();
+            CreateMap<Category, GetCategoryVM>()
+                .ForMember(destination => destination.Parent, opt => opt.MapFrom(src => src.Parent != null ? src.Parent.Name : null));
         }
     }
 }

@@ -1,27 +1,40 @@
-﻿using BlogGPT.Application.Common.Interfaces.Data;
+﻿using BlogGPT.Application.Common.Extensions;
+using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Categories.Queries
 {
-    public record GetSelectCategoryQuery : IRequest<IList<GetSelectCategoryVM>>;
+    public record GetSelectCategoryQuery : IRequest<IEnumerable<TreeItem<GetSelectCategoryVM>>>
+    {
+        public int? Id { get; set; }
+    };
 
-    public class GetSelectCategoryHandler : IRequestHandler<GetSelectCategoryQuery, IList<GetSelectCategoryVM>>
+    public class GetSelectCategoryHandler : IRequestHandler<GetSelectCategoryQuery, IEnumerable<TreeItem<GetSelectCategoryVM>>>
     {
         private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
 
-        public GetSelectCategoryHandler(IApplicationDbContext context, IMapper mapper)
+        public GetSelectCategoryHandler(IApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<IList<GetSelectCategoryVM>> Handle(GetSelectCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TreeItem<GetSelectCategoryVM>>> Handle(GetSelectCategoryQuery request, CancellationToken cancellationToken)
         {
-            var categories = await _context.Categories.Include(category => category.ChildrenCategories)
-                .ProjectTo<GetSelectCategoryVM>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+            var categoriesQuery = _context.Categories.Select(category => new GetSelectCategoryVM
+            {
+                Id = category.Id,
+                Name = category.Name,
+                ParentId = category.ParentId
+            });
 
-            var returnCategories = categories.AsEnumerable().ToList(); ;
+            if (request.Id != null)
+            {
+                categoriesQuery = categoriesQuery.Where(c => c.Id == request.Id);
+            }
+
+            var categories = await categoriesQuery.ToListAsync(cancellationToken);
+
+            var returnCategories = categories.GenerateChildren(c => c.Id, c => c.ParentId);
 
             return returnCategories;
         }
@@ -33,14 +46,6 @@ namespace BlogGPT.Application.Categories.Queries
 
         public required string Name { get; set; }
 
-        public IList<GetSelectCategoryVM>? ChildrenCategories { get; set; }
-
-        private class MappingProfile : Profile
-        {
-            public MappingProfile()
-            {
-                CreateMap<Category, GetSelectCategoryVM>();
-            }
-        }
+        public int? ParentId { get; set; }
     }
 }

@@ -1,10 +1,12 @@
-﻿using BlogGPT.Application.Common.Interfaces.Data;
+﻿using BlogGPT.Application.Common.Extensions;
+using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Categories.Queries
 {
-    public record GetAllCategoryQuery : IRequest<IEnumerable<GetAllCategoryVM>>;
+    public record GetAllCategoryQuery : IRequest<IEnumerable<TreeItem<GetAllCategoryVM>>>;
 
-    public class GetAllCategoryHandler : IRequestHandler<GetAllCategoryQuery, IEnumerable<GetAllCategoryVM>>
+    public class GetAllCategoryHandler : IRequestHandler<GetAllCategoryQuery, IEnumerable<TreeItem<GetAllCategoryVM>>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -15,39 +17,31 @@ namespace BlogGPT.Application.Categories.Queries
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<GetAllCategoryVM>> Handle(GetAllCategoryQuery query, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TreeItem<GetAllCategoryVM>>> Handle(GetAllCategoryQuery query, CancellationToken cancellationToken)
         {
-            var categories = await _context.Categories.Include(category => category.Parent)
-                                    .ProjectTo<GetAllCategoryVM>(_mapper.ConfigurationProvider)
-                                    .ToListAsync(cancellationToken);
+            var categories = await _context.Categories
+                .Select(category => new GetAllCategoryVM
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Slug = category.Slug,
+                    ParentId = category.ParentId
+                })
+                .ToListAsync(cancellationToken);
 
-            var returnCategories = categories.AsEnumerable().Where(category => category.Parent == null).ToList();
 
-            var returnsCategories = categories.Where(category => category.Parent == null).AsEnumerable();
-
-            var returnssCategories = categories.AsEnumerable().Where(category => category.Parent == null);
-
-            var returnsssCategories = categories.AsQueryable().Where(category => category.Parent == null);
-
-            return categories;
+            var result = categories.GenerateChildren(c => c.Id, c => c.ParentId);
+            return result;
         }
     }
     public class GetAllCategoryVM
     {
-        public string Id { get; set; } = string.Empty;
+        public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; }
 
-        public string Slug { get; set; } = string.Empty;
+        public required string Slug { get; set; }
 
-        public GetAllCategoryVM? Parent { get; set; }
-
-        private class MappingProfile : Profile
-        {
-            public MappingProfile()
-            {
-                CreateMap<Category, GetAllCategoryVM>();
-            }
-        }
+        public int? ParentId { get; set; }
     }
 }
