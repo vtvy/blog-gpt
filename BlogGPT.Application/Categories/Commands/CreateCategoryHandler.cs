@@ -42,8 +42,6 @@ namespace BlogGPT.Application.Categories.Commands
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            _context.Categories.Add(entity);
-
             return entity.Id;
         }
     }
