@@ -16,6 +16,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.Property(post => post.Slug).HasMaxLength(Lengths.Large);
             builder.HasIndex(post => post.Slug).IsUnique();
+            builder.HasIndex(post => post.Content).IsUnique();
 
             builder.HasMany(post => post.PostCategories).WithOne(postCategory => postCategory.Post).HasForeignKey(postCategory => postCategory.PostId);
 
