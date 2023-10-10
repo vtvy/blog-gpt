@@ -5,9 +5,10 @@
 @using BlogGPT.UI.ViewModels.Category;
 @using BlogGPT.UI.ViewModels.Post;
 @using BlogGPT.UI.Views.Shared.Components.CategorySidebar;
+@using BlogGPT.Domain.Common;
 
 @{
-    List<TreeItem<IndexCategoryModel>> categories = ViewBag.categories as List<TreeItem<IndexCategoryModel>>;
+    List<TreeModel<IndexCategoryModel>> categories = ViewBag.categories as List<TreeModel<IndexCategoryModel>>;
     IndexCategoryModel category = ViewBag.category as IndexCategoryModel;
     ViewData["Title"] = Model.Title;
 

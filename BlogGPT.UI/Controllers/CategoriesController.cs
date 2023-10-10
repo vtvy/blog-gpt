@@ -1,7 +1,5 @@
 ﻿using BlogGPT.Application.Categories.Commands;
 using BlogGPT.Application.Categories.Queries;
-using BlogGPT.Application.Common.Models;
-using BlogGPT.Infrastructure.Data;
 using BlogGPT.UI.Constants;
 using BlogGPT.UI.ViewModels.Category;
 using MediatR;
@@ -14,13 +12,11 @@ namespace BlogGPT.UI.Controllers
     [Authorize(Roles = Roles.Administrator + "," + Roles.Editor)]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context, IMediator mediator, IMapper mapper)
+        public CategoriesController(IMediator mediator, IMapper mapper)
         {
-            _context = context;
             _mediator = mediator;
             _mapper = mapper;
         }
@@ -30,7 +26,7 @@ namespace BlogGPT.UI.Controllers
         {
             var categories = await _mediator.Send(new GetAllCategoryQuery());
 
-            var categoriesVM = _mapper.Map<IEnumerable<TreeItem<IndexCategoryModel>>>(categories);
+            var categoriesVM = _mapper.Map<IEnumerable<TreeModel<IndexCategoryModel>>>(categories);
 
             return View(categoriesVM);
         }
@@ -55,7 +51,7 @@ namespace BlogGPT.UI.Controllers
         {
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
             var selectList = new List<SelectCategoryModel>();
 
             CreatePrefixForSelect(categoriesList, selectList, 0);
@@ -79,7 +75,7 @@ namespace BlogGPT.UI.Controllers
 
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
             var selectList = new List<SelectCategoryModel>();
 
             CreatePrefixForSelect(categoriesList, selectList, 0);
@@ -99,7 +95,7 @@ namespace BlogGPT.UI.Controllers
 
             var categories = await _mediator.Send(new GetSelectCategoryQuery { Id = id });
 
-            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
 
             var selectList = new List<SelectCategoryModel>();
 
@@ -132,7 +128,7 @@ namespace BlogGPT.UI.Controllers
 
             var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            var categoriesList = _mapper.Map<IEnumerable<TreeItem<SelectCategoryModel>>>(categories);
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
 
             var selectList = new List<SelectCategoryModel>();
 
@@ -167,12 +163,7 @@ namespace BlogGPT.UI.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
-
-        private void CreatePrefixForSelect(IEnumerable<TreeItem<SelectCategoryModel>> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
+        private void CreatePrefixForSelect(IEnumerable<TreeModel<SelectCategoryModel>> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
         {
             string prefix = string.Concat(Enumerable.Repeat("-----> ", level));
             foreach (var category in rawCategories)

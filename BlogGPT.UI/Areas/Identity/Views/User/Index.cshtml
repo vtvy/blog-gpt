@@ -1,6 +1,7 @@
 @model UserListModel
 @using BlogGPT.Application.Common.Models;
 @using BlogGPT.UI.ViewModels
+@using BlogGPT.UI.ViewModels.Post;
 @{
     ViewData["Title"] = "Danh sách các thành viên";
 }
@@ -35,7 +36,7 @@
     }
 </table>
 @{
-    var paginatedModel = new PaginatedModel()
+    var paginatedModel = new PaginatedModel<PostModel>()
     {
         PageNumber = Model.PageNumber,
         TotalPages = Model.TotalPages,

@@ -1,29 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BlogGPT.Application.Posts.Commands;
+using BlogGPT.UI.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.ViewModels.Post
 {
     public class CreatePostModel
     {
         [Display(Name = "Categories")]
-        public int[]? CategoryIDs { get; set; }
+        public int[]? CategoryIds { get; set; }
 
         [Required(ErrorMessage = "Post title is required")]
-        [Display(Name = "Title")]
-        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} from {2} to {1}")]
-        public string Title { set; get; } = string.Empty;
+        [StringLength(Lengths.Medium, ErrorMessage = "{0} less than {1} characters")]
+        public required string Title { set; get; }
 
-        [Display(Name = "Description")]
-        public string Description { set; get; } = string.Empty;
+        public string? Description { set; get; }
 
-        [Display(Name = "Chuỗi định danh (url)", Prompt = "Nhập hoặc để trống tự phát sinh theo Title")]
-        [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} from {2} to {1}")]
-        [RegularExpression(@"^[a-z0-9-]*$", ErrorMessage = "Chỉ dùng các ký tự [a-z0-9-]")]
-        public string Slug { set; get; }
+        public required string Content { set; get; }
 
-        [Display(Name = "Nội dung")]
-        public string Content { set; get; }
-
-        [Display(Name = "Xuất bản")]
         public bool Published { set; get; }
+
+        private class MappingProfile : Profile
+        {
+            public MappingProfile()
+            {
+                CreateMap<CreatePostModel, CreatePostCommand>();
+            }
+        }
     }
 }

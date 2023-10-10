@@ -13,7 +13,7 @@ public class SelectCategoryModel
         public MappingProfile()
         {
             CreateMap<GetSelectCategoryVM, SelectCategoryModel>();
-            CreateMap<TreeItem<GetSelectCategoryVM>, TreeItem<SelectCategoryModel>>();
+            CreateMap<TreeItem<GetSelectCategoryVM>, TreeModel<SelectCategoryModel>>();
         }
     }
 }

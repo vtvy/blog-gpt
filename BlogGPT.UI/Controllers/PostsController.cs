@@ -1,7 +1,11 @@
-﻿using BlogGPT.Domain.Constants;
+﻿using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Posts.Commands;
+using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
+using BlogGPT.UI.ViewModels.Category;
 using BlogGPT.UI.ViewModels.Post;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +18,15 @@ namespace BlogGPT.UI.Controllers
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public PostsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public PostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _mediator = mediator;
+            _mapper = mapper;
             _userManager = userManager;
         }
 
@@ -42,7 +50,7 @@ namespace BlogGPT.UI.Controllers
 
 
 
-            var pagingModel = new ViewModels.PaginatedModel()
+            var pagingModel = new ViewModels.PaginatedModel<Post>()
             {
                 PageNumber = pageNumber,
                 TotalPages = totalPages,
@@ -84,8 +92,14 @@ namespace BlogGPT.UI.Controllers
         // GET: Posts/Create
         public async Task<IActionResult> CreateAsync()
         {
-            var categories = await _context.Categories.ToListAsync();
-            ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
+            var categories = await _mediator.Send(new GetSelectCategoryQuery());
+
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
+            var selectList = new List<SelectCategoryModel>();
+
+            CreatePrefixForSelect(categoriesList, selectList, 0);
+
+            ViewData["categories"] = new MultiSelectList(selectList, "Id", "Name");
             return View();
 
         }
@@ -95,7 +109,7 @@ namespace BlogGPT.UI.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Slug,Content,Published,CategoryIDs")] CreatePostModel post)
+        public async Task<IActionResult> Create(CreatePostModel post)
         {
 
 
@@ -108,29 +122,15 @@ namespace BlogGPT.UI.Controllers
             //    return View(post);
             //}
 
-            //if (ModelState.IsValid)
-            //{
+            if (ModelState.IsValid)
+            {
+                var command = _mapper.Map<CreatePostCommand>(post);
+                var postId = await _mediator.Send(command);
 
-            //    ApplicationUser user = await _userManager.GetUserAsync(User);
-            //    post.CreatedAt = post.LastModifiedAt = DateTime.Now;
-            //    post.AuthorId = user.Id;
-            //    _context.Add(post);
+                Status = "Create a blog post successfully!";
+                return RedirectToAction(nameof(Index));
+            }
 
-            //    if (post.CategoryIDs != null)
-            //    {
-            //        foreach (int CategoryID in post.CategoryIDs)
-            //        {
-            //            _context.Add(new PostCategory { CategoryId = CategoryID, Post = post });
-            //        }
-            //    }
-
-
-
-
-            //    await _context.SaveChangesAsync();
-            //    Status = "Create a blog post successfully!";
-            //    return RedirectToAction(nameof(Index));
-            //}
             return View(post);
         }
 
@@ -315,6 +315,25 @@ namespace BlogGPT.UI.Controllers
             }
             imgPath = $"{storedPath}/thumnail.png";
             return Ok(new { imgPath });
+        }
+
+        private void CreatePrefixForSelect(IEnumerable<TreeModel<SelectCategoryModel>> rawCategories, List<SelectCategoryModel> categoriesSelect, int level)
+        {
+            string prefix = string.Concat(Enumerable.Repeat("--- ", level));
+            foreach (var category in rawCategories)
+            {
+                categoriesSelect.Add(new SelectCategoryModel()
+                {
+                    Id = category.Item.Id,
+                    Name = prefix + category.Item.Name,
+                });
+
+                if (category.Children != null)
+                {
+                    var childLevel = level + 1;
+                    CreatePrefixForSelect(category.Children, categoriesSelect, childLevel);
+                }
+            }
         }
     }
 }

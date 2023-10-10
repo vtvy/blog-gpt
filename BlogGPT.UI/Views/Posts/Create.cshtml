@@ -1,11 +1,10 @@
 ﻿@using BlogGPT.UI.ViewModels.Post;
-@using BlogGPT.UI.ViewModels.Post;
 @model CreatePostModel
 
 @{
     ViewData["Title"] = "Create";
     var selectList = ViewData["categories"] as MultiSelectList;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    // Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Create a new blog</h1>
@@ -17,10 +16,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group mt-4">
-                <label asp-for="CategoryIDs" class="control-label"></label>
-                <select asp-for="CategoryIDs" multiple="multiple" asp-items="selectList" class="w-100"></select>
-                <span asp-validation-for="CategoryIDs" class="text-danger"></span>
-            </div>
+                <label asp-for="CategoryIds" class="control-label"></label>
+                <select class="w-100" asp-for="CategoryIds" multiple="multiple" asp-items="selectList"></select>
+                <span asp-validation-for="CategoryIds" class="text-danger"></span>
+            </div> 
 
             <div class="form-group mt-4">
                 <label asp-for="Title" class="control-label"></label>
@@ -35,12 +34,6 @@
             </div>
 
             <div class="form-group mt-4">
-                <label asp-for="Slug" class="control-label"></label>
-                <input asp-for="Slug" class="form-control" />
-                <span asp-validation-for="Slug" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-4">
                 <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
@@ -52,27 +45,27 @@
                 </label>
             </div>
             <div class="form-group mt-4">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary me-2" />
+                <a class="btn btn-warning" asp-action="Index">List of posts</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">List of posts</a>
 </div>
 
 @section Scripts {
 
-    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
-    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
 
     <script>
-        $("#CategoryIDs").multipleSelect({
-            selectAll: false,
-            keepOpen: false,
-            isOpen: false,
+        $("#CategoryIds").select2({
+            placeholder: "Select categories",
+            allowClear: true,
+            closeOnSelect: false
         });
         tinymce.init({
             selector: '#Content',
