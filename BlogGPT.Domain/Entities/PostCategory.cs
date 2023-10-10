@@ -6,8 +6,8 @@
 
         public int CategoryId { get; set; }
 
-        public required Post Post { get; set; }
+        public Post? Post { get; set; }
 
-        public required Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

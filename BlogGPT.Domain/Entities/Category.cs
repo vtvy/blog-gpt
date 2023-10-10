@@ -1,6 +1,6 @@
 ﻿namespace BlogGPT.Domain.Entities
 {
-    public class Category : BaseEntity
+    public class Category : BaseEntity, ITree<Category>
     {
         public required string Name { get; set; }
 
@@ -12,7 +12,7 @@
 
         public Category? Parent { get; set; }
 
-        public ICollection<Category>? ChildrenCategories { get; set; }
+        public ICollection<Category>? Children { get; set; }
 
         public ICollection<PostCategory>? PostCategories { get; set; }
     }
