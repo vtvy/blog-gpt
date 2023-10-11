@@ -14,7 +14,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasMany(comment => comment.Children).WithOne(comment => comment.Parent).HasForeignKey(comment => comment.ParentId).OnDelete(DeleteBehavior.Cascade);
 
-            builder.Navigation(comment => comment.Author).AutoInclude();
+            //builder.Navigation(comment => comment.Author).AutoInclude();
         }
     }
 }

@@ -17,6 +17,13 @@ namespace BlogGPT.Infrastructure.Data.Configurations
             builder.HasMany(user => user.Posts).WithOne(post => post.Author).HasForeignKey(post => post.AuthorId).OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(user => user.Comments).WithOne(comment => comment.Author).HasForeignKey(comment => comment.AuthorId).OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasMany(user => user.Models).WithOne(model => model.Author).HasForeignKey(model => model.AuthorId).OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasMany(user => user.Conversations).WithOne(conversation => conversation.Author).HasForeignKey(conversation => conversation.AuthorId).OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasMany(user => user.Messages).WithOne(message => message.Author).HasForeignKey(message => message.AuthorId).OnDelete(DeleteBehavior.SetNull);
+
         }
     }
 }

@@ -18,6 +18,14 @@ namespace BlogGPT.Infrastructure.Data
 
         public DbSet<Comment> Comments => Set<Comment>();
 
+        public DbSet<PostCategory> PostCategories => Set<PostCategory>();
+
+        public DbSet<Model> Models => Set<Model>();
+
+        public DbSet<Conversation> Conversations => Set<Conversation>();
+
+        public DbSet<Message> Messages => Set<Message>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

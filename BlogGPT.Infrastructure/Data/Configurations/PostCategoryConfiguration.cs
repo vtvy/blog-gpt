@@ -10,7 +10,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
         {
             builder.HasKey(postCategory => new { postCategory.PostId, postCategory.CategoryId });
 
-            builder.Navigation(postCategory => postCategory.Category).AutoInclude();
+            //builder.Navigation(postCategory => postCategory.Category).AutoInclude();
         }
     }
 }

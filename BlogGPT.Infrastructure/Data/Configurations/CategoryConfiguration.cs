@@ -21,7 +21,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasMany(category => category.PostCategories).WithOne(postCategory => postCategory.Category).HasForeignKey(category => category.CategoryId);
 
-            builder.Navigation(category => category.PostCategories).AutoInclude();
+            //builder.Navigation(category => category.PostCategories).AutoInclude();
         }
     }
 }

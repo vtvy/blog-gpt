@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogGPT.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231002174842_Initial")]
+    [Migration("20231011093929_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace BlogGPT.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.ApplicationUser", b =>
@@ -102,6 +102,10 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
                     b.Property<DateTime>("LastModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -134,7 +138,7 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,11 +162,50 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Feedbacks");
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsOver")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.Image", b =>
@@ -199,6 +242,81 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("ModelId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Model", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("LastModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Models");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.Post", b =>
@@ -268,7 +386,7 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("PostCategory");
+                    b.ToTable("PostCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -403,22 +521,50 @@ namespace BlogGPT.Infrastructure.Migrations
                 {
                     b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
                         .WithMany("Categories")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("BlogGPT.Domain.Entities.Category", "Parent")
-                        .WithMany("ChildrenCategories")
-                        .HasForeignKey("ParentId");
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Author");
 
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Comment", b =>
                 {
                     b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
-                        .WithMany("Feedbacks")
-                        .HasForeignKey("AuthorId");
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BlogGPT.Domain.Entities.Comment", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BlogGPT.Domain.Entities.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
+                {
+                    b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany("Conversations")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Author");
                 });
@@ -427,7 +573,43 @@ namespace BlogGPT.Infrastructure.Migrations
                 {
                     b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
                         .WithMany("Images")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Message", b =>
+                {
+                    b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany("Messages")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BlogGPT.Domain.Entities.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlogGPT.Domain.Entities.Model", "Model")
+                        .WithMany("Messages")
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("Model");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Model", b =>
+                {
+                    b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany("Models")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Author");
                 });
@@ -436,7 +618,8 @@ namespace BlogGPT.Infrastructure.Migrations
                 {
                     b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
                         .WithMany("Posts")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("BlogGPT.Domain.Entities.Image", "Thumbnail")
                         .WithMany()
@@ -521,22 +704,45 @@ namespace BlogGPT.Infrastructure.Migrations
                 {
                     b.Navigation("Categories");
 
-                    b.Navigation("Feedbacks");
+                    b.Navigation("Comments");
+
+                    b.Navigation("Conversations");
 
                     b.Navigation("Images");
+
+                    b.Navigation("Messages");
+
+                    b.Navigation("Models");
 
                     b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.Category", b =>
                 {
-                    b.Navigation("ChildrenCategories");
+                    b.Navigation("Children");
 
                     b.Navigation("PostCategories");
                 });
 
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Comment", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("BlogGPT.Domain.Entities.Model", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("BlogGPT.Domain.Entities.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("PostCategories");
                 });
 #pragma warning restore 612, 618

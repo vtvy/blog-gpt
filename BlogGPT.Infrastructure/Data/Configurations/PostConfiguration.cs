@@ -16,17 +16,16 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.Property(post => post.Slug).HasMaxLength(Lengths.Large);
             builder.HasIndex(post => post.Slug).IsUnique();
-            builder.HasIndex(post => post.Content).IsUnique();
 
             builder.HasMany(post => post.PostCategories).WithOne(postCategory => postCategory.Post).HasForeignKey(postCategory => postCategory.PostId);
 
             builder.HasMany(comment => comment.Comments).WithOne(comment => comment.Post).HasForeignKey(ac => ac.PostId).OnDelete(DeleteBehavior.Cascade);
 
-            builder.Navigation(post => post.Thumbnail).AutoInclude();
+            //builder.Navigation(post => post.Thumbnail).AutoInclude();
 
-            builder.Navigation(post => post.Author).AutoInclude();
+            //builder.Navigation(post => post.Author).AutoInclude();
 
-            builder.Navigation(post => post.PostCategories).AutoInclude();
+            //builder.Navigation(post => post.PostCategories).AutoInclude();
         }
     }
 }
