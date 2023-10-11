@@ -13,5 +13,12 @@ namespace BlogGPT.Domain.Entities
         public ICollection<Comment>? Comments { get; set; }
 
         public ICollection<Category>? Categories { get; set; }
+
+        public ICollection<Model>? Models { get; set; }
+
+        public ICollection<Conversation>? Conversations { get; set; }
+
+        public ICollection<Message>? Messages { get; set; }
+
     }
 }
