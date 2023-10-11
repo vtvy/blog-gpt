@@ -2,7 +2,7 @@
 
 namespace BlogGPT.Application.Categories.Queries;
 
-public class GetCategoryQuery : IRequest<GetCategoryVM?>
+public record GetCategoryQuery : IRequest<GetCategoryVM?>
 {
     public required int Id { get; set; }
 }
@@ -46,7 +46,8 @@ public class GetCategoryVM
         public MappingProfile()
         {
             CreateMap<Category, GetCategoryVM>()
-                .ForMember(destination => destination.Parent, opt => opt.MapFrom(src => src.Parent != null ? src.Parent.Name : null));
+                .ForMember(destination => destination.Parent, opt => opt
+                .MapFrom(src => src.Parent != null ? src.Parent.Name : null));
         }
     }
 }

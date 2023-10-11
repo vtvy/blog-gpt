@@ -14,7 +14,7 @@ namespace BlogGPT.Application.Posts.Commands
 
         public required string Content { set; get; }
 
-        public bool Published { set; get; }
+        public bool IsPublished { set; get; }
 
         private class MappingProfile : Profile
         {
