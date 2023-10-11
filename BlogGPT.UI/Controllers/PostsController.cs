@@ -1,5 +1,6 @@
 ﻿using BlogGPT.Application.Categories.Queries;
 using BlogGPT.Application.Posts.Commands;
+using BlogGPT.Application.Posts.Queries;
 using BlogGPT.Domain.Constants;
 using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
@@ -111,17 +112,6 @@ namespace BlogGPT.UI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreatePostModel post)
         {
-
-
-
-            //post.Slug ??= Utility.GenerateSlug(post.Title);
-
-            //if (await _context.Posts.AnyAsync(p => p.Slug == post.Slug))
-            //{
-            //    ModelState.AddModelError("Slug", "Nhập chuỗi Url khác");
-            //    return View(post);
-            //}
-
             if (ModelState.IsValid)
             {
                 var command = _mapper.Map<CreatePostCommand>(post);
@@ -135,116 +125,49 @@ namespace BlogGPT.UI.Controllers
         }
 
         // GET: Posts/Edit/5
-        [Route("/posts/edit/{id?}")]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            //if (id == null || _context.Posts == null)
-            //{
-            //    return NotFound();
-            //}
+            var editPost = await _mediator.Send(new GetPostQuery { Id = id });
 
-            //var post = await _context.Posts
-            //                .Include(post => post.PostCategories)
-            //                .FirstOrDefaultAsync(post => post.Id == id);
+            if (editPost == null)
+            {
+                return NotFound();
+            }
 
-            //if (post == null)
-            //{
-            //    return NotFound();
-            //}
+            var categories = await _mediator.Send(new GetSelectCategoryQuery());
 
-            //var editPost = new CreatePost()
-            //{
-            //    Id = post.Id,
-            //    Title = post.Title,
-            //    Description = post.Description,
-            //    Content = post.Content,
-            //    Slug = post.Slug,
-            //    Published = post.Published,
-            //    CategoryIDs = post.PostCategories.Select(post => post.CategoryID).ToArray()
-            //};
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(categories);
+            var selectList = new List<SelectCategoryModel>();
 
+            CreatePrefixForSelect(categoriesList, selectList, 0);
 
-            //var categories = await _context.Categories.ToListAsync();
-            //ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
+            ViewData["categories"] = new MultiSelectList(selectList, "Id", "Name");
 
-            //return View(editPost);
-            return View();
+            var editPostModel = _mapper.Map<EditPostModel>(editPost);
+            return View(editPostModel);
         }
 
         // POST: Posts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Slug,Content,Published,CategoryIDs")] CreatePostModel post)
+        public async Task<IActionResult> Edit(int id, EditPostModel post)
         {
-            //if (id != post.Id)
-            //{
-            //    return NotFound();
-            //}
+            if (id != post.Id)
+            {
+                return NotFound();
+            }
 
-            //var categories = await _context.Categories.ToListAsync();
-            //ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
+            if (ModelState.IsValid)
+            {
+                var command = _mapper.Map<UpdatePostCommand>(post);
 
-            //post.Slug ??= Utility.GenerateSlug(post.Title);
+                await _mediator.Send(command);
 
-            //if (await _context.Posts.AnyAsync(p => p.Slug == post.Slug && post.Id != id))
-            //{
-            //    ModelState.AddModelError("Slug", "Nhập chuỗi Url khác");
-            //    return View(post);
-            //}
-            //if (ModelState.IsValid)
-            //{
-
-            //    var updatingPost = await _context.Posts
-            //            .Include(post => post.PostCategories)
-            //            .FirstOrDefaultAsync(post => post.Id == id);
-
-            //    if (updatingPost == null)
-            //    {
-            //        return NotFound();
-            //    }
-
-            //    updatingPost.Title = post.Title;
-            //    updatingPost.Description = post.Description;
-            //    updatingPost.Content = post.Content;
-            //    updatingPost.Slug = post.Slug;
-            //    updatingPost.LastModifiedAt = DateTime.Now;
-
-
-            //    post.CategoryIDs ??= Array.Empty<int>();
-
-            //    var oldCateIds = updatingPost.PostCategories.Select(c => c.CategoryID).ToArray();
-            //    var newCateIds = post.CategoryIDs;
-
-            //    var removeCatePosts = from postCate in updatingPost.PostCategories
-            //                          where !newCateIds.Contains(postCate.CategoryID)
-            //                          select postCate;
-            //    _context.PostCategories.RemoveRange(removeCatePosts);
-
-            //    var addCateIds = from CateId in newCateIds
-            //                     where !oldCateIds.Contains(CateId)
-            //                     select CateId;
-
-            //    foreach (var CateId in addCateIds)
-            //    {
-            //        _context.PostCategories.Add(new PostCategory()
-            //        {
-            //            PostID = id,
-            //            CategoryID = CateId
-            //        });
-            //    }
-
-
-            //    _context.Update(updatingPost);
-            //    await _context.SaveChangesAsync();
-
-            //    Status = "Update a post successfully!";
-            //    return RedirectToAction(nameof(Index));
-            //}
-            //Status = "Update fail!";
-            //return View(post);
-            return View();
+                Status = "Update a post successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            Status = "Update fail!";
+            return View(post);
         }
 
         // GET: Posts/Delete/5

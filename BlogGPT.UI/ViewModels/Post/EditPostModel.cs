@@ -1,11 +1,14 @@
 ﻿using BlogGPT.Application.Posts.Commands;
+using BlogGPT.Application.Posts.Queries;
 using BlogGPT.UI.Constants;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlogGPT.UI.ViewModels.Post
 {
-    public class CreatePostModel
+    public class EditPostModel
     {
+        public int Id { get; set; }
+
         [Display(Name = "Categories")]
         public int[]? CategoryIds { get; set; }
 
@@ -23,7 +26,8 @@ namespace BlogGPT.UI.ViewModels.Post
         {
             public MappingProfile()
             {
-                CreateMap<CreatePostModel, CreatePostCommand>();
+                CreateMap<EditPostModel, UpdatePostCommand>();
+                CreateMap<GetPostVM, EditPostModel>();
             }
         }
     }

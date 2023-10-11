@@ -1,21 +1,19 @@
 ﻿@using BlogGPT.UI.ViewModels.Post;
-@model CreatePostModel
+@model EditPostModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update";
     var selectList = ViewData["categories"] as MultiSelectList;
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Edit a post</h1>
 <hr />
-
 <div class="row">
     <div class="col-md-12">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            @* <input type="hidden" asp-for="PostId"/> *@
+            <input type="hidden" asp-for="Id"/>
 
             <div class="form-group mt-4">
                 <label asp-for="CategoryIds" class="control-label"></label>
@@ -43,32 +41,32 @@
 
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Published" /> @Html.DisplayNameFor(model => model.Published)
+                    <input class="form-check-input" asp-for="IsPublished" /> @Html.DisplayNameFor(model => model.IsPublished)
                 </label>
             </div>
 
             <div class="form-group mt-4">
-                <input type="submit" value="Edit" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary me-2" />
+                <a class="btn btn-warning" asp-action="Index">List of posts</a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">List of posts</a>
 </div>
 
 @section Scripts {
 
-    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+    <script src="~/lib/select2/js/select2.min.js"></script>
+    <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
-    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
 
     <script>
-        $("#CategoryIds").multipleSelect({
-            selectAll: false,
-            keepOpen: false,
-            isOpen: false,
+        $("#CategoryIds").select2({
+            placeholder: "Select categories",
+            allowClear: true,
+            closeOnSelect: false
         });
         tinymce.init({
             selector: '#Content',
