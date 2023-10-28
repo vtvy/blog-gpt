@@ -8,7 +8,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Post> builder)
         {
-            builder.Property(post => post.Title).HasMaxLength(Lengths.Medium);
+            builder.Property(post => post.Title).HasMaxLength(Lengths.XL);
 
             builder.Property(post => post.Description).HasMaxLength(Lengths.XL);
 
@@ -16,6 +16,8 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.Property(post => post.Slug).HasMaxLength(Lengths.Large);
             builder.HasIndex(post => post.Slug).IsUnique();
+
+            builder.HasOne(post => post.EmbeddingPost).WithOne(embeddingPost => embeddingPost.Post).HasForeignKey<EmbeddingPost>(embeddingPost => embeddingPost.PostId).OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(post => post.PostCategories).WithOne(postCategory => postCategory.Post).HasForeignKey(postCategory => postCategory.PostId);
 

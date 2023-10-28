@@ -21,6 +21,8 @@ namespace BlogGPT.Infrastructure
         {
             services.AddSingleton<IDateTime, DateTimeService>();
 
+            services.AddSingleton<IChatbot, Chatbot>();
+
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
             services.AddTransient<IEmailSender, MailService>();
@@ -56,6 +58,9 @@ namespace BlogGPT.Infrastructure
                 options.LoginPath = "/Login";
                 options.LogoutPath = "/Logout";
                 options.AccessDeniedPath = "/AccessDenied";
+                options.Cookie.Name = "BlogGPT";
+                // set httpOnly to false to allow javascript to access the cookie
+                options.Cookie.HttpOnly = false;
             });
 
             services.Configure<IdentityOptions>(options =>

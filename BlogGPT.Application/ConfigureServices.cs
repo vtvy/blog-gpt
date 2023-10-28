@@ -1,4 +1,5 @@
-﻿using BlogGPT.Application.Common.Behaviors;
+﻿using BlogGPT.Application.Chats;
+using BlogGPT.Application.Common.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -17,6 +18,8 @@ namespace BlogGPT.Application
                 configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
                 configuration.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehavior<,>));
             });
+
+            services.AddScoped<IChatService, ChatService>();
 
             return services;
         }

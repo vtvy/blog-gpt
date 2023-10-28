@@ -106,11 +106,9 @@ namespace BlogGPT.UI.Controllers
         }
 
         // POST: Posts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreatePostModel post)
+        public async Task<IActionResult> CreateAsync(CreatePostModel post)
         {
             if (ModelState.IsValid)
             {
@@ -118,7 +116,8 @@ namespace BlogGPT.UI.Controllers
                 var postId = await _mediator.Send(command);
 
                 Status = "Create a blog post successfully!";
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return View(post);
             }
 
             return View(post);
@@ -164,27 +163,25 @@ namespace BlogGPT.UI.Controllers
                 await _mediator.Send(command);
 
                 Status = "Update a post successfully!";
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return View(post);
             }
+
             Status = "Update fail!";
             return View(post);
         }
 
         // GET: Posts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.Posts == null)
+            var deletePost = await _mediator.Send(new GetPostQuery { Id = id });
+
+            if (deletePost == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
-            {
-                return NotFound();
-            }
+            var post = _mapper.Map<DeletePostModel>(deletePost);
 
             return View(post);
         }

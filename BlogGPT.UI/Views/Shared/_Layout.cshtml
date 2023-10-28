@@ -6,10 +6,6 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-@*     @RenderSection("head", required: false)
-    @{
-        @BlogGPT.UI.Events.RenderEvents.RenderHead(this);
-    } *@
 </head>
 <body>
     <header>
@@ -38,6 +34,28 @@
     <div class="container min-vh-100">
         <main role="main" class="pb-3">
             @RenderBody()
+            <div class="chatbot shadow show-chat">
+                <header class="bg-primary rounded-top-3 text-center py-2 text-white">
+                    <h2>Chatbot</h2>
+                </header>
+                <ul class="list-unstyled p-2 overflow-y-auto" style="height: 400px">
+                    <li class="answer">
+                        <img src="~/icons/bot.png" alt="My bot icon"/>
+                        <p class="bg-warning rounded-2 border border-primary-subtle"> Hi s s s s s s  s s ss  sdmsdd sadasdsdas dsd s s s s s there <br /> How can I help you today? </p>
+                    </li>
+                    <li class="question">
+                        <p class="bg-primary rounded-2 border border-success-subtle"> I think we nsddddddds dddd dd d d d d  d d d d d d ddd ddddddd ddddddeed to talk. </p>
+                    </li>
+                </ul>
+                <div class="border-top border-dark-subtle p-2 d-flex gap-2 align-items-center">
+                    <textarea id="questionInput" placeholder="Enter a message..." required></textarea>
+                    <img src="~/icons/send.png" alt="My sending icon" role="button" />
+                </div>
+            </div>
+            <button class="chat-toggle-btn">
+                <img src="~/icons/messenger.png" alt="My sending icon" />
+                <img src="~/icons/close.png" alt="My sending icon" />
+            </button>
         </main>
     </div>
 

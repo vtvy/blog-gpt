@@ -1,6 +1,8 @@
 ﻿using BlogGPT.Application.Common.Extensions;
 using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Interfaces.Services;
 using BlogGPT.Domain.Exceptions;
+using System.Text.Json;
 
 namespace BlogGPT.Application.Posts.Commands
 {
@@ -16,20 +18,24 @@ namespace BlogGPT.Application.Posts.Commands
 
         public required string Content { set; get; }
 
+        public required string RawText { set; get; }
+
         public bool IsPublished { set; get; }
     }
     public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IChatbot _chatbot;
 
-        public UpdatePostHandler(IApplicationDbContext context)
+        public UpdatePostHandler(IApplicationDbContext context, IChatbot chatbot)
         {
             _context = context;
+            _chatbot = chatbot;
         }
 
         public async Task Handle(UpdatePostCommand command, CancellationToken cancellationToken)
         {
-            var entity = await _context.Posts.FindAsync(command.Id);
+            var entity = await _context.Posts.Include(post => post.EmbeddingPost).FirstOrDefaultAsync(post => post.Id == command.Id, cancellationToken);
 
             if (entity == null)
             {
@@ -66,6 +72,26 @@ namespace BlogGPT.Application.Posts.Commands
 
                 if (addPostCategories != null) _context.PostCategories.AddRange(addPostCategories);
             }
+
+            if (command.IsPublished)
+            {
+                var contextValue = $"{command.Title}:\n{command.RawText}";
+                var embedding = _chatbot.GetEmbedding(contextValue);
+
+                if (entity.EmbeddingPost == null)
+                {
+                    var embeddingPost = new EmbeddingPost { Embedding = JsonSerializer.Serialize(embedding), RawText = contextValue };
+
+                    entity.EmbeddingPost = embeddingPost;
+                }
+                else
+                {
+                    entity.EmbeddingPost.Embedding = JsonSerializer.Serialize(embedding);
+                    entity.EmbeddingPost.RawText = contextValue;
+                }
+            }
+
+            _context.Posts.Update(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
         }

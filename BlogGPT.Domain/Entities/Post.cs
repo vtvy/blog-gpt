@@ -17,5 +17,7 @@
         public ICollection<PostCategory>? PostCategories { get; set; }
 
         public ICollection<Comment>? Comments { get; set; }
+
+        public EmbeddingPost? EmbeddingPost { get; set; }
     }
 }

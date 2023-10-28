@@ -10,12 +10,12 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create">
+        <form asp-action="Create" onsubmit="OnSubmit()">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group mt-4">
                 <label asp-for="CategoryIds" class="control-label"></label>
-                <select class="w-100" asp-for="CategoryIds" multiple="multiple" asp-items="selectList"></select>
+                <select asp-for="CategoryIds" multiple="multiple" asp-items="selectList" style="width:100% !important"></select>
                 <span asp-validation-for="CategoryIds" class="text-danger"></span>
             </div> 
 
@@ -36,6 +36,8 @@
                 <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
+
+            <input type="hidden" asp-for="RawText" class="form-control" />
 
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -65,6 +67,7 @@
             allowClear: true,
             closeOnSelect: false
         });
+
         tinymce.init({
             selector: '#Content',
             plugins: 
@@ -103,6 +106,12 @@
             },
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
         });
+
+        function OnSubmit() {
+            var rawText = tinymce.activeEditor.getContent({ format: 'text' });
+            $("#RawText").val(rawText);
+            return true;
+        }
     </script>
 
     <partial name="_ValidationScriptsPartial" />

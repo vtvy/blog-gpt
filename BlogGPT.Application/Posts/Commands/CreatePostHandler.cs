@@ -1,6 +1,8 @@
 ﻿using BlogGPT.Application.Common.Extensions;
 using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Interfaces.Services;
 using BlogGPT.Domain.Events;
+using System.Text.Json;
 
 namespace BlogGPT.Application.Posts.Commands
 {
@@ -13,6 +15,8 @@ namespace BlogGPT.Application.Posts.Commands
         public string? Description { set; get; }
 
         public required string Content { set; get; }
+
+        public required string RawText { set; get; }
 
         public bool IsPublished { set; get; }
 
@@ -34,16 +38,28 @@ namespace BlogGPT.Application.Posts.Commands
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IChatbot _chatbot;
 
-        public CreatePostHandler(IApplicationDbContext context, IMapper mapper)
+        public CreatePostHandler(IApplicationDbContext context, IMapper mapper, IChatbot chatbot)
         {
             _context = context;
             _mapper = mapper;
+            _chatbot = chatbot;
         }
 
         public async Task<int> Handle(CreatePostCommand command, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Post>(command);
+
+            if (command.IsPublished)
+            {
+                var contextValue = $"{command.Title}:\n{command.RawText}";
+                var embedding = _chatbot.GetEmbedding(contextValue);
+
+                var embeddingPost = new EmbeddingPost { Embedding = JsonSerializer.Serialize(embedding), RawText = contextValue };
+
+                entity.EmbeddingPost = embeddingPost;
+            }
 
             _context.Posts.Add(entity);
 

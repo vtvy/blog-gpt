@@ -8,10 +8,6 @@
 
         public int ConversationId { get; set; }
 
-        public int? ModelId { get; set; }
-
         public Conversation? Conversation { get; set; }
-
-        public Model? Model { get; set; }
     }
 }

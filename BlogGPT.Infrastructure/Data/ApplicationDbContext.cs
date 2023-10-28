@@ -12,6 +12,8 @@ namespace BlogGPT.Infrastructure.Data
 
         public DbSet<Post> Posts => Set<Post>();
 
+        public DbSet<EmbeddingPost> EmbeddingPosts => Set<EmbeddingPost>();
+
         public DbSet<Category> Categories => Set<Category>();
 
         public DbSet<Image> Images => Set<Image>();
@@ -19,8 +21,6 @@ namespace BlogGPT.Infrastructure.Data
         public DbSet<Comment> Comments => Set<Comment>();
 
         public DbSet<PostCategory> PostCategories => Set<PostCategory>();
-
-        public DbSet<Model> Models => Set<Model>();
 
         public DbSet<Conversation> Conversations => Set<Conversation>();
 
