@@ -65,7 +65,7 @@ namespace BlogGPT.Infrastructure.Services
                 prompt.AppendLine($"{chatContext}");
             }
 
-            prompt.Append($"User: {question}\n");
+            prompt.Append($"User: {question}");
 
             var inferenceParams = new InferenceParams() { Temperature = 0.6f, AntiPrompts = new string[] { "User:", ">" }, MaxTokens = 800 };
             Console.WriteLine(_modelPath);

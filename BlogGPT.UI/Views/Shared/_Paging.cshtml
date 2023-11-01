@@ -1,8 +1,14 @@
-@model dynamic
+@using BlogGPT.UI.ViewModels.Post;
+@model PaginatedModel<IndexPostModel>
 @{
-    int currentPage  = Model.CurPage;
-    int countPages   = Model.PageNumber;
-    var generateUrl  = Model.GenerateUrl;
+    int currentPage = Model.PageNumber;
+    int countPages = Model.TotalPages;
+    var generateUrl = Model.GenerateUrl;
+    // (p) => Url.Action("Index", new
+    // {
+    //     p,
+    //     10
+    // });
     
     if (currentPage > countPages)
         currentPage = countPages;
@@ -69,7 +75,7 @@
 @if (preview != null)
 {
     <li class="page-item">
-        <a class="page-link" href="@generateUrl(preview)">Trang trước</a>
+        @* <a class="page-link" href="@generateUrl(preview)">Trang trước</a> *@
     </li>
 }
 else
@@ -80,19 +86,19 @@ else
 }
    
 <!-- Numbered page links -->
-@foreach (var pageitem in pagesRanges)
+@foreach (var pageItem in pagesRanges)
 {
-    if (pageitem != currentPage) {
+    if (pageItem != currentPage) {
         <li class="page-item">
-            <a class="page-link" href="@generateUrl(pageitem)">
-                @pageitem
-            </a>
+@*             <a class="page-link" href="@generateUrl(pageItem)">
+                @pageItem
+            </a> *@
         </li>
     }   
     else 
     {
         <li class="page-item active" aria-current="page">
-            <a class="page-link" href="#">@pageitem <span class="sr-only">(current)</span></a>
+            <a class="page-link" href="#">@pageItem <span class="sr-only">(current)</span></a>
         </li>
     }
 }
@@ -102,7 +108,7 @@ else
 @if (next != null)
 {
     <li class="page-item">
-        <a class="page-link" href="@generateUrl(next)">Trang sau</a>
+        @* <a class="page-link" href="@generateUrl(next)">Trang sau</a> *@
     </li>
 }
 else 

@@ -15,8 +15,8 @@ namespace BlogGPT.UI.ViewModels.Category
         {
             public MappingProfile()
             {
-                CreateMap<GetAllCategoryVM, IndexCategoryModel>();
-                CreateMap<TreeItem<GetAllCategoryVM>, TreeModel<IndexCategoryModel>>();
+                CreateMap<GetAllCategory, IndexCategoryModel>();
+                CreateMap<TreeItem<GetAllCategory>, TreeModel<IndexCategoryModel>>();
             }
         }
     }

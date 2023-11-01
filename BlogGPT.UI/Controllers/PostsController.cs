@@ -36,41 +36,24 @@ namespace BlogGPT.UI.Controllers
 
         // GET: Posts
         [Route("/posts")]
-        public async Task<IActionResult> Index([FromQuery(Name = "p")] int pageNumber, int pageSize)
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            var posts = _context.Posts.OrderByDescending(post => post.LastModifiedAt);
+            var pagingList = await _mediator.Send(new GetAllPostQuery { PageNumber = pageNumber, PageSize = pageSize });
 
-            if (pageSize < 1) pageSize = 10;
+            var pagingModel = new PaginatedModel<IndexPostModel>();
+            pagingModel.PageNumber = pagingList.PageNumber;
+            pagingModel.TotalCount = pagingList.TotalCount;
+            pagingModel.TotalPages = pagingList.TotalPages;
+            pagingModel.PageSize = pageSize;
 
-            int postNumber = await posts.CountAsync();
-
-            int totalPages = (int)Math.Ceiling((double)postNumber / pageSize);
-
-            if (pageNumber > totalPages) pageNumber = totalPages;
-            if (pageNumber < 1) pageNumber = 1;
-
-
-
-            var pagingModel = new ViewModels.PaginatedModel<Post>()
-            {
-                PageNumber = pageNumber,
-                TotalPages = totalPages,
-                GenerateUrl = (p) => Url.Action("Index", new
-                {
-                    p,
-                    pageSize
-                })
-            };
-            ViewBag.postIndex = (pageNumber - 1) * pageSize;
             ViewBag.pagingModel = pagingModel;
-            ViewBag.postNumber = postNumber;
-            var pagingPosts = await posts.Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .Include(p => p.PostCategories)
-                    .ThenInclude(post => post.Category)
-                    .ToListAsync();
 
-            return View(pagingPosts);
+            pagingModel.Items = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(pagingList.Items);
+
+            ViewBag.postIndex = (pagingModel.PageNumber - 1) * pageSize;
+            ViewBag.postNumber = pagingModel.TotalCount;
+
+            return View(pagingModel);
         }
 
         // GET: Posts/Details/5
@@ -124,7 +107,7 @@ namespace BlogGPT.UI.Controllers
         }
 
         // GET: Posts/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> EditAsync(int id)
         {
             var editPost = await _mediator.Send(new GetPostQuery { Id = id });
 
@@ -149,7 +132,7 @@ namespace BlogGPT.UI.Controllers
         // POST: Posts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditPostModel post)
+        public async Task<IActionResult> EditAsync(int id, EditPostModel post)
         {
             if (id != post.Id)
             {
@@ -172,7 +155,7 @@ namespace BlogGPT.UI.Controllers
         }
 
         // GET: Posts/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var deletePost = await _mediator.Send(new GetPostQuery { Id = id });
 
@@ -189,20 +172,10 @@ namespace BlogGPT.UI.Controllers
         // POST: Posts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmedAsync(int id)
         {
-            if (_context.Posts == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Posts'  is null.");
-            }
-            var post = await _context.Posts.FindAsync(id);
-            if (post != null)
-            {
-                _context.Posts.Remove(post);
-            }
-
-            await _context.SaveChangesAsync();
-            Status = "Success delete the post: " + post.Title;
+            await _mediator.Send(new DeletePostCommand { Id = id });
+            Status = "Success delete the post";
 
             return RedirectToAction(nameof(Index));
         }

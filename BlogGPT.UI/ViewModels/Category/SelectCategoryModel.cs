@@ -12,8 +12,8 @@ public class SelectCategoryModel
     {
         public MappingProfile()
         {
-            CreateMap<GetSelectCategoryVM, SelectCategoryModel>();
-            CreateMap<TreeItem<GetSelectCategoryVM>, TreeModel<SelectCategoryModel>>();
+            CreateMap<GetSelectCategory, SelectCategoryModel>();
+            CreateMap<TreeItem<GetSelectCategory>, TreeModel<SelectCategoryModel>>();
         }
     }
 }

@@ -11,7 +11,7 @@ A blog website application integrated chatbot using asp.net mvc.
 7. :white_check_mark: Develop the category module.
 8. [ ] Add more datasets to the model.
 9. :white_check_mark: Develop the post module.
-10. [ ] Develop the chatbot module.
+10. :white_check_mark: Develop the chatbot module.
 11. [ ] Develop the feedback module.
 12. [ ] Initiate thesis document.
 13. [ ] Create a basic thesis document.

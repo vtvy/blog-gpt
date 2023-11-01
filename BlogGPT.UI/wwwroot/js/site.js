@@ -25,6 +25,9 @@ const createUserChatLine = (text) => {
 };
 
 const createAnswerChatLine = (text) => {
+	const chatImg = document.createElement("img");
+	chatImg.src = "~/icons/bot.png";
+	chatImg.alt = "My bot icon";
 	const chatLine = document.createElement("li");
 	chatLine.classList.add("answer");
 	let chatContent = document.createElement("p");
@@ -35,6 +38,7 @@ const createAnswerChatLine = (text) => {
 		"border-primary-subtle"
 	);
 	chatContent.innerText = text;
+	//chatLine.appendChild(chatImg);
 	chatLine.appendChild(chatContent);
 	return chatLine;
 };

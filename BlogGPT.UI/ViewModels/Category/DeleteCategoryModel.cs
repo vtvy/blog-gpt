@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Categories.Queries;
+﻿using BlogGPT.Application.Common.Models;
 
 public class DeleteCategoryModel
 {
@@ -13,7 +13,7 @@ public class DeleteCategoryModel
     {
         public MappingProfile()
         {
-            CreateMap<GetCategoryVM, DeleteCategoryModel>();
+            CreateMap<GetCategory, DeleteCategoryModel>();
         }
     }
 }

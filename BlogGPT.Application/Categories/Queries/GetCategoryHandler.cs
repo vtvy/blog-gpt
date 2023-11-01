@@ -1,13 +1,14 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Categories.Queries;
 
-public record GetCategoryQuery : IRequest<GetCategoryVM?>
+public record GetCategoryQuery : IRequest<GetCategory?>
 {
     public required int Id { get; set; }
 }
 
-public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryVM?>
+public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategory?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -18,36 +19,12 @@ public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, GetCategoryV
         _mapper = mapper;
     }
 
-    public async Task<GetCategoryVM?> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    public async Task<GetCategory?> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
     {
         var existedCategory = await _context.Categories
-            .ProjectTo<GetCategoryVM>(_mapper.ConfigurationProvider)
+            .ProjectTo<GetCategory>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(category => category.Id == request.Id, cancellationToken);
 
         return existedCategory;
-    }
-}
-public class GetCategoryVM
-{
-    public int Id { get; set; }
-
-    public required string Name { get; set; }
-
-    public required string Slug { get; set; }
-
-    public string? Description { get; set; }
-
-    public int? ParentId { get; set; }
-
-    public string? Parent { get; set; }
-
-    private class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-            CreateMap<Category, GetCategoryVM>()
-                .ForMember(destination => destination.Parent, opt => opt
-                .MapFrom(src => src.Parent != null ? src.Parent.Name : null));
-        }
     }
 }

@@ -4,9 +4,9 @@ using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Categories.Queries
 {
-    public record GetAllCategoryQuery : IRequest<IEnumerable<TreeItem<GetAllCategoryVM>>>;
+    public record GetAllCategoryQuery : IRequest<IEnumerable<TreeItem<GetAllCategory>>>;
 
-    public class GetAllCategoryHandler : IRequestHandler<GetAllCategoryQuery, IEnumerable<TreeItem<GetAllCategoryVM>>>
+    public class GetAllCategoryHandler : IRequestHandler<GetAllCategoryQuery, IEnumerable<TreeItem<GetAllCategory>>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -17,31 +17,14 @@ namespace BlogGPT.Application.Categories.Queries
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TreeItem<GetAllCategoryVM>>> Handle(GetAllCategoryQuery query, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TreeItem<GetAllCategory>>> Handle(GetAllCategoryQuery query, CancellationToken cancellationToken)
         {
             var categories = await _context.Categories
-                .Select(category => new GetAllCategoryVM
-                {
-                    Id = category.Id,
-                    Name = category.Name,
-                    Slug = category.Slug,
-                    ParentId = category.ParentId
-                })
+                .ProjectTo<GetAllCategory>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
-
 
             var result = categories.GenerateChildren(c => c.Id, c => c.ParentId);
             return result;
         }
-    }
-    public class GetAllCategoryVM
-    {
-        public int Id { get; set; }
-
-        public required string Name { get; set; }
-
-        public required string Slug { get; set; }
-
-        public int? ParentId { get; set; }
     }
 }

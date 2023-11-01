@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Categories.Queries;
+﻿using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.UI.ViewModels.Category
 {
@@ -20,7 +20,7 @@ namespace BlogGPT.UI.ViewModels.Category
         {
             public MappingProfile()
             {
-                CreateMap<GetCategoryVM, DetailCategoryModel>();
+                CreateMap<GetCategory, DetailCategoryModel>();
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿@using BlogGPT.UI.ViewModels.Post;
-@model IEnumerable<PostModel>
+@model PaginatedModel<IndexPostModel>
 @{
     ViewData["Title"] = "List of posts";
 }
@@ -10,47 +10,51 @@
     <a class="btn btn-success" asp-action="Create">Tạo bài viết mới</a>
 </p>
 <p>Number of posts: @ViewBag.postNumber</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Index</th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Published)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@if (Model.Items != null)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @(++ViewBag.postIndex)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.PostId">
-                        @Html.DisplayFor(modelItem => item.Title)
-                    </a>
-                    <br>
-                    <small>
-                        @string.Join(", ", item.PostCategories.Select(pc => pc.CategoryID))
-                    </small>
-
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Published)
-                </td>
-                <td>
-
-                    <a asp-action="Edit" asp-route-id="@item.PostId">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.PostId">Delete</a>
-                </td>
+                <th>Index</th>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Published
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @(++ViewBag.postIndex)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </a>
+                        <br>
+                        @if (item.Categories != null)
+                        {
+                            <small>
+                                @string.Join(", ", item.Categories.Select(category => category.Name))
+                            </small>
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsPublished)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-<partial name="_Paging" model="@ViewBag.pagingModel" />
+    <partial name="_Paging" model="ViewBag.pagingModel" />
+}

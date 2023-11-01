@@ -1,4 +1,4 @@
-﻿@model PostModel
+﻿@* @model PostModel
 @using BlogGPT.Application.Common.Models;
 @using BlogGPT.UI.ViewModels.Category;
 @using BlogGPT.UI.ViewModels.Post;
@@ -20,8 +20,8 @@
         <li class="breadcrumb-item"><a href="~/">Home</a></li>
         @if (category != null)
         {
-            @* var li = category.ListParents(); *@
-            @* foreach (var l in li)
+            var li = category.ListParents();
+            foreach (var l in li)
             {
                 <li class="breadcrumb-item">
                     <a asp-action="Index" asp-route-categoryslug="@l.Slug">@l.Name</a>
@@ -29,8 +29,8 @@
             }
             <li class="breadcrumb-item">
                 <a asp-action="Index" asp-route-categoryslug="@category.Slug">@category.Name</a>
-            </li> *@
-        }
+            </li> 
+            }
     </ol>
 </nav>
 
@@ -38,11 +38,11 @@
     <h1>@Model.Title</h1>
     <div class="sapo">
         @Model.Description
-    </div>
-@*     <div>
+    </div> 
+  <div>
         <i>Cập nhật: @Model.DateUpdated</i> /
         Tác giả: <strong>@Model.Author.UserName</strong>
-    </div> *@
+    </div>
     <hr>
 
     @Html.Raw(Model.Content)
@@ -70,6 +70,7 @@
                 </a>
             </li>
         }
-    </ul>
+</ul>
 }
 
+ *@

@@ -4,12 +4,12 @@ using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Categories.Queries
 {
-    public record GetSelectCategoryQuery : IRequest<IEnumerable<TreeItem<GetSelectCategoryVM>>>
+    public record GetSelectCategoryQuery : IRequest<IEnumerable<TreeItem<GetSelectCategory>>>
     {
         public int? Id { get; set; }
     };
 
-    public class GetSelectCategoryHandler : IRequestHandler<GetSelectCategoryQuery, IEnumerable<TreeItem<GetSelectCategoryVM>>>
+    public class GetSelectCategoryHandler : IRequestHandler<GetSelectCategoryQuery, IEnumerable<TreeItem<GetSelectCategory>>>
     {
         private readonly IApplicationDbContext _context;
 
@@ -18,9 +18,9 @@ namespace BlogGPT.Application.Categories.Queries
             _context = context;
         }
 
-        public async Task<IEnumerable<TreeItem<GetSelectCategoryVM>>> Handle(GetSelectCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TreeItem<GetSelectCategory>>> Handle(GetSelectCategoryQuery request, CancellationToken cancellationToken)
         {
-            var categoriesQuery = _context.Categories.Select(category => new GetSelectCategoryVM
+            var categoriesQuery = _context.Categories.Select(category => new GetSelectCategory
             {
                 Id = category.Id,
                 Name = category.Name,
@@ -38,14 +38,5 @@ namespace BlogGPT.Application.Categories.Queries
 
             return returnCategories;
         }
-    }
-
-    public class GetSelectCategoryVM
-    {
-        public int Id { get; set; }
-
-        public required string Name { get; set; }
-
-        public int? ParentId { get; set; }
     }
 }
