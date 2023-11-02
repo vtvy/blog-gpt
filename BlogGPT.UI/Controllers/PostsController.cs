@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlogGPT.UI.Controllers
 {
@@ -36,7 +35,7 @@ namespace BlogGPT.UI.Controllers
 
         // GET: Posts
         [Route("/posts")]
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> IndexAsync(int pageNumber = 1, int pageSize = 10)
         {
             var pagingList = await _mediator.Send(new GetAllPostQuery { PageNumber = pageNumber, PageSize = pageSize });
 
@@ -57,20 +56,17 @@ namespace BlogGPT.UI.Controllers
         }
 
         // GET: Posts/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> DetailAsync(int id)
         {
-            if (id == null || _context.Posts == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts.FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _mediator.Send(new GetDetailPostQuery { Id = id });
             if (post == null)
             {
                 return NotFound();
             }
 
-            return View(post);
+            var postModel = _mapper.Map<DetailPostModel>(post);
+
+            return View(postModel);
         }
 
         // GET: Posts/Create

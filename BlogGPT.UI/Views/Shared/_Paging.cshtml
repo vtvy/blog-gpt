@@ -3,12 +3,7 @@
 @{
     int currentPage = Model.PageNumber;
     int countPages = Model.TotalPages;
-    var generateUrl = Model.GenerateUrl;
-    // (p) => Url.Action("Index", new
-    // {
-    //     p,
-    //     10
-    // });
+    int pageSize = Model.PageSize;
     
     if (currentPage > countPages)
         currentPage = countPages;
@@ -75,13 +70,13 @@
 @if (preview != null)
 {
     <li class="page-item">
-        @* <a class="page-link" href="@generateUrl(preview)">Trang trước</a> *@
+            <a class="page-link" href="@Url.Action("Index", new { pageNumber = preview, pageSize })">Previous</a>
     </li>
 }
 else
 {
     <li class="page-item disabled">
-        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang trước</a>
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
     </li>
 }
    
@@ -90,15 +85,15 @@ else
 {
     if (pageItem != currentPage) {
         <li class="page-item">
-@*             <a class="page-link" href="@generateUrl(pageItem)">
+                <a class="page-link" href="@Url.Action("Index", new { pageNumber = pageItem, pageSize })">
                 @pageItem
-            </a> *@
+            </a>
         </li>
     }   
     else 
     {
         <li class="page-item active" aria-current="page">
-            <a class="page-link" href="#">@pageItem <span class="sr-only">(current)</span></a>
+            <a class="page-link" href="#">@pageItem</a>
         </li>
     }
 }
@@ -108,13 +103,13 @@ else
 @if (next != null)
 {
     <li class="page-item">
-        @* <a class="page-link" href="@generateUrl(next)">Trang sau</a> *@
+            <a class="page-link" href="@Url.Action("Index", new { pageNumber = next, pageSize })">Next</a>
     </li>
 }
 else 
 {
     <li class="page-item disabled">
-        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang sau</a>
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
     </li>
 }
 </ul>

@@ -1,4 +1,4 @@
-﻿using BlogGPT.Application.Posts.Queries;
+﻿using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.UI.ViewModels.Post
 {
@@ -16,7 +16,7 @@ namespace BlogGPT.UI.ViewModels.Post
         {
             public MappingProfile()
             {
-                CreateMap<GetPostVM, DeletePostModel>();
+                CreateMap<GetPost, DeletePostModel>();
             }
         }
     }

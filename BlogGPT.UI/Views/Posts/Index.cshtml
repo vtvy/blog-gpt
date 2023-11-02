@@ -7,33 +7,35 @@
 <partial name="_AlertMessage" />
 
 <p>
-    <a class="btn btn-success" asp-action="Create">Tạo bài viết mới</a>
+    <a class="btn btn-primary" asp-action="Create">Create new post</a>
 </p>
 <p>Number of posts: @ViewBag.postNumber</p>
 @if (Model.Items != null)
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
-            <tr>
-                <th>Index</th>
-                <th>
+            <tr class="row">
+                <th scope="col" class="col-1 text-center">Index</th>
+                <th scope="col" class="col-6 text-center">
                     Title
                 </th>
-                <th>
+                <th scope="col" class="col-2 text-center">
                     Published
                 </th>
-                <th></th>
+                <th scope="col" class="col-2 text-center">
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Items)
             {
-                <tr>
-                    <td>
+                <tr class="row">
+                    <td class="col-1 text-center">
                         @(++ViewBag.postIndex)
                     </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">
+                    <td class="col-6">
+                        <a asp-action="Detail" asp-route-id="@item.Id">
                             @Html.DisplayFor(modelItem => item.Title)
                         </a>
                         <br>
@@ -44,12 +46,12 @@
                             </small>
                         }
                     </td>
-                    <td>
+                    <td class="col-2 text-center">
                         @Html.DisplayFor(modelItem => item.IsPublished)
                     </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <td class="col-2 text-center">
+                        <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>
             }

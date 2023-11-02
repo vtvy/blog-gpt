@@ -8,6 +8,10 @@ html {
 	}
 }
 
+.tox-promotion {
+	display: none !important;
+}
+
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,

@@ -1,5 +1,5 @@
-﻿using BlogGPT.Application.Posts.Commands;
-using BlogGPT.Application.Posts.Queries;
+﻿using BlogGPT.Application.Common.Models;
+using BlogGPT.Application.Posts.Commands;
 using BlogGPT.UI.Constants;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,7 +31,7 @@ namespace BlogGPT.UI.ViewModels.Post
                 CreateMap<EditPostModel, UpdatePostCommand>()
                     .ForMember(destination => destination.RawText,
                                 opt => opt.MapFrom(src => src.RawText.Replace("\r\n", "\n")));
-                CreateMap<GetPostVM, EditPostModel>();
+                CreateMap<GetPost, EditPostModel>();
             }
         }
     }
