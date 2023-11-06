@@ -2,7 +2,7 @@
 @model DetailPostModel;
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Title;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -27,7 +27,7 @@
             @Html.DisplayNameFor(model => model.Content)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
+            @Html.Raw(@Model.Content)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsPublished)

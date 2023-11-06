@@ -19,5 +19,7 @@
         public ICollection<Comment>? Comments { get; set; }
 
         public EmbeddingPost? EmbeddingPost { get; set; }
+
+        public ICollection<ViewPost>? ViewPosts { get; set; }
     }
 }

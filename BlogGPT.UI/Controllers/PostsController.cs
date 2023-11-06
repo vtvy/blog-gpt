@@ -1,14 +1,14 @@
 ﻿using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Common.Interfaces.Identity;
+using BlogGPT.Application.Images;
 using BlogGPT.Application.Posts.Commands;
 using BlogGPT.Application.Posts.Queries;
 using BlogGPT.Domain.Constants;
-using BlogGPT.Domain.Entities;
 using BlogGPT.Infrastructure.Data;
 using BlogGPT.UI.ViewModels.Category;
 using BlogGPT.UI.ViewModels.Post;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -20,14 +20,16 @@ namespace BlogGPT.UI.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUser _user;
+        private readonly IImageService _imageService;
 
-        public PostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public PostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper, IUser user, IImageService imageService)
         {
             _context = context;
             _mediator = mediator;
             _mapper = mapper;
-            _userManager = userManager;
+            _user = user;
+            _imageService = imageService;
         }
 
         [TempData]
@@ -182,27 +184,29 @@ namespace BlogGPT.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadAsync(IFormFile file)
+        public async Task<IActionResult> UploadAsync(IFormFile file, CancellationToken cancellationToken)
         {
-            string imgPath;
-            string storedPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "wwwroot/files"));
+            var imgPath = string.Empty;
             if (file.Length > 0)
             {
+                string storedPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, $"wwwroot/files/{_user.UserName}"));
                 if (!Directory.Exists(storedPath))
                 {
                     Directory.CreateDirectory(storedPath);
                 }
-                imgPath = DateTime.Now.ToString("yyyyMMddTHHmmss") + file.FileName;
-                string fullPath = Path.Combine(storedPath, imgPath);
+                var imgName = DateTime.Now.ToString("yyyyMMddTHHmmss") + file.FileName;
+                string fullPath = Path.GetFullPath(Path.Combine(storedPath, imgName));
                 using (var fileStream = new FileStream(fullPath, FileMode.Create))
                 {
-                    await file.CopyToAsync(fileStream);
+                    await file.CopyToAsync(fileStream, cancellationToken);
                 }
-                imgPath = $@"{storedPath}/{imgPath}";
-
-                return Ok(new { imgPath });
+                imgPath = $@"/files/{_user.UserName}/{imgName}";
+                await _imageService.UploadImageAsync(file.FileName, imgPath, cancellationToken);
             }
-            imgPath = $"{storedPath}/thumnail.png";
+            else
+            {
+                imgPath = $"/default.png";
+            }
             return Ok(new { imgPath });
         }
 

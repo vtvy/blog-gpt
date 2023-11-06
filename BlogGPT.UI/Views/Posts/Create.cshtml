@@ -5,7 +5,6 @@
     ViewData["Title"] = "Create";
     var selectList = ViewData["categories"] as MultiSelectList;
 }
-
 <h1>Create a new post</h1>
 <hr />
 <div class="row">
@@ -96,8 +95,7 @@
                             return res;
                           }).catch(err => err);
                         let imgPath = response.imgPath;
-                        let caption = response.results.captions[0].text;
-                        callback(imgPath, { alt: caption });
+                        callback(imgPath);
                     } catch (error) {
                         console.error('Error:', error);
                     }

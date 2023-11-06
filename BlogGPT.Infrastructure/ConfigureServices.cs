@@ -37,7 +37,7 @@ namespace BlogGPT.Infrastructure
             {
                 options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
 
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                options.UseSqlServer(connectionString);
             });
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());

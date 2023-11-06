@@ -24,7 +24,7 @@ namespace BlogGPT.Application.Posts.Queries
 
             var pagingList = new PaginatedList<GetAllPost>(request.PageNumber, request.PageSize, count);
 
-            var pagingPosts = await _context.Posts
+            var pagingPosts = count > 0 ? await _context.Posts
                 .OrderByDescending(post => post.LastModifiedAt)
                 .Select(post => new GetAllPost
                 {
@@ -45,7 +45,7 @@ namespace BlogGPT.Application.Posts.Queries
                 .Skip((pagingList.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                .ToListAsync(cancellationToken) : null;
 
             pagingList.Items = pagingPosts;
 
