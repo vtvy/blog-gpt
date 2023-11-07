@@ -1,0 +1,62 @@
+﻿@using BlogGPT.UI.Areas.Manage.Models.Post;
+@model PaginatedModel<IndexPostModel>
+@{
+    ViewData["Title"] = "List of posts";
+}
+
+<partial name="_AlertMessage" />
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create new post</a>
+</p>
+<p>Number of posts: @ViewBag.postNumber</p>
+@if (Model.Items != null)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr class="row">
+                <th scope="col" class="col-1 text-center">Index</th>
+                <th scope="col" class="col-6 text-center">
+                    Title
+                </th>
+                <th scope="col" class="col-2 text-center">
+                    Published
+                </th>
+                <th scope="col" class="col-2 text-center">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr class="row">
+                    <td class="col-1 text-center">
+                        @(++ViewBag.postIndex)
+                    </td>
+                    <td class="col-6">
+                        <a asp-action="Detail" asp-route-id="@item.Id">
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </a>
+                        <br>
+                        @if (item.Categories != null)
+                        {
+                            <small>
+                                @string.Join(", ", item.Categories.Select(category => category.Name))
+                            </small>
+                        }
+                    </td>
+                    <td class="col-2 text-center">
+                        @Html.DisplayFor(modelItem => item.IsPublished)
+                    </td>
+                    <td class="col-2 text-center">
+                        <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="_Paging" model="ViewBag.pagingModel" />
+}

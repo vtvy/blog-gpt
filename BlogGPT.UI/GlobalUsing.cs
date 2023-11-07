@@ -1,2 +1,2 @@
 ﻿global using AutoMapper;
-global using BlogGPT.UI.ViewModels;
+global using BlogGPT.UI.Models;

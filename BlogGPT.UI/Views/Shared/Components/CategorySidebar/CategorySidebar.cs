@@ -1,4 +1,5 @@
-using BlogGPT.UI.ViewModels.Category;
+using BlogGPT.UI.Areas.Manage.Models.Category;
+using BlogGPT.UI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogGPT.UI.Views.Shared.Components.CategorySidebar

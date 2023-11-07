@@ -1,0 +1,52 @@
+﻿@using BlogGPT.UI.Areas.Manage.Models.Category;
+@model DetailCategoryModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>Category</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-4">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-8">
+            @Html.Raw(Model.Name)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Slug)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.Raw(Model.Slug)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.Raw(Model.Description)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Parent)
+        </dt>
+        <dd class="col-sm-8">
+        @if(Model.Parent != null)
+        {
+            <a asp-action="Detail" asp-route-id="@Model.ParentId">@Html.Raw(Model.Parent)</a>
+        }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class ="btn btn-info me-2" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    <a class="btn btn-warning" asp-action="Index">Back to List</a>
+</div>

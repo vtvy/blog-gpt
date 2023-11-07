@@ -9,5 +9,13 @@
         public required string Slug { get; set; }
 
         public int? ParentId { get; set; }
+
+        private class MappingProfile : Profile
+        {
+            public MappingProfile()
+            {
+                CreateMap<Category, GetAllCategory>();
+            }
+        }
     }
 }
