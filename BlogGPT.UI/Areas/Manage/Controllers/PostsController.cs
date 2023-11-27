@@ -1,6 +1,5 @@
 ﻿using BlogGPT.Application.Categories.Queries;
 using BlogGPT.Application.Common.Interfaces.Identity;
-using BlogGPT.Application.Images;
 using BlogGPT.Application.Posts.Commands;
 using BlogGPT.Application.Posts.Queries;
 using BlogGPT.Domain.Constants;
@@ -22,15 +21,13 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IUser _user;
-        private readonly IImageService _imageService;
 
-        public PostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper, IUser user, IImageService imageService)
+        public PostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper, IUser user)
         {
             _context = context;
             _mediator = mediator;
             _mapper = mapper;
             _user = user;
-            _imageService = imageService;
         }
 
         [TempData]
@@ -41,20 +38,17 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
         {
             var pagingList = await _mediator.Send(new GetAllPostQuery { PageNumber = pageNumber, PageSize = pageSize });
 
-            var pagingModel = new PaginatedModel<IndexPostModel>();
-            pagingModel.PageNumber = pagingList.PageNumber;
-            pagingModel.TotalCount = pagingList.TotalCount;
-            pagingModel.TotalPages = pagingList.TotalPages;
-            pagingModel.PageSize = pageSize;
+            ViewBag.pagingModel = new PaginatedModel
+            {
+                PageNumber = pagingList.PageNumber,
+                TotalCount = pagingList.TotalCount,
+                TotalPages = pagingList.TotalPages,
+                PageSize = pageSize
+            };
 
-            ViewBag.pagingModel = pagingModel;
+            var postList = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(pagingList.Items);
 
-            pagingModel.Items = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(pagingList.Items);
-
-            ViewBag.postIndex = (pagingModel.PageNumber - 1) * pageSize;
-            ViewBag.postNumber = pagingModel.TotalCount;
-
-            return View(pagingModel);
+            return View(postList);
         }
 
         // GET: Posts/Details/5
@@ -201,7 +195,6 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
                     await file.CopyToAsync(fileStream, cancellationToken);
                 }
                 imgPath = $@"/files/{_user.UserName}/{imgName}";
-                await _imageService.UploadImageAsync(file.FileName, imgPath, cancellationToken);
             }
             else
             {

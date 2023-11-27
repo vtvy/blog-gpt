@@ -1,8 +1,8 @@
 ﻿using BlogGPT.Application.Common.Models;
 
-namespace BlogGPT.UI.Areas.Manage.Models.Category
+namespace BlogGPT.UI.Models
 {
-    public class IndexCategoryModel
+    public class CategoryModel
     {
         public int Id { get; set; }
 
@@ -14,8 +14,8 @@ namespace BlogGPT.UI.Areas.Manage.Models.Category
         {
             public MappingProfile()
             {
-                CreateMap<GetAllCategory, IndexCategoryModel>();
-                CreateMap<TreeItem<GetAllCategory>, TreeModel<IndexCategoryModel>>();
+                CreateMap<GetAllCategory, CategoryModel>();
+                CreateMap<TreeItem<GetAllCategory>, TreeModel<CategoryModel>>();
             }
         }
     }

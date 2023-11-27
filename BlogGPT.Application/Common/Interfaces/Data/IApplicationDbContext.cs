@@ -6,17 +6,17 @@
 
         DbSet<EmbeddingPost> EmbeddingPosts { get; }
 
-        DbSet<Category> Categories { get; }
+        DbSet<EmbeddingChunk> EmbeddingChunks { get; }
 
-        DbSet<Image> Images { get; }
+        DbSet<Category> Categories { get; }
 
         DbSet<Comment> Comments { get; }
 
         DbSet<PostCategory> PostCategories { get; }
 
-        DbSet<Conversation> Conversations { get; }
-
         DbSet<Message> Messages { get; }
+
+        DbSet<View> Views { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

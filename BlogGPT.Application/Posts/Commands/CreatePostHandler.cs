@@ -61,6 +61,7 @@ namespace BlogGPT.Application.Posts.Commands
                 entity.EmbeddingPost = embeddingPost;
             }
 
+            entity.View = new View { Count = 0 };
             _context.Posts.Add(entity);
 
             await _context.SaveChangesAsync(cancellationToken);

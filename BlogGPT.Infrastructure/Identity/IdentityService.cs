@@ -4,23 +4,27 @@ using BlogGPT.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace BlogGPT.Infrastructure.Identity
 {
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
 
         public IdentityService(
             UserManager<ApplicationUser> userManager,
             IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
+            _signInManager = signInManager;
         }
 
         public async Task<string?> GetUserNameAsync(string userId)
@@ -78,6 +82,22 @@ namespace BlogGPT.Infrastructure.Identity
             var result = await _userManager.DeleteAsync(user);
 
             return result.ToApplicationResult();
+        }
+
+        public bool IsSignedIn(ClaimsPrincipal user)
+        {
+            return _signInManager.IsSignedIn(user);
+        }
+
+        public string? GetUserName(ClaimsPrincipal user)
+        {
+            return _userManager.GetUserName(user);
+        }
+
+        public async Task<IEnumerable<string>> GetExternalAuthenticationSchemesAsync()
+        {
+            var scheme = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            return scheme.Select(s => s.Name);
         }
     }
 }

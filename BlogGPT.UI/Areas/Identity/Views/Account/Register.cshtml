@@ -1,10 +1,11 @@
-﻿@using BlogGPT.Infrastructure.Identity;
+﻿@using BlogGPT.Application.Common.Interfaces.Identity
+@using BlogGPT.Infrastructure.Identity;
 @using BlogGPT.Domain.Entities;
-@inject SignInManager<BlogGPT.Domain.Entities.ApplicationUser> SignInManager
+@inject IIdentityService IdentityService;
 
 @model RegisterViewModel
 @{
-    ViewData["Title"] = "Đăng ký tài khoản";
+    ViewData["Title"] = "Register";
 }
 
 <h1>@ViewData["Title"].</h1>
@@ -13,7 +14,6 @@
     <div class="col-md-8">
         <section>   
             <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-                <h4>Tạo tài khoản mới trên website.</h4>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group mt-4">
@@ -54,16 +54,15 @@
     </div>
     <div class="col-md-4">
         <section>
-            <h4>Đăng nhập bằng tài khoản.</h4>
+            <h4>Sign in with Google.</h4>
             <hr />
             @{
-                var schemes = await SignInManager.GetExternalAuthenticationSchemesAsync();
-                var loginProviders = schemes.ToArray();
-                if (loginProviders.Length == 0)
+                var loginProviders = await IdentityService.GetExternalAuthenticationSchemesAsync();
+                if (!loginProviders.Any())
                 {
                     <div>
                         <p>
-                            Ứng dụng chưa hỗ trợ đăng nhập từ tài khoản ngoài
+                            Google sign in is not available.
                         </p>
                     </div>
                 }
@@ -74,7 +73,7 @@
                             <p>
                                 @foreach (var provider in loginProviders)
                                 {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.Name account">@provider.Name</button>
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider" title="Log in using your @provider account">@provider</button>
                                 }
                             </p>
                         </div>

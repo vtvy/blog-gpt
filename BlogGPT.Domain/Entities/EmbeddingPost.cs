@@ -10,5 +10,7 @@
         public int PostId { get; set; }
 
         public Post Post { get; set; } = null!;
+
+        public ICollection<EmbeddingChunk>? EmbeddingChunks { get; set; }
     }
 }

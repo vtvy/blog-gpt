@@ -14,17 +14,17 @@ namespace BlogGPT.Infrastructure.Data
 
         public DbSet<EmbeddingPost> EmbeddingPosts => Set<EmbeddingPost>();
 
-        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<EmbeddingChunk> EmbeddingChunks => Set<EmbeddingChunk>();
 
-        public DbSet<Image> Images => Set<Image>();
+        public DbSet<Category> Categories => Set<Category>();
 
         public DbSet<Comment> Comments => Set<Comment>();
 
         public DbSet<PostCategory> PostCategories => Set<PostCategory>();
 
-        public DbSet<Conversation> Conversations => Set<Conversation>();
-
         public DbSet<Message> Messages => Set<Message>();
+
+        public DbSet<View> Views => Set<View>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

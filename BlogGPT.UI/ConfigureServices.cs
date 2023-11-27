@@ -22,6 +22,7 @@ namespace BlogGPT.UI
             services.Configure<RouteOptions>(options =>
             {
                 options.LowercaseUrls = true;
+                options.AppendTrailingSlash = false;
             });
 
             return services;

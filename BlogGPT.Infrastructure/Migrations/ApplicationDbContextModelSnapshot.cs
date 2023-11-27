@@ -167,9 +167,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -177,14 +174,12 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("ParentId");
-
                     b.HasIndex("PostId");
 
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingChunk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -192,27 +187,18 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsOver")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                    b.Property<int>("EmbeddingPostId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("EmbeddingPostId");
 
-                    b.ToTable("Conversations");
+                    b.ToTable("EmbeddingChunks");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingPost", b =>
@@ -242,44 +228,6 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.ToTable("EmbeddingPosts");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Images");
-                });
-
             modelBuilder.Entity("BlogGPT.Domain.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -293,9 +241,6 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -315,8 +260,6 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("ConversationId");
 
                     b.ToTable("Messages");
                 });
@@ -358,8 +301,8 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int?>("ThumbnailId")
-                        .HasColumnType("int");
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -372,8 +315,6 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.HasIndex("Slug")
                         .IsUnique();
-
-                    b.HasIndex("ThumbnailId");
 
                     b.ToTable("Posts");
                 });
@@ -393,7 +334,7 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.ToTable("PostCategories");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.ViewPost", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.View", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -401,21 +342,18 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ViewedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ViewerId")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("PostId")
+                        .IsUnique();
 
-                    b.ToTable("ViewPost");
+                    b.ToTable("Views");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -575,11 +513,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("BlogGPT.Domain.Entities.Comment", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("BlogGPT.Domain.Entities.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
@@ -588,19 +521,18 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.Navigation("Author");
 
-                    b.Navigation("Parent");
-
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingChunk", b =>
                 {
-                    b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
-                        .WithMany("Conversations")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.HasOne("BlogGPT.Domain.Entities.EmbeddingPost", "EmbeddingPost")
+                        .WithMany("EmbeddingChunks")
+                        .HasForeignKey("EmbeddingPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Author");
+                    b.Navigation("EmbeddingPost");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingPost", b =>
@@ -614,16 +546,6 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Image", b =>
-                {
-                    b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
-                        .WithMany("Images")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("BlogGPT.Domain.Entities.Message", b =>
                 {
                     b.HasOne("BlogGPT.Domain.Entities.ApplicationUser", "Author")
@@ -631,15 +553,7 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("BlogGPT.Domain.Entities.Conversation", "Conversation")
-                        .WithMany("Messages")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Author");
-
-                    b.Navigation("Conversation");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.Post", b =>
@@ -649,13 +563,7 @@ namespace BlogGPT.Infrastructure.Migrations
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("BlogGPT.Domain.Entities.Image", "Thumbnail")
-                        .WithMany()
-                        .HasForeignKey("ThumbnailId");
-
                     b.Navigation("Author");
-
-                    b.Navigation("Thumbnail");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.PostCategory", b =>
@@ -677,11 +585,11 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.ViewPost", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.View", b =>
                 {
                     b.HasOne("BlogGPT.Domain.Entities.Post", "Post")
-                        .WithMany("ViewPosts")
-                        .HasForeignKey("PostId")
+                        .WithOne("View")
+                        .HasForeignKey("BlogGPT.Domain.Entities.View", "PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -745,10 +653,6 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.Navigation("Comments");
 
-                    b.Navigation("Conversations");
-
-                    b.Navigation("Images");
-
                     b.Navigation("Messages");
 
                     b.Navigation("Posts");
@@ -761,14 +665,9 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.Navigation("PostCategories");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Comment", b =>
+            modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingPost", b =>
                 {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("BlogGPT.Domain.Entities.Conversation", b =>
-                {
-                    b.Navigation("Messages");
+                    b.Navigation("EmbeddingChunks");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.Post", b =>
@@ -779,7 +678,8 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.Navigation("PostCategories");
 
-                    b.Navigation("ViewPosts");
+                    b.Navigation("View")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

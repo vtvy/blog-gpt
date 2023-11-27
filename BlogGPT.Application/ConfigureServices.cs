@@ -1,6 +1,5 @@
 ﻿using BlogGPT.Application.Chats;
 using BlogGPT.Application.Common.Behaviors;
-using BlogGPT.Application.Images;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -21,8 +20,6 @@ namespace BlogGPT.Application
             });
 
             services.AddScoped<IChatService, ChatService>();
-
-            services.AddScoped<IImageService, ImageService>();
 
             return services;
         }

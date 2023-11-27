@@ -1,0 +1,59 @@
+﻿@model DetailPostModel;
+@using BlogGPT.UI.Models.Post;
+@using BlogGPT.UI.Views.Shared.Components.CategorySidebar;
+@using BlogGPT.Domain.Common;
+
+@{
+    // List<TreeModel<CategoryModel>> categories = ViewBag.categories as List<TreeModel<CategoryModel>>;
+    // CategoryModel category = ViewBag.category as CategoryModel;
+    ViewData["Title"] = Model.Title;
+
+    // IQueryable<DetailPostModel> otherPosts = ViewBag.otherPosts as IQueryable<DetailPostModel>;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="~/">Home</a></li>
+        <li class="breadcrumb-item"><a href="~/Posts">Posts</a></li>
+        <li class="breadcrumb-item">@Model.Title</li>
+    </ol>
+</nav>
+
+<div class="detailpost">
+    <h1>@Model.Title</h1>
+    <div class="sapo">
+        @Model.Description
+    </div>
+@*     <div>
+        <i>Cập nhật: @Model.DateUpdated</i> /
+        Tác giả: <strong>@Model.Author.UserName</strong>
+    </div> *@
+    <hr>
+
+    @Html.Raw(Model.Content)
+
+</div>
+
+
+
+@* 
+@section Sidebar {
+    @await Component.InvokeAsync(nameof(CategorySidebar),
+        new CategorySidebar.CategorySidebarData()
+        {
+            Categories = categories,
+            level = 0,
+            categoryslug = category.Slug
+        })
+
+    <ul class="list-group">
+        @foreach (var post in otherPosts)
+        {
+            <li class="list-group-item">
+                <a asp-controller="ViewPost" asp-action="Detail" asp-route-postslug="@post.Slug">
+                    @post.Title
+                </a>
+            </li>
+        }
+    </ul>
+} *@

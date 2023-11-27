@@ -189,53 +189,6 @@ namespace BlogGPT.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Conversations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IsOver = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Conversations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Conversations_AspNetUsers_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Images_AspNetUsers_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
@@ -243,7 +196,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Question = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     Answer = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConversationId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -258,12 +210,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Messages_Conversations_ConversationId",
-                        column: x => x.ConversationId,
-                        principalTable: "Conversations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -275,7 +221,7 @@ namespace BlogGPT.Infrastructure.Migrations
                     Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Slug = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ThumbnailId = table.Column<int>(type: "int", nullable: true),
+                    Thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPublished = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -292,11 +238,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Posts_Images_ThumbnailId",
-                        column: x => x.ThumbnailId,
-                        principalTable: "Images",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -307,7 +248,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -322,11 +262,6 @@ namespace BlogGPT.Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Comments_Comments_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Posts_PostId",
                         column: x => x.PostId,
@@ -381,22 +316,41 @@ namespace BlogGPT.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ViewPost",
+                name: "Views",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    ViewerId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ViewedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Count = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ViewPost", x => x.Id);
+                    table.PrimaryKey("PK_Views", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ViewPost_Posts_PostId",
+                        name: "FK_Views_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmbeddingChunks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmbeddingPostId = table.Column<int>(type: "int", nullable: false),
+                    Embedding = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmbeddingChunks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmbeddingChunks_EmbeddingPosts_EmbeddingPostId",
+                        column: x => x.EmbeddingPostId,
+                        principalTable: "EmbeddingPosts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -462,19 +416,14 @@ namespace BlogGPT.Infrastructure.Migrations
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_ParentId",
-                table: "Comments",
-                column: "ParentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_PostId",
                 table: "Comments",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Conversations_AuthorId",
-                table: "Conversations",
-                column: "AuthorId");
+                name: "IX_EmbeddingChunks_EmbeddingPostId",
+                table: "EmbeddingChunks",
+                column: "EmbeddingPostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmbeddingPosts_PostId",
@@ -483,19 +432,9 @@ namespace BlogGPT.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Images_AuthorId",
-                table: "Images",
-                column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Messages_AuthorId",
                 table: "Messages",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_ConversationId",
-                table: "Messages",
-                column: "ConversationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PostCategories_CategoryId",
@@ -514,14 +453,10 @@ namespace BlogGPT.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_ThumbnailId",
-                table: "Posts",
-                column: "ThumbnailId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ViewPost_PostId",
-                table: "ViewPost",
-                column: "PostId");
+                name: "IX_Views_PostId",
+                table: "Views",
+                column: "PostId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -546,7 +481,7 @@ namespace BlogGPT.Infrastructure.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "EmbeddingPosts");
+                name: "EmbeddingChunks");
 
             migrationBuilder.DropTable(
                 name: "Messages");
@@ -555,22 +490,19 @@ namespace BlogGPT.Infrastructure.Migrations
                 name: "PostCategories");
 
             migrationBuilder.DropTable(
-                name: "ViewPost");
+                name: "Views");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Conversations");
+                name: "EmbeddingPosts");
 
             migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Posts");
-
-            migrationBuilder.DropTable(
-                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

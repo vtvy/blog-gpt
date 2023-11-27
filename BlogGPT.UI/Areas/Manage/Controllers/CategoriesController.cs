@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace BlogGPT.UI.Areas.Manage.Controllers
 {
     [Area("Manage")]
-    [Authorize(Roles = Roles.Administrator + "," + Roles.Editor)]
+    [Authorize(Roles = Roles.Administrator)]
     public class CategoriesController : Controller
     {
         private readonly IMediator _mediator;

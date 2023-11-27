@@ -35,10 +35,12 @@
     }
 </table>
 @{
-    var paginatedModel = new PaginatedModel<IndexPostModel>()
+    var paginatedModel = new PaginatedModel()
     {
         PageNumber = Model.PageNumber,
         TotalPages = Model.TotalPages,
+        TotalCount = Model.TotalUsers,
+        PageSize = 10
     };
 }
 

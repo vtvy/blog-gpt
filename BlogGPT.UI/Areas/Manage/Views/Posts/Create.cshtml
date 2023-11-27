@@ -55,7 +55,6 @@
 </div>
 
 @section Scripts {
-
     <script src="~/lib/select2/js/select2.min.js"></script>
     <link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
     <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
@@ -95,7 +94,7 @@
                             return res;
                           }).catch(err => err);
                         let imgPath = response.imgPath;
-                        callback(imgPath);
+                        callback(imgPath, { alt: file.name });
                     } catch (error) {
                         console.error('Error:', error);
                     }

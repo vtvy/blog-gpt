@@ -60,12 +60,19 @@ namespace BlogGPT.Infrastructure
                 options.AccessDeniedPath = "/AccessDenied";
                 options.Cookie.Name = "BlogGPT";
                 // set httpOnly to false to allow javascript to access the cookie
-                options.Cookie.HttpOnly = false;
+                //options.Cookie.HttpOnly = false;
             });
+
+            services.AddAuthentication()
+                .AddGoo(options =>
+                {
+
+                });
 
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
                 options.Password.RequiredUniqueChars = 0;
 
                 options.Lockout.MaxFailedAccessAttempts = 5;

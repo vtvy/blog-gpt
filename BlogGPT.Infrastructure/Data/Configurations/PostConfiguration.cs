@@ -15,6 +15,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
             builder.Property(post => post.LastModifiedBy).HasMaxLength(Lengths.XL);
 
             builder.Property(post => post.Slug).HasMaxLength(Lengths.Large);
+
             builder.HasIndex(post => post.Slug).IsUnique();
 
             builder.HasOne(post => post.EmbeddingPost).WithOne(embeddingPost => embeddingPost.Post).HasForeignKey<EmbeddingPost>(embeddingPost => embeddingPost.PostId).OnDelete(DeleteBehavior.Cascade);
@@ -23,9 +24,9 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasMany(post => post.Comments).WithOne(comment => comment.Post).HasForeignKey(ac => ac.PostId).OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(post => post.ViewPosts).WithOne(viewPost => viewPost.Post).HasForeignKey(vp => vp.PostId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(post => post.View).WithOne(view => view.Post).HasForeignKey<View>(v => v.PostId).OnDelete(DeleteBehavior.Cascade);
 
-            //builder.Navigation(post => post.Thumbnail).AutoInclude();
+            //builder.Navigation(post => post.View).AutoInclude();
 
             //builder.Navigation(post => post.Author).AutoInclude();
 

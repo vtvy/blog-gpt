@@ -1,24 +1,26 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Data;
+using BlogGPT.Application.Common.Interfaces.Services;
 using BlogGPT.Application.Common.Models;
 
 namespace BlogGPT.Application.Posts.Queries
 {
-    public record GetDetailPostQuery : IRequest<GetDetailPost?>
+    public record GetDetailPostBySlugQuery : IRequest<GetDetailPost?>
     {
-        public int Id { get; set; }
+        public required string Slug { get; set; }
     }
 
-
-    public class GetDetailPostHandler : IRequestHandler<GetDetailPostQuery, GetDetailPost?>
+    public class GetDetailPostBySlugHandler : IRequestHandler<GetDetailPostBySlugQuery, GetDetailPost?>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IDateTime _dateTimeService;
 
-        public GetDetailPostHandler(IApplicationDbContext context)
+        public GetDetailPostBySlugHandler(IApplicationDbContext context, IDateTime dateTimeService)
         {
             _context = context;
+            _dateTimeService = dateTimeService;
         }
 
-        public async Task<GetDetailPost?> Handle(GetDetailPostQuery request, CancellationToken cancellationToken)
+        public async Task<GetDetailPost?> Handle(GetDetailPostBySlugQuery request, CancellationToken cancellationToken)
         {
             var post = await _context.Posts
                 .Select(post => new GetDetailPost
@@ -39,8 +41,19 @@ namespace BlogGPT.Application.Posts.Queries
                     LastModifiedAt = post.LastModifiedAt,
                     LastModifiedBy = post.LastModifiedBy,
                     CreatedBy = post.Author != null ? post.Author.NormalizedUserName : null,
+                    View = post.View != null ? post.View.Count : 0,
                 })
-                .FirstOrDefaultAsync(post => post.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(post => post.Slug == request.Slug, cancellationToken);
+
+            if (post != null)
+            {
+                _context.Views.Add(new View
+                {
+                    PostId = post.Id,
+                    Count = post.View + 1,
+                });
+            }
+            await _context.SaveChangesAsync(cancellationToken);
 
             return post;
         }

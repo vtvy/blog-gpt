@@ -1,4 +1,5 @@
 ﻿using BlogGPT.Application.Common.Models;
+using System.Security.Claims;
 
 namespace BlogGPT.Application.Common.Interfaces.Identity
 {
@@ -13,5 +14,11 @@ namespace BlogGPT.Application.Common.Interfaces.Identity
         Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
         Task<Result> DeleteUserAsync(string userId);
+
+        bool IsSignedIn(ClaimsPrincipal user);
+
+        string? GetUserName(ClaimsPrincipal user);
+
+        Task<IEnumerable<string>> GetExternalAuthenticationSchemesAsync();
     }
 }

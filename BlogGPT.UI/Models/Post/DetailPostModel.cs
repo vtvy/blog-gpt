@@ -1,6 +1,6 @@
 ﻿using BlogGPT.Application.Common.Models;
 
-namespace BlogGPT.UI.Areas.Manage.Models.Post
+namespace BlogGPT.UI.Models.Post
 {
     public class DetailPostModel
     {

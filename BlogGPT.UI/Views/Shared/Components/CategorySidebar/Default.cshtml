@@ -1,44 +1,42 @@
-@using BlogGPT.UI.Views.Shared.Components.CategorySidebar
+@using BlogGPT.UI.Views.Shared.Components.CategorySidebar;
 @model CategorySidebar.CategorySidebarData
 @{
-    int level = Model.level;
+	int level = Model.Level;
 }
-@if (Model.Categories.Count > 0)
+@if (Model.Categories != null)
 {
-    @if (level == 0)
-    {
-        @Html.Raw("<div class=\"categorysidebar\">")
-        ;
-        <h3>
-            <a asp-controller="ViewPost" asp-action="Index" asp-route-categoryslug="">
-                Tất cả chuyên mục
-            </a>
-        </h3>
-    }
-    <ul>
-        @foreach (var category in Model.Categories)
-        {
-            var cssActive = (category.Item.Slug == Model.categoryslug) ? "active" : null;
-            <li>
-                <a class="@cssActive" asp-controller="ViewPost" asp-action="Index" asp-route-categoryslug="@category.Item.Slug">
-                    @category.Item.Name
-                </a>
-                @if (category.Children != null)
-                {
-                    @await Component.InvokeAsync("BlogGPT.UI.Components.CategorySidebar",
-        new CategorySidebar.CategorySidebarData()
-        {
-        Categories = category.Children.ToList(),
-        level = level + 1,
-        categoryslug = ViewBag.categoryslug
-        })
-                }
-            </li>
-        }
-    </ul>
-    @if (level == 0)
-    {
-        @Html.Raw("</div>")
-        ;
-    }
+	@if (level == 0)
+	{
+		@Html.Raw(@"<div class='categorysidebar'>")
+		<h3>
+			<a class="text-decoration-none" asp-controller="Posts" asp-action="Index" asp-route-categories="">
+				Categories
+			</a>
+		</h3>
+	}
+	<ul class="list-unstyled">
+		@foreach (var category in Model.Categories)
+		{
+			<li class="ps-4">
+				<a class="text-decoration-none" asp-controller="Posts" asp-action="Index"
+					asp-route-categories="@category.Item.Slug">
+					@category.Item.Name
+				</a>
+				@if (category.Children != null)
+				{
+					@await Component.InvokeAsync(nameof(CategorySidebar), new CategorySidebar.CategorySidebarData()
+{
+	Categories = category.Children.ToList(),
+	Level = level + 1
+}
+								)
+					;
+				}
+			</li>
+		}
+	</ul>
+	@if (level == 0)
+	{
+		@Html.Raw("</div>")
+	}
 }

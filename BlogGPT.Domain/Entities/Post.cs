@@ -8,7 +8,7 @@
 
         public string Slug { get; set; } = null!;
 
-        public Image? Thumbnail { get; set; }
+        public string? Thumbnail { get; set; }
 
         public required string Content { get; set; }
 
@@ -20,6 +20,6 @@
 
         public EmbeddingPost? EmbeddingPost { get; set; }
 
-        public ICollection<ViewPost>? ViewPosts { get; set; }
+        public View View { get; set; } = null!;
     }
 }
