@@ -1,91 +1,81 @@
 ﻿@using BlogGPT.Application.Common.Interfaces.Identity
-@using BlogGPT.Infrastructure.Identity;
-@using BlogGPT.Domain.Entities;
-@inject IIdentityService IdentityService;
+@using BlogGPT.Infrastructure.Identity
+@using BlogGPT.Domain.Entities
+@inject IIdentityService IdentityService
 
 @model RegisterViewModel
 @{
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"].</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
         <section>   
             <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group mt-4">
-                    <label asp-for="UserName" class="col-md-10 control-label"></label>
-                    <div class="col-md-10">
+                    <label asp-for="UserName" class="col-md-12 control-label"></label>
+                    <div class="col-md-12">
                         <input asp-for="UserName" class="form-control" />
                         <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group mt-4">
-                    <label asp-for="Email" class="col-md-10 control-label"></label>
-                    <div class="col-md-10">
+                    <label asp-for="Email" class="col-md-12 control-label"></label>
+                    <div class="col-md-12">
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group mt-4">
-                    <label asp-for="Password" class="col-md-10 control-label"></label>
-                    <div class="col-md-10">
+                    <label asp-for="Password" class="col-md-12 control-label"></label>
+                    <div class="col-md-12">
                         <input asp-for="Password" class="form-control" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group mt-4">
-                    <label asp-for="ConfirmPassword" class="col-md-10 control-label"></label>
-                    <div class="col-md-10">
+                    <label asp-for="ConfirmPassword" class="col-md-12 control-label"></label>
+                    <div class="col-md-12">
                         <input asp-for="ConfirmPassword" class="form-control" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="form-group mt-4">
-                    <div class="col-md-offset-2 col-md-10">
-                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    <div class="col-md-offset-2 col-md-12">
+                        <button type="submit" class="btn btn-primary">Sign up</button>
                     </div>
                 </div>
             </form>          
         </section>
     </div>
-    <div class="col-md-4">
-        <section>
-            <h4>Sign in with Google.</h4>
-            <hr />
-            @{
-                var loginProviders = await IdentityService.GetExternalAuthenticationSchemesAsync();
-                if (!loginProviders.Any())
-                {
-                    <div>
-                        <p>
-                            Google sign in is not available.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-                        <div>
-                            <p>
-                                @foreach (var provider in loginProviders)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider" title="Log in using your @provider account">@provider</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
 </div>
+@{
+    var loginProviders = await IdentityService.GetExternalAuthenticationSchemesAsync();
+    if (loginProviders.Any())
+    {
+        <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+            <div>
+                <p>
+                    @foreach (var provider in loginProviders)
+                    {
+                        <button type="submit" class="btn btn-danger mt-2" name="provider" value="@provider" title="Log in using your @provider account">Sign in with @provider</button>
+                    }
+                </p>
+            </div>
+        </form>
+    }
+}
+
+<p>
+    Already have account, <a asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">sign in</a>
+</p>
 
 
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } 
 }

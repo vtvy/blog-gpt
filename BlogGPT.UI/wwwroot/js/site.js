@@ -32,7 +32,7 @@ const createAnswerChatLine = (text) => {
 	chatLine.classList.add("answer");
 	let chatContent = document.createElement("p");
 	chatContent.classList.add(
-		"bg-warning",
+		"text-bg-light",
 		"rounded-2",
 		"border",
 		"border-primary-subtle"
@@ -75,9 +75,13 @@ const handleChat = async () => {
 
 			if (done) break;
 
-			chatBox.lastChild.lastChild.innerText += new TextDecoder().decode(
-				value
-			);
+			let nextText = new TextDecoder().decode(value);
+			if (nextText.startsWith("Answered based on")) {
+				chatBox.lastChild.lastChild.innerHTML += nextText
+			} else {
+				chatBox.lastChild.lastChild.innerText += nextText
+			}
+
 
 			if (chatBox.scrollHeight > 0) {
 				chatBox.scrollTop = chatBox.scrollHeight;

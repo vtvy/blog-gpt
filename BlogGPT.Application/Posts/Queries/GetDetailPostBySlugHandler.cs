@@ -43,15 +43,25 @@ namespace BlogGPT.Application.Posts.Queries
                     CreatedBy = post.Author != null ? post.Author.NormalizedUserName : null,
                     View = post.View != null ? post.View.Count : 0,
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync(post => post.Slug == request.Slug, cancellationToken);
 
             if (post != null)
             {
-                _context.Views.Add(new View
+                var view = await _context.Views.FirstOrDefaultAsync(view => view.PostId == post.Id, cancellationToken);
+                if (view == null)
                 {
-                    PostId = post.Id,
-                    Count = post.View + 1,
-                });
+                    _context.Views.Add(new View
+                    {
+                        PostId = post.Id,
+                        Count = 1,
+                    });
+                }
+                else
+                {
+                    view.Count += 1;
+                    _context.Views.Update(view);
+                }
             }
             await _context.SaveChangesAsync(cancellationToken);
 

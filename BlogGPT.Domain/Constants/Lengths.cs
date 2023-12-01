@@ -11,5 +11,7 @@
         public const int XL = 256;
 
         public const int XXL = 512;
+
+        public const int XXXL = 1024;
     }
 }

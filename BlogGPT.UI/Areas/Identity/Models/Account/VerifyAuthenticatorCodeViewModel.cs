@@ -7,7 +7,7 @@ namespace BlogGPT.UI.Areas.Identity.Models.Account
 {
     public class VerifyAuthenticatorCodeViewModel
     {
-        [Required(ErrorMessage = "Phải nhập {0}")]
+        [Required(ErrorMessage = "{0} is required")]
         [Display(Name = "Nhập mã đã lưu")]
         public string Code { get; set; }
 

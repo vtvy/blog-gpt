@@ -1,26 +1,28 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Services;
 using LLama;
 using LLama.Common;
-using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace BlogGPT.Infrastructure.Services
 {
     public class Chatbot : IChatbot
     {
-        private readonly string _modelPath;
-        private readonly string _embeddingModelPath;
 
-        public Chatbot(IConfiguration configuration)
+        public Chatbot()
         {
-            _modelPath = configuration.GetSection("Chatbot:ModelPath").Value ?? throw new Exception("Model path not found");
-            _embeddingModelPath = configuration.GetSection("Chatbot:EmbeddingModelPath").Value ?? throw new Exception("Model path not found");
         }
 
-        public float[] GetEmbedding(string text)
+        public IList<float[]> GetEmbeddings(IList<string> texts)
         {
-            var embeddingModelParams = new ModelParams(_embeddingModelPath)
+
+            var embeddingList = new List<string> {
+                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
+                @"D:\Downloads\zephyr-7b-alpha.Q3_K_M.gguf",
+                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
+                @"D:\code\model\beta\zephyr-q2-k.gguf",
+            };
+
+            var embeddingModelParams = new ModelParams(embeddingList[0])
             {
                 GpuLayerCount = 35,
                 EmbeddingMode = true,
@@ -30,46 +32,54 @@ namespace BlogGPT.Infrastructure.Services
             using var embeddingWeights = LLamaWeights.LoadFromFile(embeddingModelParams);
             var embedder = new LLamaEmbedder(embeddingWeights, embeddingModelParams);
 
-            var embedding = embedder.GetEmbeddings(text);
+            var embeddings = texts.Select(text => embedder.GetEmbeddings(text)).ToList();
             embedder.Dispose();
             embeddingWeights.Dispose();
 
-            return embedding;
+            return embeddings;
         }
 
         public async IAsyncEnumerable<string> GetAnswerAsync(string question, string chatContext)
         {
-            var modelParams = new ModelParams(_modelPath)
+            var modelList = new List<string> {
+                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
+                @"D:\Downloads\zephyr-7b-alpha.Q3_K_M.gguf",
+                @"D:\code\model\beta\zephyr-q2-k.gguf",
+            };
+
+            var modelParams = new ModelParams(modelList[0])
             {
                 ContextSize = 1024,
-                Seed = unchecked(RandomNumberGenerator.GetInt32(int.MaxValue)),
+                Seed = unchecked((uint)RandomNumberGenerator.GetInt32(int.MaxValue)),
                 GpuLayerCount = 35,
             };
             using var modelWeights = LLamaWeights.LoadFromFile(modelParams);
             var modelContext = new LLamaContext(modelWeights, modelParams);
             var modelExecutor = new InstructExecutor(modelContext);
 
-            StringBuilder prompt = new("Transcript of a dialog, where the User interacts with an Assistant. Assistant is helpful, kind, honest, good at writing, and never fails to answer the User's requests immediately and with precision.");
+            //StringBuilder prompt = new("Transcript of a dialog, where the User interacts with an Assistant. Assistant is helpful, kind, honest, good at writing, and never fails to answer the User's requests immediately and with precision.");
+            var prompt =
+"""
+<|system|>
+Article:
+{{$facts}}
+======
+Given only the facts above, provide a comprehensive/detailed answer.
+You don't know where the knowledge comes from, just answer.
+If you don't have sufficient information, reply with 'I cannot find relevance information about this question'.</s>
+<|user|>
+{{$input}}</s>
+<|assistant|>
 
-            if (true)
-            {
-                var userHistory = "Hello, Assistant.";
-                var answerHistory = "Hello. How may I help you today?";
-                prompt.AppendLine($"User: {userHistory}");
-                prompt.AppendLine($"Assistant: {answerHistory}");
-            }
+""";
 
-            if (chatContext.Length > 0)
-            {
-                prompt.AppendLine("Please read the following articles then answer User based on that.");
-                prompt.AppendLine($"{chatContext}");
-            }
+            var promptWithInfor = prompt.Replace("{{$facts}}", chatContext);
+            if (question[question.Length - 1] != '?') question += '?';
+            var promptWithQuestion = prompt.Replace("{{$input}}", question);
 
-            prompt.Append($"User: {question}");
-
-            var inferenceParams = new InferenceParams() { Temperature = 0.6f, AntiPrompts = new string[] { "User:", ">" }, MaxTokens = 800 };
-            Console.WriteLine(_modelPath);
-            await foreach (var output in modelExecutor.InferAsync(prompt.ToString(), inferenceParams))
+            var inferenceParams = new InferenceParams() { Temperature = 0.6f, AntiPrompts = new string[] { "<|user|>" }, MaxTokens = 1000 };
+            Console.WriteLine(modelList[0]);
+            await foreach (var output in modelExecutor.InferAsync(promptWithQuestion, inferenceParams))
             {
                 if (output.Contains("User")) break;
                 Console.Write(output);

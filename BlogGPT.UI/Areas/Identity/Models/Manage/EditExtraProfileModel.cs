@@ -4,7 +4,7 @@ namespace BlogGPT.UI.Areas.Identity.Models.Manage
 {
     public class EditExtraProfileModel
     {
-        [Display(Name = "Tên tài khoản")]
+        [Display(Name = "Username")]
         public string UserName { get; set; }
 
         [Display(Name = "Địa chỉ email")]

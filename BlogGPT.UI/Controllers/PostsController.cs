@@ -21,15 +21,22 @@ namespace BlogGPT.UI.Controllers
         }
 
         // /posts/
-        public async Task<IActionResult> IndexAsync([FromQuery] string categories = "", [FromQuery] string order = "date", [FromQuery] string dir = "desc", [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> IndexAsync(
+                    string search = "",
+                    int pageNumber = 1,
+                    int pageSize = 10,
+                    string categories = "",
+                    string order = "date",
+                    string direction = "desc")
         {
             var pagingList = await _mediator.Send(new GetAllPostQuery
             {
-                Categories = categories,
-                Order = order,
-                Direction = dir,
                 PageNumber = pageNumber,
-                PageSize = pageSize
+                PageSize = pageSize,
+                Categories = categories,
+                Search = search,
+                Order = order,
+                Direction = direction,
             });
 
             ViewBag.pagingModel = new PaginatedModel
@@ -37,7 +44,11 @@ namespace BlogGPT.UI.Controllers
                 PageNumber = pagingList.PageNumber,
                 TotalCount = pagingList.TotalCount,
                 TotalPages = pagingList.TotalPages,
-                PageSize = pageSize
+                PageSize = pageSize,
+                Categories = categories,
+                Search = search,
+                Order = order,
+                Direction = direction,
             };
 
             var postList = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(pagingList.Items);
@@ -58,14 +69,8 @@ namespace BlogGPT.UI.Controllers
 
             var postModel = _mapper.Map<DetailPostModel>(post);
 
-
-            //var categories = GetCategories();
-            //ViewBag.categories = categories;
-
-
-            //Category category = post.PostCategories.FirstOrDefault()?.Category;
-            //ViewBag.category = category;
-
+            var categoryTree = await _mediator.Send(new GetAllCategoryQuery());
+            ViewBag.categories = _mapper.Map<IEnumerable<TreeModel<CategoryModel>>>(categoryTree);
 
             //ViewBag.otherPosts = otherPosts;
 

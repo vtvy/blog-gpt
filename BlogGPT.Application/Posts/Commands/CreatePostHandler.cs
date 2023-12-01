@@ -12,6 +12,8 @@ namespace BlogGPT.Application.Posts.Commands
 
         public required string Title { set; get; }
 
+        public string? Thumbnail { set; get; }
+
         public string? Description { set; get; }
 
         public required string Content { set; get; }
@@ -51,12 +53,25 @@ namespace BlogGPT.Application.Posts.Commands
         {
             var entity = _mapper.Map<Post>(command);
 
+            var existedSlug = await _context.Posts
+                .AnyAsync(post => post.Slug == entity.Slug, cancellationToken);
+
+            if (existedSlug) return -1;
+
             if (command.IsPublished)
             {
-                var contextValue = $"{command.Title}:\n{command.RawText}";
-                var embedding = _chatbot.GetEmbedding(contextValue);
 
-                var embeddingPost = new EmbeddingPost { Embedding = JsonSerializer.Serialize(embedding), RawText = contextValue };
+                var chunkTexts = new List<string> { command.RawText, command.Title };
+                chunkTexts.AddRange(command.RawText.Split("\n\n").Where(chunk => chunk.Length > 10));
+
+                var embeddings = _chatbot.GetEmbeddings(chunkTexts);
+
+                var embeddingPost = new EmbeddingPost
+                {
+                    Embedding = JsonSerializer.Serialize(embeddings[0]),
+                    RawText = command.Title + "\n" + command.RawText,
+                    EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
+                };
 
                 entity.EmbeddingPost = embeddingPost;
             }

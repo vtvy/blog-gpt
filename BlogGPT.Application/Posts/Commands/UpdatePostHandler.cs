@@ -6,13 +6,15 @@ using System.Text.Json;
 
 namespace BlogGPT.Application.Posts.Commands
 {
-    public record UpdatePostCommand : IRequest
+    public record UpdatePostCommand : IRequest<int>
     {
         public int Id { get; set; }
 
         public int[]? CategoryIds { get; set; }
 
         public required string Title { set; get; }
+
+        public string? Thumbnail { set; get; }
 
         public string? Description { set; get; }
 
@@ -22,7 +24,7 @@ namespace BlogGPT.Application.Posts.Commands
 
         public bool IsPublished { set; get; }
     }
-    public class UpdatePostHandler : IRequestHandler<UpdatePostCommand>
+    public class UpdatePostHandler : IRequestHandler<UpdatePostCommand, int>
     {
         private readonly IApplicationDbContext _context;
         private readonly IChatbot _chatbot;
@@ -33,20 +35,25 @@ namespace BlogGPT.Application.Posts.Commands
             _chatbot = chatbot;
         }
 
-        public async Task Handle(UpdatePostCommand command, CancellationToken cancellationToken)
+        public async Task<int> Handle(UpdatePostCommand command, CancellationToken cancellationToken)
         {
-            var entity = await _context.Posts.Include(post => post.EmbeddingPost).FirstOrDefaultAsync(post => post.Id == command.Id, cancellationToken);
-
-            if (entity == null)
-            {
-                throw new NotFoundException(nameof(Post), command.Id);
-            }
+            var entity = await _context.Posts.Include(post => post.EmbeddingPost).FirstOrDefaultAsync(post => post.Id == command.Id, cancellationToken) ?? throw new NotFoundException(nameof(Post), command.Id);
+            var oldSlug = entity.Slug;
 
             entity.Title = command.Title;
+            entity.Thumbnail = command.Thumbnail;
             entity.Description = command.Description;
             entity.Content = command.Content;
             entity.IsPublished = command.IsPublished;
             entity.Slug = command.Title.GenerateSlug();
+
+            if (oldSlug != entity.Slug)
+            {
+                var existedSlug = await _context.Posts
+                    .AnyAsync(post => post.Slug == entity.Slug, cancellationToken);
+
+                if (existedSlug) return -1;
+            }
 
             var postCategories = await _context.PostCategories
                 .Where(postCategories => postCategories.PostId == command.Id)
@@ -75,25 +82,31 @@ namespace BlogGPT.Application.Posts.Commands
 
             if (command.IsPublished)
             {
-                var contextValue = $"{command.Title}:\n{command.RawText}";
-                var embedding = _chatbot.GetEmbedding(contextValue);
+                var chunkTexts = new List<string> { command.RawText, command.Title };
+                chunkTexts.AddRange(command.RawText.Split("\n\n"));
 
-                if (entity.EmbeddingPost == null)
-                {
-                    var embeddingPost = new EmbeddingPost { Embedding = JsonSerializer.Serialize(embedding), RawText = contextValue };
+                var embeddings = _chatbot.GetEmbeddings(chunkTexts);
 
-                    entity.EmbeddingPost = embeddingPost;
-                }
-                else
+                if (entity.EmbeddingPost != null)
                 {
-                    entity.EmbeddingPost.Embedding = JsonSerializer.Serialize(embedding);
-                    entity.EmbeddingPost.RawText = contextValue;
+                    _context.EmbeddingPosts.Remove(entity.EmbeddingPost);
                 }
+
+                var embeddingPost = new EmbeddingPost
+                {
+                    Embedding = JsonSerializer.Serialize(embeddings[0]),
+                    RawText = command.Title + "\n" + command.RawText,
+                    EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
+                };
+                entity.EmbeddingPost = embeddingPost;
+
             }
 
             _context.Posts.Update(entity);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            return entity.Id;
         }
     }
 }

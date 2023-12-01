@@ -6,6 +6,7 @@ namespace BlogGPT.Application.Posts.Queries
     public record GetAllPostQuery : IRequest<PaginatedList<GetAllPost>>
     {
         public string Categories { get; set; } = "";
+        public string Search { get; set; } = "";
         public string Order { get; set; } = "date";
         public string Direction { get; set; } = "desc";
         public int PageNumber { get; set; } = 1;
@@ -27,7 +28,7 @@ namespace BlogGPT.Application.Posts.Queries
         {
             var count = await _context.Posts.CountAsync();
 
-            var pagingList = new PaginatedList<GetAllPost>(request.Categories, request.Order, request.Direction, request.PageNumber, request.PageSize, count);
+            var pagingList = new PaginatedList<GetAllPost>(request.Categories, request.Search, request.Order, request.Direction, request.PageNumber, request.PageSize, count);
 
             if (count > 0)
             {
@@ -37,6 +38,15 @@ namespace BlogGPT.Application.Posts.Queries
                 if (request.Order == "date")
                 {
                     query = request.Direction == "desc" ? query.OrderByDescending(post => post.LastModifiedAt) : query.OrderBy(post => post.LastModifiedAt);
+                }
+                else if (request.Order == "view")
+                {
+                    query = request.Direction == "desc" ? query.OrderByDescending(post => post.View.Count) : query.OrderBy(post => post.View.Count);
+                }
+
+                if (request.Search != "")
+                {
+                    query = query.Where(post => post.Title.Contains(request.Search) || (post.Description != null && post.Description.Contains(request.Search)));
                 }
 
                 if (request.Categories != "")

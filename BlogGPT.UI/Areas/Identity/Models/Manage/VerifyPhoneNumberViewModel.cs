@@ -7,11 +7,11 @@ namespace BlogGPT.UI.Areas.Identity.Models.Manage
 {
     public class VerifyPhoneNumberViewModel
     {
-        [Required(ErrorMessage = "Phải nhập {0}")]
+        [Required(ErrorMessage = "{0} is required")]
         [Display(Name = "Mã xác nhận")]
         public string Code { get; set; }
 
-        [Required(ErrorMessage = "Phải nhập {0}")]
+        [Required(ErrorMessage = "{0} is required")]
         [Phone]
         [Display(Name = "Số điện thoại")]
         public string PhoneNumber { get; set; }

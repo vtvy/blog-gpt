@@ -7,29 +7,29 @@ namespace BlogGPT.UI.Areas.Identity.Models.Account
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Phải nhập {0}")]
-        [EmailAddress(ErrorMessage = "Sai định dạng Email")]
+        [Required(ErrorMessage = "{0} is required")]
+        [EmailAddress(ErrorMessage = "Invalid Email")]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
 
-        [Required(ErrorMessage = "Phải nhập {0}")]
-        [StringLength(100, ErrorMessage = "{0} phải dài từ {2} đến {1} ký tự.", MinimumLength = 2)]
+        [Required(ErrorMessage = "{0} is required")]
+        [StringLength(100, ErrorMessage = "{0} must long {2} to {1} characters.", MinimumLength = 2)]
         [DataType(DataType.Password)]
-        [Display(Name = "Mật khẩu")]
-        public string Password { get; set; }
+        [Display(Name = "Password")]
+        public required string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Lặp lại mật khẩu")]
-        [Compare("Password", ErrorMessage = "Mật khẩu lặp lại không chính xác.")]
-        public string ConfirmPassword { get; set; }
+        [Display(Name = "Re-Password")]
+        [Compare("Password", ErrorMessage = "Re-Password does not match")]
+        public required string ConfirmPassword { get; set; }
 
 
         [DataType(DataType.Text)]
-        [Display(Name = "Tên tài khoản")]
-        [Required(ErrorMessage = "Phải nhập {0}")]
-        [StringLength(100, ErrorMessage = "{0} phải dài từ {2} đến {1} ký tự.", MinimumLength = 3)]
-        public string UserName { get; set; }
+        [Display(Name = "Username")]
+        [Required(ErrorMessage = "{0} is required")]
+        [StringLength(100, ErrorMessage = "{0} must long {2} to {1} characters.", MinimumLength = 3)]
+        public required string UserName { get; set; }
 
     }
 }

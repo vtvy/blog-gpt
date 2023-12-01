@@ -38,6 +38,11 @@ namespace BlogGPT.Application.Categories.Commands
         {
             var entity = _mapper.Map<Category>(command);
 
+            var existedSlug = await _context.Categories
+                .AnyAsync(cate => cate.Slug == entity.Slug, cancellationToken);
+
+            if (existedSlug) return -1;
+
             _context.Categories.Add(entity);
 
             await _context.SaveChangesAsync(cancellationToken);

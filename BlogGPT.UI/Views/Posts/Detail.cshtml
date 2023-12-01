@@ -21,9 +21,6 @@
 
 <div class="detailpost">
     <h1>@Model.Title</h1>
-    <div class="sapo">
-        @Model.Description
-    </div>
 @*     <div>
         <i>Cập nhật: @Model.DateUpdated</i> /
         Tác giả: <strong>@Model.Author.UserName</strong>
@@ -36,17 +33,16 @@
 
 
 
-@* 
+
 @section Sidebar {
     @await Component.InvokeAsync(nameof(CategorySidebar),
-        new CategorySidebar.CategorySidebarData()
-        {
-            Categories = categories,
-            level = 0,
-            categoryslug = category.Slug
-        })
+    new CategorySidebar.CategorySidebarData()
+    {
+        Categories = ViewBag.categories,
+        Level = 0
+    })
 
-    <ul class="list-group">
+@*     <ul class="list-group">
         @foreach (var post in otherPosts)
         {
             <li class="list-group-item">
@@ -55,5 +51,5 @@
                 </a>
             </li>
         }
-    </ul>
-} *@
+    </ul> *@
+}

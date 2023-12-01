@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using BlogGPT.Application.Common.Extensions;
+using BlogGPT.Application.Common.Interfaces.Identity;
 using BlogGPT.Domain.Entities;
 using BlogGPT.UI.Areas.Identity.Models.Account;
 using BlogGPT.UI.Extensions;
@@ -25,17 +26,20 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly IUser _userService;
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
+            IUser userService,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _userService = userService;
             _logger = logger;
         }
 
@@ -44,6 +48,10 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         [AllowAnonymous]
         public IActionResult Login(string returnUrl = "")
         {
+            if (_userService.Id != null)
+            {
+                return Redirect("/");
+            }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -53,9 +61,8 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         [HttpPost("/login/")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "")
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = "/")
         {
-            returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -84,12 +91,12 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
 
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning(2, "Tài khoản bị khóa");
+                    _logger.LogWarning(2, "Your account has been banned");
                     return View("Lockout");
                 }
                 else
                 {
-                    ModelState.AddModelError("Không đăng nhập được.");
+                    ModelState.AddModelError("Your credential information is not correct.");
                     return View(model);
                 }
             }
@@ -102,7 +109,7 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User đăng xuất");
+            _logger.LogInformation("User sign out");
             return RedirectToAction("Index", "Home", new { area = "" });
         }
         //
@@ -111,6 +118,10 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = "")
         {
+            if (_userService.Id != null)
+            {
+                return Redirect("/");
+            }
             returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -120,9 +131,8 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = "")
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = "/")
         {
-            returnUrl ??= Url.Content("~/");
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -131,9 +141,9 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("Đã tạo user mới.");
+                    _logger.LogInformation("Create new user");
 
-                    // Phát sinh token để xác nhận email
+                    // Generate new token to confirm email
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
@@ -150,14 +160,14 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(model.Email,
-                        "Xác nhận địa chỉ email",
-                        @$"Bạn đã đăng ký tài khoản trên RazorWeb, 
-                           hãy <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>bấm vào đây</a> 
-                           để kích hoạt tài khoản.");
+                        "Confirm email address",
+                        @$"You have sign up to Blog, 
+                           please <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>Click here</a> 
+                           to confirm your email.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return LocalRedirect(Url.Action(nameof(RegisterConfirmation)));
+                        return LocalRedirect(Url.Action(nameof(RegisterConfirmation))!);
                     }
                     else
                     {
@@ -166,11 +176,9 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
                     }
 
                 }
-
                 ModelState.AddModelError(result);
             }
-
-            // If we got this far, something failed, redisplay form
+            // If something failed, redisplay form
             return View(model);
         }
 
@@ -198,7 +206,15 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
             }
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "ErrorConfirmEmail");
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return Redirect("/");
+            }
+            else
+            {
+                return View("ErrorConfirmEmail");
+            }
         }
 
         //
@@ -206,9 +222,8 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = "")
+        public IActionResult ExternalLogin(string provider, string returnUrl = "/")
         {
-            returnUrl ??= Url.Content("~/");
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
@@ -217,12 +232,11 @@ namespace BlogGPT.UI.Areas.Identity.Controllers
         // GET: /Account/ExternalLoginCallback
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "", string remoteError = "")
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "/", string? remoteError = null)
         {
-            returnUrl ??= Url.Content("~/");
             if (remoteError != null)
             {
-                ModelState.AddModelError(string.Empty, $"Lỗi sử dụng dịch vụ ngoài: {remoteError}");
+                ModelState.AddModelError(string.Empty, $"Error when using external sign in: {remoteError}");
                 return View(nameof(Login));
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();

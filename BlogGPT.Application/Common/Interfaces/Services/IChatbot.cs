@@ -2,7 +2,7 @@
 {
     public interface IChatbot
     {
-        float[] GetEmbedding(string text);
+        IList<float[]> GetEmbeddings(IList<string> texts);
         IAsyncEnumerable<string> GetAnswerAsync(string question, string chatContext);
     }
 }

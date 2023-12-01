@@ -115,6 +115,131 @@ namespace BlogGPT.Infrastructure
                     await _userManager.AddToRoleAsync(user, userRole.Name);
                 }
             }
+
+            if (!_context.Categories.Any())
+            {
+                var defaultCategoryList = new List<Category>
+                {
+                    new ()
+                    {
+                        Name = "Arts and Entertainment",
+                        Description = "Arts and Entertainment",
+                        Slug = "arts-and-entertainment",
+                    },
+                    new ()
+                    {
+                        Name = "Cars & Other Vehicles",
+                        Description = "Cars & Other Vehicles",
+                        Slug = "cars-&-other-vehicles",
+                    },
+                    new ()
+                    {
+                        Name = "Computers and Electronics",
+                        Description = "Computers and Electronics",
+                        Slug = "computers-and-electronics",
+                    },
+                    new ()
+                    {
+                        Name = "Education and Communications",
+                        Description = "Education and Communications",
+                        Slug = "education-and-communications",
+                    },
+                    new ()
+                    {
+                        Name = "Family Life",
+                        Description = "Family Life",
+                        Slug = "family-life",
+                    },
+                    new ()
+                    {
+                        Name = "Finance and Business",
+                        Description = "Finance and Business",
+                        Slug = "finance-and-business",
+                    },
+                    new ()
+                    {
+                        Name = "Food and Entertaining",
+                        Description = "Food and Entertaining",
+                        Slug = "food-and-entertaining",
+                    },
+                    new ()
+                    {
+                        Name = "Health",
+                        Description = "Health",
+                        Slug = "health",
+                    },
+                    new ()
+                    {
+                        Name = "Hobbies and Crafts",
+                        Description = "Hobbies and Crafts",
+                        Slug = "hobbies-and-crafts",
+                    },
+                    new ()
+                    {
+                        Name = "Holidays and Traditions",
+                        Description = "Holidays and Traditions",
+                        Slug = "holidays-and-traditions",
+                    },
+                    new ()
+                    {
+                        Name = "Home and Garden",
+                        Description = "Home and Garden",
+                        Slug = "home-and-garden",
+                    },
+                    new ()
+                    {
+                        Name = "Personal Care and Style",
+                        Description = "Personal Care and Style",
+                        Slug = "personal-care-and-style",
+                    },
+                    new ()
+                    {
+                        Name = "Pets and Animals",
+                        Description = "Pets and Animals",
+                        Slug = "pets-and-animals",
+                    },
+                    new ()
+                    {
+                        Name = "Philosophy and Religion",
+                        Description = "Philosophy and Religion",
+                        Slug = "philosophy-and-religion",
+                    },
+                    new ()
+                    {
+                        Name = "Relationships",
+                        Description = "Relationships",
+                        Slug = "relationships",
+                    },
+                    new ()
+                    {
+                        Name = "Sports and Fitness",
+                        Description = "Sports and Fitness",
+                        Slug = "sports-and-fitness",
+                    },
+                    new ()
+                    {
+                        Name = "Travel",
+                        Description = "Travel",
+                        Slug = "travel",
+                    },
+                    new ()
+                    {
+                        Name = "Work World",
+                        Description = "Work World",
+                        Slug = "work-world",
+                    },
+                    new ()
+                    {
+                        Name = "Youth",
+                        Description = "Youth",
+                        Slug = "youth",
+                    }
+                };
+
+                _context.Categories.AddRange(defaultCategoryList);
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

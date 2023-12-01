@@ -8,7 +8,7 @@ namespace BlogGPT.UI.Areas.Identity.Models.Account
     public class UseRecoveryCodeViewModel
     {
 
-        [Required(ErrorMessage = "Phải nhập {0}")]
+        [Required(ErrorMessage = "{0} is required")]
         [Display(Name = "Nhập mã phục hồi đã lưu")]
         public string Code { get; set; }
 

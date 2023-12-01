@@ -64,24 +64,27 @@ namespace BlogGPT.Infrastructure
             });
 
             services.AddAuthentication()
-                .AddGoo(options =>
+                .AddGoogle(options =>
                 {
-
+                    options.ClientId = configuration["Identity:Google:ClientId"] ?? throw new Exception("Not configure Google");
+                    options.ClientSecret = configuration["Identity:Google:ClientSecret"] ?? throw new Exception("Not configure Google");
                 });
+
+            services.AddAuthorization(options => options.AddPolicy(Policies.CanManageCategory, policy => policy.RequireRole(Roles.Administrator)));
 
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireUppercase = false;
 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
                 options.User.RequireUniqueEmail = true;
+                //options.SignIn.RequireConfirmedEmail = true;
             });
-
-            services.AddAuthorization(options => options.AddPolicy(Policies.CanManageCategory, policy => policy.RequireRole(Roles.Administrator)));
 
             return services;
         }

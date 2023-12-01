@@ -38,7 +38,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "BlogArea",
-    pattern: "{area:exists}/{controller=Posts}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=ManagePosts}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",

@@ -10,7 +10,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
         {
             builder.Property(post => post.Title).HasMaxLength(Lengths.XL);
 
-            builder.Property(post => post.Description).HasMaxLength(Lengths.XL);
+            builder.Property(post => post.Description).HasMaxLength(Lengths.XXXL);
 
             builder.Property(post => post.LastModifiedBy).HasMaxLength(Lengths.XL);
 

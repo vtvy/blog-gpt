@@ -1,0 +1,16 @@
+﻿@using BlogGPT.Application.Common.Interfaces.Identity
+@model PaginatedModel
+@inject IIdentityService IdentityService
+
+<form class="input-group mb-3 p-4" method="get" action="@Url.Action("Index", "Posts")">
+    <input type="text" asp-for="Categories" class="form-control" placeholder="categories" hidden />
+    <input type="text" asp-for="PageSize" class="form-control" placeholder="size" hidden />
+    <input type="text" asp-for="PageNumber" class="form-control" placeholder="page" hidden />
+    <input type="text" asp-for="Direction" class="form-control" placeholder="dir" hidden  />
+    <input type="text" asp-for="Search" class="form-control" placeholder="How to do anything..." />
+    <button class="btn btn-outline-success" value="search" type="submit">
+        <i class="bi bi-search"></i>
+        Search
+    </button>
+    <input type="text" asp-for="Order" class="form-control" placeholder="order" hidden />
+</form>

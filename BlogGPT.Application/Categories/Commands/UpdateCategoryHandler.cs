@@ -4,7 +4,7 @@ using BlogGPT.Domain.Exceptions;
 
 namespace BlogGPT.Application.Categories.Commands
 {
-    public record UpdateCategoryCommand : IRequest
+    public record UpdateCategoryCommand : IRequest<int>
     {
         public int Id { get; set; }
 
@@ -16,7 +16,7 @@ namespace BlogGPT.Application.Categories.Commands
     }
 
 
-    public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
+    public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, int>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ namespace BlogGPT.Application.Categories.Commands
             _mapper = mapper;
         }
 
-        public async Task Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
+        public async Task<int> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             var entity = await _context.Categories.FindAsync(new object?[] { command.Id }, cancellationToken: cancellationToken) ?? throw new NotFoundException(nameof(Category), command.Id);
 
@@ -36,7 +36,14 @@ namespace BlogGPT.Application.Categories.Commands
             entity.ParentId = command.ParentId;
             entity.Slug = command.Name.GenerateSlug();
 
+            var existedSlug = await _context.Categories
+                .AnyAsync(cate => cate.Slug == entity.Slug, cancellationToken);
+
+            if (existedSlug) return -1;
+
             await _context.SaveChangesAsync(cancellationToken);
+
+            return entity.Id;
         }
     }
 }

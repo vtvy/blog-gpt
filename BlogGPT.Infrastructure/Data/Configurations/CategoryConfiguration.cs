@@ -12,7 +12,7 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.Property(category => category.LastModifiedBy).HasMaxLength(Lengths.XL);
 
-            builder.Property(category => category.Description).HasMaxLength(Lengths.XL);
+            builder.Property(category => category.Description).HasMaxLength(Lengths.XXXL);
 
             builder.Property(category => category.Slug).HasMaxLength(Lengths.Large);
             builder.HasIndex(category => category.Slug).IsUnique();

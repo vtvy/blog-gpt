@@ -28,6 +28,7 @@ namespace BlogGPT.Application.Posts.Queries
                     CategoryIds = post.PostCategories != null ? post.PostCategories.Select(postCate => postCate.CategoryId).ToArray() : null,
                     Title = post.Title,
                     Description = post.Description,
+                    Thumbnail = post.Thumbnail ?? "/default.png",
                     Content = post.Content,
                     IsPublished = post.IsPublished,
                     Slug = post.Slug,

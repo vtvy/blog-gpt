@@ -7,24 +7,20 @@
 
 @if (isAuthor.Succeeded) {
     <div class="dropdown">
-        <a class="btn btn-outline-danger dropdown-toggle" href="#"
-            id="manage-db-drop-down-menu" data-toggle="dropdown">
+        <button class="btn btn-outline-danger dropdown-toggle" id="manage-db-drop-down-menu" data-bs-toggle="dropdown" aria-expanded="false">
             Manage
-        </a>
+        </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="manage-db-drop-down-menu">
-            <a class="dropdown-item" asp-action="Index" asp-controller="DbManage" asp-area="Database">
-                Database
-            </a>
             <a class="dropdown-item" asp-action="Index" asp-controller="Role" asp-area="Identity">
                 Manage Roles
             </a>
             <a class="dropdown-item" asp-action="Index" asp-controller="User" asp-area="Identity">
                 Manage Members
             </a>
-            <a class="dropdown-item" asp-action="Index" asp-controller="Categories">
+            <a class="dropdown-item" asp-action="Index" asp-controller="Categories" asp-area="Manage">
                 Manage Catagories
             </a>
-            <a class="dropdown-item" asp-action="Index" asp-controller="Posts">
+            <a class="dropdown-item" asp-action="Index" asp-controller="ManagePosts" asp-area="Manage">
                 Manage Posts
             </a>
         </div>

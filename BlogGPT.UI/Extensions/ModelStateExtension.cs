@@ -7,7 +7,7 @@ namespace BlogGPT.UI.Extensions
     {
         public static void AddModelError(this ModelStateDictionary ModelState, string message)
         {
-            ModelState.AddModelError("Message", message);
+            ModelState.AddModelError("", message);
         }
         public static void AddModelError(this ModelStateDictionary ModelState, IdentityResult result)
         {

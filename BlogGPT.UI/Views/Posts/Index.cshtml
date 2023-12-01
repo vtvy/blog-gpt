@@ -4,7 +4,7 @@
 @{
     // List<TreeModel<ICategoryModel>> categories = ViewBag.categories as List<TreeModel<IndexCategoryModel>>;
     // IndexCategoryModel category = ViewBag.category as IndexCategoryModel;
-    ViewData["Title"] = /* (category != null) ? category.Name : */ "Bài viết trong tất cả các danh mục";
+    ViewData["Title"] = /* (category != null) ? category.Name : */ "Articles in all categories";
 }
 
 <nav aria-label="breadcrumb">
@@ -18,13 +18,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>Bài viết trong tất cả các danh mục ...</p>
+<p>List of articles ...</p>
 <hr>
 
 @foreach (var post in Model)
 {
     <div class="media border-bottom mb-3 pb-3">
-        @* <img src="/default.png" class="mr-3 w-8"> *@
+        <img src="@post.Thumbnail" class="mr-3 w-8">
         <div class="media-body">
             <h5 class="mt-0">
                 <a asp-controller="Posts" asp-action="Detail" asp-route-slug="@post.Slug">

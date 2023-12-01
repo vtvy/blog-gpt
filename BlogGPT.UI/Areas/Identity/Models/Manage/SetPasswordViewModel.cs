@@ -7,7 +7,7 @@ namespace BlogGPT.UI.Areas.Identity.Models.Manage
 {
     public class SetPasswordViewModel
     {
-        [Required(ErrorMessage = "Phải nhập {0}")]
+        [Required(ErrorMessage = "{0} is required")]
         [StringLength(100, ErrorMessage = "{0} dài tối thiểu {2} ký tự.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu mới")]

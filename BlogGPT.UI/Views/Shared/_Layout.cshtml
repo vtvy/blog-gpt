@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewBag.PaginatedModel = new PaginatedModel();
+    ViewBag.IsShowSearch = ViewContext.RouteData.Values["Controller"]?.ToString() == "Posts";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,17 +11,18 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css">
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark text-white bg-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                <a class="navbar-brand px-3" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Posts" asp-action="Index">Blog</a>
@@ -32,16 +38,19 @@
         </nav>
     </header>
     <div class="container min-vh-100">
+        @if (ViewBag.IsShowSearch) {
+            <partial name="_SearchPartial" model="@ViewBag.PaginatedModel" />
+        }
         <main role="main" class="pb-3">
             @RenderBody()
             <div class="chatbot shadow">
-                <header class="bg-primary rounded-top-3 text-center py-2 text-white">
+                <header class="bg-dark rounded-top-3 text-center py-2 text-white">
                     <h2>Chatbot</h2>
                 </header>
-                <ul class="list-unstyled p-2 overflow-y-auto" style="height: 400px">
+                <ul class="list-unstyled p-2 overflow-y-auto">
                     <li class="answer">
                         <img src="~/icons/bot.png" alt="My bot icon"/>
-                        <p class="bg-warning rounded-2 border border-primary-subtle"> Hi there <br /> How can I help you today? </p>
+                        <p class="text-bg-light rounded-2 border border-primary-subtle"> Hi there <br /> How can I help you today? </p>
                     </li>
                 </ul>
                 <div class="border-top border-dark-subtle p-2 d-flex gap-2 align-items-center">

@@ -18,7 +18,7 @@ namespace BlogGPT.Application.Posts.Commands
 
         public async Task Handle(DeletePostCommand command, CancellationToken cancellationToken)
         {
-            var entity = await _context.Posts.FindAsync(new { command.Id }, cancellationToken);
+            var entity = await _context.Posts.FindAsync(command.Id, cancellationToken);
 
             if (entity == null)
             {

@@ -7,17 +7,17 @@ namespace BlogGPT.UI.Areas.Identity.Models.Account
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Phải nhập {0}")]
-        [Display(Name = "Địa chỉ email hoặc tên tài khoản")]
-        public string UserNameOrEmail { get; set; }
+        [Required(ErrorMessage = "{0} is required")]
+        [Display(Name = "Username or email")]
+        public required string UserNameOrEmail { get; set; }
 
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Mật khẩu")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Nhớ thông tin đăng nhập?")]
+        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 }
