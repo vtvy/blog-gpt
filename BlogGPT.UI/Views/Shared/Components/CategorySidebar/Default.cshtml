@@ -18,8 +18,7 @@
 		@foreach (var category in Model.Categories)
 		{
 			<li class="ps-4">
-				<a class="text-decoration-none" asp-controller="Posts" asp-action="Index"
-					asp-route-categories="@category.Item.Slug">
+				<a class="@(Model.SelectCategories.Contains(category.Item.Slug) ? "text-decoration-none text-danger" : "text-decoration-none")" asp-controller="Posts" asp-action="Index" asp-route-categories="@category.Item.Slug">
 					@category.Item.Name
 				</a>
 				@if (category.Children != null)
@@ -27,7 +26,8 @@
 					@await Component.InvokeAsync(nameof(CategorySidebar), new CategorySidebar.CategorySidebarData()
 {
 	Categories = category.Children.ToList(),
-	Level = level + 1
+	Level = level + 1,
+	SelectCategories = Model.SelectCategories
 }
 								)
 					;

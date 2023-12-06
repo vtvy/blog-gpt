@@ -16,6 +16,8 @@ namespace BlogGPT.UI.Areas.Manage.Models.Post
 
         public string? Thumbnail { get; set; }
 
+        public int View { get; set; }
+
         public required string Slug { get; set; }
 
         private class MappingProfile : Profile

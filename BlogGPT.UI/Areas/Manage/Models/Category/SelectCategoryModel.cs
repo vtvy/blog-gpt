@@ -7,6 +7,8 @@ public class SelectCategoryModel
 
     public required string Name { get; set; }
 
+    public string? Slug { get; set; }
+
     private class MappingProfile : Profile
     {
         public MappingProfile()

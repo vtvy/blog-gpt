@@ -1,11 +1,6 @@
 ﻿@model IReadOnlyCollection<IndexPostModel>;
 @using BlogGPT.UI.Models.Post;
 @using BlogGPT.UI.Views.Shared.Components.CategorySidebar;
-@{
-    // List<TreeModel<ICategoryModel>> categories = ViewBag.categories as List<TreeModel<IndexCategoryModel>>;
-    // IndexCategoryModel category = ViewBag.category as IndexCategoryModel;
-    ViewData["Title"] = /* (category != null) ? category.Name : */ "Articles in all categories";
-}
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -14,37 +9,28 @@
     </ol>
 </nav>
 
-
-
-<h1>@ViewData["Title"]</h1>
-
-<p>List of articles ...</p>
-<hr>
-
 @foreach (var post in Model)
 {
-    <div class="media border-bottom mb-3 pb-3">
-        <img src="@post.Thumbnail" class="mr-3 w-8">
-        <div class="media-body">
-            <h5 class="mt-0">
+    <div class="border-bottom mb-3 card">
+        <img src="@post.Thumbnail" alt="Thumbnail" class="card-img-top">
+        <div class="card-body">
+            <h5 class="card-title">
                 <a asp-controller="Posts" asp-action="Detail" asp-route-slug="@post.Slug">
                     @post.Title
                 </a>
             </h5>
-            @post.Description
+            <p class="card-text">
+                @post.Description
+            </p>
             @if (@post.Categories != null)
             {
                 <div>
                     Categories:
                     <strong class="text-danger">
-                        @post.Categories.FirstOrDefault()?.Name
+                        @string.Join(", ", @post.Categories.Select(c => c.Name))
                     </strong>
                 </div>
             }
-            @* <div class="author-row">
-        Tác giả: <strong>@post.Author.UserName</strong> |
-        Ngày cập nhật : <i>@post.DateUpdated.ToShortDateString()</i>
-        </div>*@
         </div>
     </div>
 }
@@ -54,7 +40,8 @@
         new CategorySidebar.CategorySidebarData()
 {
     Categories = ViewBag.categories,
-    Level = 0
+    Level = 0,
+    SelectCategories = ViewBag.pagingModel?.Categories as string[]
 })
 }
 

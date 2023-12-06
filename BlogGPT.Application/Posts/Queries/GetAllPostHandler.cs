@@ -5,7 +5,7 @@ namespace BlogGPT.Application.Posts.Queries
 {
     public record GetAllPostQuery : IRequest<PaginatedList<GetAllPost>>
     {
-        public string Categories { get; set; } = "";
+        public string[] Categories { get; set; } = [];
         public string Search { get; set; } = "";
         public string Order { get; set; } = "date";
         public string Direction { get; set; } = "desc";
@@ -26,7 +26,7 @@ namespace BlogGPT.Application.Posts.Queries
 
         public async Task<PaginatedList<GetAllPost>> Handle(GetAllPostQuery request, CancellationToken cancellationToken)
         {
-            var count = await _context.Posts.CountAsync();
+            var count = await _context.Posts.Where(p => p.IsPublished).CountAsync();
 
             var pagingList = new PaginatedList<GetAllPost>(request.Categories, request.Search, request.Order, request.Direction, request.PageNumber, request.PageSize, count);
 
@@ -49,18 +49,16 @@ namespace BlogGPT.Application.Posts.Queries
                     query = query.Where(post => post.Title.Contains(request.Search) || (post.Description != null && post.Description.Contains(request.Search)));
                 }
 
-                if (request.Categories != "")
+                if (request.Categories.Length > 0)
                 {
                     var categoryList = await _context.Categories
                     .ProjectTo<GetAllCategory>(_mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 
-                    var categorySlugList = request.Categories.Split(",").Select(slug => slug.Trim()).ToList();
-
                     var categoryIds = new HashSet<int>();
 
                     // get category id from slug and all category id of children
-                    foreach (var slug in categorySlugList)
+                    foreach (var slug in request.Categories)
                     {
                         var category = categoryList.FirstOrDefault(cate => cate.Slug == slug);
                         if (category != null)
@@ -79,6 +77,7 @@ namespace BlogGPT.Application.Posts.Queries
                 }
 
                 var pagingPosts = count > 0 ? await query
+                    .Where(p => p.IsPublished)
                     .Select(post => new GetAllPost
                     {
                         Id = post.Id,
@@ -92,8 +91,8 @@ namespace BlogGPT.Application.Posts.Queries
                         Title = post.Title,
                         Description = post.Description,
                         Thumbnail = post.Thumbnail != null ? post.Thumbnail : "/default.png",
-                        IsPublished = post.IsPublished,
                         Slug = post.Slug,
+                        CreatedBy = post.Author != null ? post.Author.UserName : "Anonymous",
                     })
                     .Skip((pagingList.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)

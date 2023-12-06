@@ -26,6 +26,11 @@ namespace BlogGPT.UI.Models.Post
 
         public string? CreatedBy { get; set; }
 
+        public string? AddComment { get; set; }
+        public int AddCommentId { get; set; }
+
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
         private class MappingProfile : Profile
         {
             public MappingProfile()

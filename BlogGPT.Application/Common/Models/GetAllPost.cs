@@ -14,6 +14,10 @@
 
         public string? Thumbnail { get; set; }
 
+        public int View { get; set; }
+
         public required string Slug { get; set; }
+
+        public string? CreatedBy { get; set; }
     }
 }

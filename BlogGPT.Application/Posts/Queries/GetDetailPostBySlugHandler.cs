@@ -42,6 +42,13 @@ namespace BlogGPT.Application.Posts.Queries
                     LastModifiedBy = post.LastModifiedBy,
                     CreatedBy = post.Author != null ? post.Author.NormalizedUserName : null,
                     View = post.View != null ? post.View.Count : 0,
+                    Comments = post.Comments != null ? post.Comments.Select(comment => new GetComment
+                    {
+                        Author = (comment.Author != null && comment.Author.UserName != null) ? comment.Author.UserName : "Anonymous",
+                        Content = comment.Content,
+                        Id = comment.Id,
+                        LastModifiedAt = comment.LastModifiedAt,
+                    }).ToList() : null,
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync(post => post.Slug == request.Slug, cancellationToken);

@@ -19,7 +19,6 @@
     <Folder Include="Areas\Identity\Views\Manage\" />
     <Folder Include="Areas\Identity\Views\User\" />
     <Folder Include="Areas\Identity\Views\Role\" />
-    <Folder Include="Areas\Manage\Views\ManagePosts\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.0" />

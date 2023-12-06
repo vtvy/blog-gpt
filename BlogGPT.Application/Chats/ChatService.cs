@@ -23,7 +23,7 @@ namespace BlogGPT.Application.Chats
         public async IAsyncEnumerable<string> SendStreamingAsync(ChatRequest request)
         {
             var minRelevanceScore = 0.5;
-            var limit = 1;
+            var limit = 8;
 
             var embeddingQuestion = _chatbot.GetEmbeddings([request.Message.Replace("?", "")])[0];
 
@@ -49,32 +49,49 @@ namespace BlogGPT.Application.Chats
                         relevanceChunk.SimilarityScore = similarityScore;
                         relevancePosts.Add(relevanceChunk);
                     }
+                    if (relevanceChunk.EmbeddingChunk.EmbeddingPostId == 10)
+                    {
+                        await Console.Out.WriteLineAsync(similarityScore.ToString());
+                    }
+                    if (relevanceChunk.EmbeddingChunk.EmbeddingPostId == 999)
+                    {
+                        await Console.Out.WriteLineAsync(similarityScore.ToString());
+                    }
                 }
             };
 
-            var mostRelevancePost = relevancePosts
+            var mostRelevancePosts = relevancePosts
                 .OrderByDescending(relevancePost => relevancePost.SimilarityScore)
-                .Take(limit)
-                .FirstOrDefault();
+                .Select(relevancePost => relevancePost.EmbeddingPostId)
+                .Take(limit).ToArray();
 
-            if (mostRelevancePost != null)
+            if (mostRelevancePosts != null)
             {
-                var chatContext = await _context.EmbeddingPosts
-                    .Where(embeddingPost => embeddingPost.Id == mostRelevancePost.EmbeddingPostId)
-                    .Select(embeddingPost => new DocumentContext { RawText = embeddingPost.RawText, Title = embeddingPost.Post.Title, Slug = embeddingPost.Post.Slug })
-                    .FirstOrDefaultAsync();
+                //.Where(embeddingPost => embeddingPost.Id == mostRelevancePost.EmbeddingPostId)
+                var chatContexts = await _context.EmbeddingPosts
+                    .Where(em => mostRelevancePosts.Contains(em.Id))
+                    .Select(embedP => new DocumentContext
+                    {
+                        Title = embedP.Post.Title,
+                        RawText = embedP.Post.RawText,
+                        Slug = embedP.Post.Slug,
+                    })
+                    .ToListAsync();
 
-                if (chatContext == null)
+                if (chatContexts == null)
                 {
                     yield return "Sorry, I cannot find the relevance document base on your question.";
                 }
                 else
                 {
-                    await foreach (var output in _chatbot.GetAnswerAsync(request.Message, string.Join("\n\n", chatContext.RawText)))
+                    var articlesArray = chatContexts.Select(context => "Ariticle: " + context.Title + "\n" + context.RawText).ToArray();
+                    var articles = string.Join("\n", articlesArray);
+                    await foreach (var output in _chatbot.GetAnswerAsync(request.Message, articles))
                     {
                         yield return output;
                     };
-                    yield return $"Answered based on <a href=\"/posts/{chatContext.Slug}.html\" target=\"_blank\">{chatContext.Title}</a>";
+                    var sources = string.Join(", ", chatContexts.Select(chatContext => $"<a href=\"/posts/{chatContext.Slug}.html\" target=\"_blank\">{chatContext.Title}</a>").ToArray());
+                    yield return "Answered based on: " + sources;
                 }
             }
             else
@@ -93,8 +110,8 @@ namespace BlogGPT.Application.Chats
 
     public record DocumentContext
     {
-        public string RawText { get; set; } = null!;
-        public string Title { get; set; } = null!;
-        public string Slug { get; set; } = null!;
+        public required string Title { get; set; }
+        public required string RawText { get; set; }
+        public required string Slug { get; set; }
     }
 }

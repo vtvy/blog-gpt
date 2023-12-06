@@ -17,16 +17,16 @@ namespace BlogGPT.Infrastructure.Services
 
             var embeddingList = new List<string> {
                 @"D:\code\model\beta\zephyr-q3-k_m.gguf",
-                @"D:\Downloads\zephyr-7b-alpha.Q3_K_M.gguf",
+                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
                 @"D:\code\model\beta\zephyr-q5-k-m.gguf",
-                @"D:\code\model\beta\zephyr-q2-k.gguf",
+                @"D:\code\model\beta\zephyr-q4-k-m.gguf",
             };
 
             var embeddingModelParams = new ModelParams(embeddingList[0])
             {
                 GpuLayerCount = 35,
                 EmbeddingMode = true,
-                ContextSize = 10000,
+                ContextSize = 8192,
             };
 
             using var embeddingWeights = LLamaWeights.LoadFromFile(embeddingModelParams);
@@ -39,17 +39,45 @@ namespace BlogGPT.Infrastructure.Services
             return embeddings;
         }
 
+        public List<List<float[]>> GetEmbeddingsList(List<List<string>> textsList)
+        {
+            var embeddingList = new List<string> {
+                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
+                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
+                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
+                @"D:\code\model\beta\zephyr-q4-k-m.gguf",
+            };
+
+            var embeddingModelParams = new ModelParams(embeddingList[0])
+            {
+                GpuLayerCount = 35,
+                EmbeddingMode = true,
+                ContextSize = 8192,
+            };
+
+            using var embeddingWeights = LLamaWeights.LoadFromFile(embeddingModelParams);
+            var embedder = new LLamaEmbedder(embeddingWeights, embeddingModelParams);
+
+            var embeddingsList = textsList.Select(texts => texts.Select(text => embedder.GetEmbeddings(text)).ToList()).ToList();
+            embedder.Dispose();
+            embeddingWeights.Dispose();
+
+            return embeddingsList;
+        }
+
+
         public async IAsyncEnumerable<string> GetAnswerAsync(string question, string chatContext)
         {
             var modelList = new List<string> {
                 @"D:\code\model\beta\zephyr-q3-k_m.gguf",
-                @"D:\Downloads\zephyr-7b-alpha.Q3_K_M.gguf",
-                @"D:\code\model\beta\zephyr-q2-k.gguf",
+                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
+                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
+                @"D:\code\model\beta\zephyr-q4-k_m.gguf",
             };
 
             var modelParams = new ModelParams(modelList[0])
             {
-                ContextSize = 1024,
+                ContextSize = 8192,
                 Seed = unchecked((uint)RandomNumberGenerator.GetInt32(int.MaxValue)),
                 GpuLayerCount = 35,
             };
@@ -61,10 +89,10 @@ namespace BlogGPT.Infrastructure.Services
             var prompt =
 """
 <|system|>
-Article:
+Some articles:
 {{$facts}}
 ======
-Given only the facts above, provide a comprehensive/detailed answer.
+Given only some articles above, provide a comprehensive and detailed answer.
 You don't know where the knowledge comes from, just answer.
 If you don't have sufficient information, reply with 'I cannot find relevance information about this question'.</s>
 <|user|>

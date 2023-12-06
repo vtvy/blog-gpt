@@ -2,6 +2,74 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4 text-primary">Welcome to my website</h1>
+<div class="w-100 px-4">
+
+    <h1>List of categories</h1>
+
+    <hr>
+
+    <ul class="d-flex flex-wrap list-unstyled">
+        @foreach (var category in ViewBag.categories)
+        {
+            <li class="border px-2 py-1 m-1 rounded-pill">
+                <a class="text-decoration-none text-nowrap" asp-controller="Posts" asp-action="Index"
+                    asp-route-categories="@category.Slug">
+                    @category.Name
+                </a>
+            </li>
+    }
+    </ul>
+
+    <h1>Latest articles</h1>
+
+    <hr>
+
+    <div class="row row-cols-md-2 row-cols-lg-5 g-4 mb-5">
+        @foreach (var post in ViewBag.latestPosts)
+        {
+            <div class="p-2">
+                <div class="card h-100">
+                    <img src="@post.Thumbnail" alt="Thumbnail" class="card-img-top object-fit-contain border-bottom bg-secondary-subtle" style="height: 180px;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a class="text-decoration-none text-dark" asp-controller="Posts" asp-action="Detail" asp-route-slug="@post.Slug">
+                                @post.Title
+                            </a>
+                        </h5>
+                        @* <div class="author-row">
+                    Tác giả: <strong>@post.Author.UserName</strong> |
+                    Ngày cập nhật : <i>@post.DateUpdated.ToShortDateString()</i>
+                    </div>*@
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h1>Popular articles</h1>
+
+    <hr>
+
+    <div class="row row-cols-md-2 row-cols-lg-5 g-4">
+    @foreach (var post in ViewBag.popularPosts)
+    {
+        <div class="p-2">
+            <div class="card h-100">
+                    <img src="@post.Thumbnail" alt="Thumbnail" class="card-img-top object-fit-contain border-bottom bg-secondary-subtle" style="height: 180px;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a class="text-decoration-none text-dark" asp-controller="Posts" asp-action="Detail" asp-route-slug="@post.Slug">
+                            @post.Title
+                        </a>
+                    </h5>
+                    @* <div class="author-row">
+                Tác giả: <strong>@post.Author.UserName</strong> |
+                Ngày cập nhật : <i>@post.DateUpdated.ToShortDateString()</i>
+                </div>*@
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+
 </div>

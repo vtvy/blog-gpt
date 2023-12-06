@@ -25,9 +25,6 @@ const createUserChatLine = (text) => {
 };
 
 const createAnswerChatLine = (text) => {
-	const chatImg = document.createElement("img");
-	chatImg.src = "~/icons/bot.png";
-	chatImg.alt = "My bot icon";
 	const chatLine = document.createElement("li");
 	chatLine.classList.add("answer");
 	let chatContent = document.createElement("p");
@@ -38,7 +35,6 @@ const createAnswerChatLine = (text) => {
 		"border-primary-subtle"
 	);
 	chatContent.innerText = text;
-	//chatLine.appendChild(chatImg);
 	chatLine.appendChild(chatContent);
 	return chatLine;
 };
@@ -57,7 +53,7 @@ const handleChat = async () => {
 	}
 
 	try {
-		const response = await fetch("https://localhost:7063/chat/send", {
+		const response = await fetch("/chat/send", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

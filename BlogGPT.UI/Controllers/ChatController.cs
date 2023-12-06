@@ -1,10 +1,12 @@
 ﻿using BlogGPT.Application.Chats;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogGPT.UI.Controllers
 {
 
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class ChatController : ControllerBase
     {

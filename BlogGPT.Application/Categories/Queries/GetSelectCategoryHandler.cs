@@ -24,7 +24,8 @@ namespace BlogGPT.Application.Categories.Queries
             {
                 Id = category.Id,
                 Name = category.Name,
-                ParentId = category.ParentId
+                ParentId = category.ParentId,
+                Slug = category.Slug
             });
 
             if (request.Id != null)

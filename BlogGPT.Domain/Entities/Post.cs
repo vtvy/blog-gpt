@@ -12,6 +12,8 @@
 
         public required string Content { get; set; }
 
+        public required string RawText { get; set; }
+
         public bool IsPublished { get; set; }
 
         public ICollection<PostCategory>? PostCategories { get; set; }
@@ -20,6 +22,6 @@
 
         public EmbeddingPost? EmbeddingPost { get; set; }
 
-        public View View { get; set; } = null!;
+        public required View View { get; set; }
     }
 }

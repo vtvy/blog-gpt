@@ -5,6 +5,8 @@
     var postIndex = ViewBag.pagingModel.PageIndex;
 }
 
+<partial name="_SearchAdminPartial" model="ViewBag.pagingModel"/>
+
 <partial name="_AlertMessage" />
 
 <p>
@@ -15,12 +17,15 @@
 <table class="table table-striped">
     <thead>
         <tr class="row">
-            <th scope="col" class="col-1 text-center">Index</th>
+            <th scope="col" class="col-1 text-center">No</th>
             <th scope="col" class="col-6 text-center">
                 Title
             </th>
             <th scope="col" class="col-2 text-center">
                 Published
+            </th>
+            <th scope="col" class="col-1 text-center">
+                Views
             </th>
             <th scope="col" class="col-2 text-center">
                 Actions
@@ -49,9 +54,12 @@
                 <td class="col-2 text-center">
                     @Html.DisplayFor(modelItem => item.IsPublished)
                 </td>
+                <td class="col-1 text-center">
+                    @item.View
+                </td>
                 <td class="col-2 text-center">
                     <a class="btn btn-info me-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="btn btn-danger me-2 mt-2 mt-sm-0" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a class="btn btn-danger me-2 mt-2" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }

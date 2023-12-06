@@ -1,0 +1,93 @@
+﻿@using BlogGPT.Application.Common.Interfaces.Identity
+@model PaginatedModel
+@inject IIdentityService IdentityService
+@{
+    var selectList = new MultiSelectList(Model.CategoryList, "Slug", "Name");
+}
+
+<form class="mb-3 p-4 row" method="get" action="@Url.Action("Index", "ManagePosts", new { Area = "Manage" })">
+    <div class="col-md-12 mb-3 input-group">
+        <input type="text" asp-for="Search" class="form-control" placeholder="Search articles by title..." />
+        <button class="btn btn-outline-success" value="search" type="submit">
+            <i class="bi bi-search"></i>
+            Search
+        </button>
+    </div>
+    <div class="col-md-4">
+        <label class="ms-1" asp-for="Order">Order by:</label>
+        <select asp-for="Order" class="form-select" onchange="this.form.submit()" aria-label="Order">
+            <option value="date">
+                Date
+            </option>
+            <option value="view">
+                View
+            </option>
+            <option value="title">
+                Title
+            </option>
+            <option value="published">
+                Publish
+            </option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="ms-1" asp-for="Direction">Direction:</label>
+        <select asp-for="Direction" class="form-select" onchange="this.form.submit()" aria-label="Direction">
+            <option value="desc">
+                Descending
+            </option>
+            <option value="asc">
+                Ascending
+            </option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="ms-1" asp-for="PageSize">Page Size:</label>
+        <select asp-for="PageSize" class="form-select" onchange="this.form.submit()" aria-label="PageSizeSelect">
+            <option value="5">
+                5
+            </option>
+            <option value="10">
+                10
+            </option>
+            <option value="20">
+                20
+            </option>
+            <option value="50">
+                50
+            </option>
+            <option value="100">
+                100
+            </option>
+        </select>
+    </div>
+    <div class="col-12">
+        @* <label class="ms-1" asp-for="Categories">Categories:</label>
+        <select asp-for="Categories" multiple class="form-select" onblur="this.form.submit()" aria-label="Categories">
+            @foreach(var item in Model.CategoryList)
+            {
+                <option value="@item.Slug">
+                    @item.Name
+                </option>
+            })
+        </select> *@
+        <label asp-for="Categories" class="control-label">Categories:</label>
+        <select asp-for="Categories" multiple="multiple" onblur="this.form.submit()" asp-items="selectList" style="width:100% !important"></select>
+    </div>
+</form>
+
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script src="~/lib/select2/js/select2.min.js" ></script>
+<link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+<script>
+    $("#Categories").select2({
+        placeholder: "Select categories",
+        allowClear: true,
+        closeOnSelect: false,
+    });
+    $("#Categories").on('select2:close', function (e) {
+        this.form.submit();
+    });
+</script>
+
+

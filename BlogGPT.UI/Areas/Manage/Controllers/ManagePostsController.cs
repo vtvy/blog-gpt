@@ -1,8 +1,8 @@
 ﻿using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Posts;
 using BlogGPT.Application.Posts.Commands;
 using BlogGPT.Application.Posts.Queries;
 using BlogGPT.Domain.Constants;
-using BlogGPT.Infrastructure.Data;
 using BlogGPT.UI.Areas.Manage.Models.Category;
 using BlogGPT.UI.Areas.Manage.Models.Post;
 using MediatR;
@@ -14,11 +14,11 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
 {
     [Area("Manage")]
     [Authorize(Roles = Roles.Administrator + "," + Roles.Editor)]
-    public class ManagePostsController(ApplicationDbContext context, IMediator mediator, IMapper mapper) : Controller
+    public class ManagePostsController(IMediator mediator, IMapper mapper, IPostService postService) : Controller
     {
-        private readonly ApplicationDbContext _context = context;
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
+        private readonly IPostService _postService = postService;
 
         [TempData]
         public string Status { set; get; } = string.Empty;
@@ -27,20 +27,30 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
         public async Task<IActionResult> IndexAsync(
             string search = "",
             int pageNumber = 1,
-            int pageSize = 10,
-            string categories = "",
             string order = "date",
-            string direction = "desc")
+            string direction = "desc",
+            string pageSize = "10",
+            string[]? categories = null
+        )
         {
-            var pagingList = await _mediator.Send(new GetAllPostQuery
+            _ = int.TryParse(pageSize, out int pageSizeInput);
+
+            var pagingList = await _mediator.Send(new GetAllManagePostQuery
             {
                 PageNumber = pageNumber,
-                PageSize = pageSize,
-                Categories = categories,
+                PageSize = pageSizeInput,
+                Categories = categories ?? new string[] { },
                 Search = search,
                 Order = order,
                 Direction = direction,
             });
+
+            var selectCategories = await _mediator.Send(new GetSelectCategoryQuery());
+
+            var categoriesList = _mapper.Map<IEnumerable<TreeModel<SelectCategoryModel>>>(selectCategories);
+            var selectList = new List<SelectCategoryModel>();
+
+            CreatePrefixForSelect(categoriesList, selectList, 0);
 
             ViewBag.pagingModel = new PaginatedModel
             {
@@ -52,6 +62,7 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
                 Search = search,
                 Order = order,
                 Direction = direction,
+                CategoryList = selectList
             };
 
             var postList = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(pagingList.Items);
@@ -149,7 +160,7 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
             }
 
             Status = "Update fail!";
-            return View(post);
+            return RedirectToAction("Edit", post);
         }
 
         // GET: Posts/Delete/5
@@ -178,9 +189,34 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PostExists(int id)
+        public IActionResult Import()
         {
-            return _context.Posts.Any(e => e.Id == id);
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportAsync(string type = "import")
+        {
+            bool result;
+            switch (type)
+            {
+                case "import":
+                    result = await _postService.ImportPostAsync();
+                    break;
+                case "embedding":
+                    result = await _postService.EmbeddingPostAsync();
+                    break;
+                case "delete":
+                    result = await _postService.DeleteEmbeddingPostAsync();
+                    break;
+                default:
+                    Status = $"""The action "{type}" is not found!""";
+                    return RedirectToAction("Import");
+            }
+
+            Status = result ? $"""The action "{type}" is successfully!""" : $"""The action "{type}" is fail!""";
+            return RedirectToAction("Import");
         }
 
         //[HttpPost]
@@ -218,6 +254,7 @@ namespace BlogGPT.UI.Areas.Manage.Controllers
                 {
                     Id = category.Item.Id,
                     Name = prefix + category.Item.Name,
+                    Slug = category.Item.Slug
                 });
 
                 if (category.Children != null)

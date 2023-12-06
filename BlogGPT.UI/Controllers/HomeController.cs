@@ -1,25 +1,46 @@
-﻿using BlogGPT.UI.Models;
+﻿using BlogGPT.Application.Categories.Queries;
+using BlogGPT.Application.Posts.Queries;
+using BlogGPT.UI.Areas.Manage.Models.Category;
+using BlogGPT.UI.Areas.Manage.Models.Post;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace BlogGPT.UI.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, IMediator mediator, IMapper mapper) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger = logger;
+        private readonly IMediator _mediator = mediator;
+        private readonly IMapper _mapper = mapper;
 
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> IndexAsync()
         {
-            _logger = logger;
-        }
+            var latestPosts = await _mediator.Send(new GetAllPostQuery
+            {
+                Order = "date"
+            });
 
-        public IActionResult Index()
-        {
+            ViewBag.latestPosts = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(latestPosts.Items);
+
+            var popularPosts = await _mediator.Send(new GetAllPostQuery
+            {
+                Order = "view"
+            });
+
+            ViewBag.popularPosts = _mapper.Map<IReadOnlyCollection<IndexPostModel>>(popularPosts.Items);
+
+            var categories = await _mediator.Send(new GetCategoryListQuery());
+
+            ViewBag.categories = _mapper.Map<IEnumerable<IndexCategoryModel>>(categories);
+
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult PrivacyAsync()
         {
+
+
             return View();
         }
 

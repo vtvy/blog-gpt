@@ -39,7 +39,21 @@ namespace BlogGPT.Application.Categories.Commands
             var existedSlug = await _context.Categories
                 .AnyAsync(cate => cate.Slug == entity.Slug, cancellationToken);
 
-            if (existedSlug) return -1;
+            if (existedSlug)
+            {
+                var latestCategory = await _context.Categories
+                    .OrderByDescending(cate => cate.Id)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (latestCategory != null)
+                {
+                    entity.Slug = $"{entity.Slug}-{latestCategory.Id + 1}";
+                }
+                else
+                {
+                    entity.Slug = $"{entity.Slug}-1";
+                }
+            };
 
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -2,7 +2,7 @@
 @{
     int currentPage = Model.PageNumber;
     int countPages = Model.TotalPages;
-    int pageSize = Model.PageSize;
+    string pageSize = Model.PageSize;
     
     if (currentPage > countPages)
         currentPage = countPages;

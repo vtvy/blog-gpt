@@ -25,5 +25,7 @@
         public string? CreatedBy { get; set; }
 
         public int View { get; set; }
+
+        public ICollection<GetComment>? Comments { get; set; }
     }
 }

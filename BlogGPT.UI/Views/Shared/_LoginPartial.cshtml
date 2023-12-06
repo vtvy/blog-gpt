@@ -1,6 +1,6 @@
-﻿@using BlogGPT.Application.Common.Interfaces.Identity;
+﻿@using BlogGPT.Application.Common.Interfaces.Identity
 
-@inject IIdentityService IdentityService;
+@inject IIdentityService IdentityService
 
 @if (IdentityService.IsSignedIn(User))
 {
@@ -10,7 +10,7 @@
                 <a class="nav-link" asp-area="Identity" asp-controller="Manage" asp-action="Index" title="Manage">Welcome @IdentityService.GetUserName(User)</a>
             </li>
             <li class="nav-item">
-                <button type="submit" class="btn text-light">Log out</button>
+                <button type="submit" class="btn btn-outline-warning">Log out</button>
             </li>
         </ul>
     </form>
@@ -19,12 +19,12 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
         <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-controller="Account" asp-action="Register">
+            <a class="btn btn-outline-light me-0 me-sm-2" asp-area="Identity" asp-controller="Account" asp-action="Register">
                 Sign up
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-controller="Account" asp-action="Login">Sign in</a>
+        <li class="nav-item mt-2 mt-sm-0">
+            <a class="btn btn-outline-light" asp-area="Identity" asp-controller="Account" asp-action="Login">Sign in</a>
         </li>
     </ul>
 }

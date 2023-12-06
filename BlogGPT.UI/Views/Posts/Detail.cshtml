@@ -4,11 +4,7 @@
 @using BlogGPT.Domain.Common;
 
 @{
-    // List<TreeModel<CategoryModel>> categories = ViewBag.categories as List<TreeModel<CategoryModel>>;
-    // CategoryModel category = ViewBag.category as CategoryModel;
     ViewData["Title"] = Model.Title;
-
-    // IQueryable<DetailPostModel> otherPosts = ViewBag.otherPosts as IQueryable<DetailPostModel>;
 }
 
 <nav aria-label="breadcrumb">
@@ -19,12 +15,12 @@
     </ol>
 </nav>
 
-<div class="detailpost">
+<div class="detailpost mb-3">
     <h1>@Model.Title</h1>
-@*     <div>
-        <i>Cập nhật: @Model.DateUpdated</i> /
-        Tác giả: <strong>@Model.Author.UserName</strong>
-    </div> *@
+    <p>
+        Author: <strong>@Model.CreatedBy</strong>
+    </p>
+    <i>Updated: @Model.LastModifiedAt</i>
     <hr>
 
     @Html.Raw(Model.Content)
@@ -32,7 +28,75 @@
 </div>
 
 
+<h1>Comments</h1>
 
+<hr>
+
+<form class="row g-3 mb-3" asp-action="Comment" method="post">
+    <input type="hidden" asp-for="AddCommentId" />
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Slug" />
+    <div class="form-floating">
+        <textarea class="form-control" asp-for="AddComment" placeholder="Leave a comment here" id="Comment" required style="height: 120px"></textarea>
+        <label for="Comment" class="text-body-secondary ms-2">Please let me know what you think</label>
+    </div>
+    <div class="col-2">
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </div>
+    <div class="col-2" id="editCancel" style="display: none;">
+        <button type="button" onclick="cancelHandler(this)" class="btn btn-warning mb-3">Cancel</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="card mb-3" id="@("comment" + comment.Id)">
+            <div class="card-header">
+                <strong>@comment.Author</strong>
+            </div>
+            <div class="card-body">
+                @comment.Content
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center bg-transparent">
+                @comment.LastModifiedAt
+                @if (User?.Identity?.Name == comment.Author)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            More
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" onclick="editHandler(this)" href="#Comment">Edit</a></li>
+                            <li><button class="dropdown-item" onclick="deleteHandler(this)" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button></li>
+                        </ul>
+                        <input hidden value="@comment.Id" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Delete</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure to delete this comment?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModalButton" onclick="closeModalHandler()" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="confirmDeleteHandler()" class="btn btn-danger">Delete</button>
+            </div>
+            <input hidden id="deleteCommentId" />
+        </div>
+    </div>
+</div>
 
 @section Sidebar {
     @await Component.InvokeAsync(nameof(CategorySidebar),
@@ -42,14 +106,85 @@
         Level = 0
     })
 
-@*     <ul class="list-group">
-        @foreach (var post in otherPosts)
-        {
-            <li class="list-group-item">
-                <a asp-controller="ViewPost" asp-action="Detail" asp-route-postslug="@post.Slug">
-                    @post.Title
-                </a>
-            </li>
+    @if (ViewBag.similarPosts != null)
+    {
+        <h2>Similar articles</h2>   
+
+        <ul class="list-group">
+            @foreach (var post in ViewBag.similarPosts)
+            {
+                <li class="list-group-item">
+                    <a href="/posts/@($"{post.Slug}.html")">
+                        @post.Title
+                    </a>
+                    <div>
+                        @post.Description
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+}
+
+@section Scripts {
+    <script>
+        function editHandler(event) {
+            let editCommentId = event.parentElement.parentElement.nextElementSibling.value;
+            let comment = document.getElementById(`comment${editCommentId}`);
+            comment.style.display = "none";
+
+            let commentId = document.getElementById("AddCommentId");
+            commentId.value = editCommentId;
+            let commentContent = document.getElementById("Comment");
+            commentContent.value = comment.firstElementChild.nextElementSibling.textContent.trim();
+            let cancelButton = document.getElementById("editCancel");
+            cancelButton.style.display = "block";
+        };
+
+        function cancelHandler(event) {
+            let editComment = document.getElementById("AddCommentId");
+            let commentId = editComment.value;
+
+            let comment = document.getElementById(`comment${commentId}`);
+            comment.style.display = "block";
+
+            let commentContent = document.getElementById("Comment");
+            commentContent.value = "";
+
+            editComment.value = null;
+
+            let cancelButton = document.getElementById("editCancel");
+            cancelButton.style.display = "none";
+        };
+
+        function deleteHandler(event) {
+            let commentId = event.parentElement.parentElement.nextElementSibling.value;
+            let deleteCommentId = document.getElementById("deleteCommentId");
+            deleteCommentId.value = commentId;
+        };
+
+        function closeModalHandler() {
+            let deleteCommentId = document.getElementById("deleteCommentId");
+            deleteCommentId.value = null;
+        };
+
+        async function confirmDeleteHandler() {
+            let deleteCommentId = document.getElementById("deleteCommentId");
+            let response = await fetch(`/Posts/Comment/${deleteCommentId.value}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                let comment = document.getElementById(`comment${deleteCommentId.value}`);
+                comment.remove();
+                document.getElementById("closeModalButton").click();
+            }
+            else {
+                alert("Please check your comment again!");
+            }
         }
-    </ul> *@
+    </script>
 }

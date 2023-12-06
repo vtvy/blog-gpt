@@ -1,0 +1,26 @@
+﻿@{
+    var message = TempData["Status"] as string;
+}
+
+<h1>Manage embeddings</h1>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success" role="alert">
+        @message
+    </div>
+}
+
+<div class="row row-cols-1 g-3 mt-5">
+    <form asp-area="Manage" asp-controller="ManagePosts" asp-action="Import" method="POST" class="mb-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-danger my-2" name="type" value="import" title="Import">Import Posts</button>
+    </form>
+
+    <form asp-area="Manage" asp-controller="ManagePosts" asp-action="Import" method="POST" class="mb-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-danger my-2" name="type" value="delete" title="Delete">Delete Embedding</button>
+    </form>
+
+    <form asp-area="Manage" asp-controller="ManagePosts" asp-action="Import" method="POST" class="mb-3 d-flex justify-content-center">
+        <button type="submit" class="btn btn-danger my-2" name="type" value="embedding" title="Embedding">Embedding Posts</button>
+    </form>
+</div>

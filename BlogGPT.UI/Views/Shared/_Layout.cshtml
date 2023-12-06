@@ -1,6 +1,9 @@
-﻿@{
+﻿@using BlogGPT.Application.Common.Interfaces.Identity
+@inject IIdentityService IdentityService
+@{
     ViewBag.PaginatedModel = new PaginatedModel();
     ViewBag.IsShowSearch = ViewContext.RouteData.Values["Controller"]?.ToString() == "Posts";
+    ViewBag.IsHome = ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index";
 }
 
 <!DOCTYPE html>
@@ -15,59 +18,70 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark text-white bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark text-white bg-dark border-bottom box-shadow">
             <div class="container">
                 <a class="navbar-brand px-3" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row px-3 px-sm-0" id="navbarSupportedContent">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Posts" asp-action="Index">Blog</a>
+                            <a class="nav-link" asp-area="" asp-controller="Posts" asp-route-order="date" asp-action="Index">Latest</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Posts" asp-route-order="view" asp-action="Index">Popular</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <partial name="_LoginPartial" /> &nbsp;&nbsp;
+                    <partial name="_Menu" />
                 </div>
-                <partial name="_LoginPartial" /> &nbsp;&nbsp;
-                <partial name="_Menu" />
             </div>
         </nav>
     </header>
-    <div class="container min-vh-100">
-        @if (ViewBag.IsShowSearch) {
+    @if (ViewBag.IsHome)
+    {
+        <div class="text-center bg-primary-subtle p-4 mb-3">
+            <h1 class="display-4 text-primary fw-bold container-lg">Welcome to blogGPT, the news-sharing website combined with Large Language Model.</h1>
+        </div>
+    }
+    <div class="container">
+        @if (ViewBag.IsShowSearch || ViewBag.IsHome) {
             <partial name="_SearchPartial" model="@ViewBag.PaginatedModel" />
         }
-        <main role="main" class="pb-3">
+        <main role="main" class="py-3" style="min-height: 90vh;">
             @RenderBody()
-            <div class="chatbot shadow">
-                <header class="bg-dark rounded-top-3 text-center py-2 text-white">
-                    <h2>Chatbot</h2>
-                </header>
-                <ul class="list-unstyled p-2 overflow-y-auto">
-                    <li class="answer">
-                        <img src="~/icons/bot.png" alt="My bot icon"/>
-                        <p class="text-bg-light rounded-2 border border-primary-subtle"> Hi there <br /> How can I help you today? </p>
-                    </li>
-                </ul>
-                <div class="border-top border-dark-subtle p-2 d-flex gap-2 align-items-center">
-                    <textarea id="questionInput" placeholder="Enter a message..." required></textarea>
-                    <img src="~/icons/send.png" alt="My sending icon" role="button" />
+            @if (IdentityService.IsSignedIn(User))
+            {
+                <div class="chatbot shadow">
+                    <header class="bg-dark rounded-top-3 text-center py-2 text-white">
+                        <h2>Chatbot</h2>
+                    </header>
+                    <ul class="list-unstyled p-2 overflow-y-auto">
+                        <li class="answer">
+                            <img src="~/icons/bot.png" alt="My bot icon"/>
+                            <p class="text-bg-light rounded-2 border border-primary-subtle"> Hi there <br /> How can I help you today? </p>
+                        </li>
+                    </ul>
+                    <div class="border-top border-dark-subtle p-2 d-flex gap-2 align-items-center">
+                        <textarea id="questionInput" placeholder="Enter a message..." required></textarea>
+                        <img src="~/icons/send.png" alt="My sending icon" role="button" />
+                    </div>
                 </div>
-            </div>
-            <button class="chat-toggle-btn">
-                <img src="~/icons/messenger.png" alt="My sending icon" />
-                <img src="~/icons/close.png" alt="My sending icon" />
-            </button>
+                <button class="chat-toggle-btn">
+                    <img src="/icons/messenger.png" alt="My sending icon" />
+                    <img src="/icons/close.png" alt="My sending icon" />
+                </button>
+            }
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - Blog - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - BlogGPT - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/jquery.min.js"></script>
