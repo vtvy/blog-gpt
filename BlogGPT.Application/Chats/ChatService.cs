@@ -22,10 +22,10 @@ namespace BlogGPT.Application.Chats
 
         public async IAsyncEnumerable<string> SendStreamingAsync(ChatRequest request)
         {
-            var minRelevanceScore = 0.5;
-            var limit = 8;
+            var minRelevanceScore = 0.7f;
+            var limit = 4;
 
-            var embeddingQuestion = _chatbot.GetEmbeddings([request.Message.Replace("?", "")])[0];
+            var embeddingQuestion = _chatbot.GetEmbeddings([request.Message.Replace("?", "").Replace("\n", " ").Trim()])[0];
 
             List<RelevanceChunk> relevancePosts = [];
 
@@ -40,7 +40,7 @@ namespace BlogGPT.Application.Chats
             {
                 if (relevanceChunk != null)
                 {
-                    double similarityScore = TensorPrimitives.CosineSimilarity(
+                    var similarityScore = TensorPrimitives.CosineSimilarity(
                         new ReadOnlyMemory<float>(embeddingQuestion).Span,
                         new ReadOnlyMemory<float>(JsonSerializer.Deserialize<float[]>(relevanceChunk.EmbeddingChunk.Embedding)).Span);
 

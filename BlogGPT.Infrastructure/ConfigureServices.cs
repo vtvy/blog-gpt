@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Python.Runtime;
 
 namespace BlogGPT.Infrastructure
 {
@@ -21,7 +22,10 @@ namespace BlogGPT.Infrastructure
         {
             services.AddSingleton<IDateTime, DateTimeService>();
 
-            services.AddSingleton<IChatbot, Chatbot>();
+            Runtime.PythonDLL = @"C:\Users\votri\AppData\Local\Programs\Python\Python311\python311.dll";
+            PythonEngine.Initialize();
+            PythonEngine.BeginAllowThreads();
+            services.AddScoped<IChatbot, Chatbot>();
 
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 

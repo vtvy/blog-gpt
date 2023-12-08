@@ -1,7 +1,9 @@
 ﻿using BlogGPT.Application.Common.Interfaces.Services;
 using LLama;
 using LLama.Common;
+using Python.Runtime;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace BlogGPT.Infrastructure.Services
 {
@@ -12,57 +14,42 @@ namespace BlogGPT.Infrastructure.Services
         {
         }
 
-        public IList<float[]> GetEmbeddings(IList<string> texts)
+        public List<float[]> GetEmbeddings(List<string> texts)
         {
+            List<float[]> embeddings;
 
-            var embeddingList = new List<string> {
-                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
-                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
-                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
-                @"D:\code\model\beta\zephyr-q4-k-m.gguf",
-            };
-
-            var embeddingModelParams = new ModelParams(embeddingList[0])
+            PythonEngine.Initialize();
+            using (Py.GIL())
             {
-                GpuLayerCount = 35,
-                EmbeddingMode = true,
-                ContextSize = 8192,
-            };
-
-            using var embeddingWeights = LLamaWeights.LoadFromFile(embeddingModelParams);
-            var embedder = new LLamaEmbedder(embeddingWeights, embeddingModelParams);
-
-            var embeddings = texts.Select(text => embedder.GetEmbeddings(text)).ToList();
-            embedder.Dispose();
-            embeddingWeights.Dispose();
-
+                PythonEngine.Initialize();
+                dynamic _module = Py.Import("sentence_transformers");
+                dynamic np = Py.Import("numpy");
+                dynamic model = _module.SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2");
+                dynamic arr = np.array(texts);
+                var em = model.encode(arr).tolist().ToString();
+                embeddings = JsonSerializer.Deserialize<List<float[]>>(em);
+            }
             return embeddings;
         }
 
         public List<List<float[]>> GetEmbeddingsList(List<List<string>> textsList)
         {
-            var embeddingList = new List<string> {
-                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
-                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
-                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
-                @"D:\code\model\beta\zephyr-q4-k-m.gguf",
-            };
-
-            var embeddingModelParams = new ModelParams(embeddingList[0])
+            using (Py.GIL())
             {
-                GpuLayerCount = 35,
-                EmbeddingMode = true,
-                ContextSize = 8192,
-            };
+                dynamic _module = Py.Import("sentence_transformers");
+                dynamic np = Py.Import("numpy");
+                dynamic model = _module.SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2");
 
-            using var embeddingWeights = LLamaWeights.LoadFromFile(embeddingModelParams);
-            var embedder = new LLamaEmbedder(embeddingWeights, embeddingModelParams);
+                var embeddingsList = textsList.Select(texts =>
+                {
+                    dynamic arr = np.array(texts);
+                    var em = model.encode(arr).tolist().ToString();
+                    List<float[]> embeddings = JsonSerializer.Deserialize<List<float[]>>(em);
+                    return embeddings;
+                }).ToList();
 
-            var embeddingsList = textsList.Select(texts => texts.Select(text => embedder.GetEmbeddings(text)).ToList()).ToList();
-            embedder.Dispose();
-            embeddingWeights.Dispose();
-
-            return embeddingsList;
+                return embeddingsList;
+            }
         }
 
 

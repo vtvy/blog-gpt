@@ -6,99 +6,97 @@ using System.Text.Json;
 
 namespace BlogGPT.Application.Posts.Commands
 {
-	public record CreatePostCommand : IRequest<int>
-	{
-		public int[]? CategoryIds { get; set; }
+    public record CreatePostCommand : IRequest<int>
+    {
+        public int[]? CategoryIds { get; set; }
 
-		public required string Title { set; get; }
+        public required string Title { set; get; }
 
-		public string? Thumbnail { set; get; }
+        public string? Thumbnail { set; get; }
 
-		public string? Description { set; get; }
+        public string? Description { set; get; }
 
-		public required string Content { set; get; }
+        public required string Content { set; get; }
 
-		public required string RawText { set; get; }
+        public required string RawText { set; get; }
 
-		public bool IsPublished { set; get; }
+        public bool IsPublished { set; get; }
 
-		private class MappingProfile : Profile
-		{
-			public MappingProfile()
-			{
-				CreateMap<CreatePostCommand, Post>()
-					.ForMember(destination => destination.Slug,
-								opt => opt.MapFrom(src => src.Title.GenerateSlug()))
-					.ForMember(destination => destination.RawText,
-								opt => opt.MapFrom(src => src.Title + "\n" + src.RawText))
-					.ForMember(destination => destination.PostCategories,
-								opt => opt.MapFrom(src => src.CategoryIds != null
-								? src.CategoryIds.Select(cateId => new PostCategory { CategoryId = cateId })
-								: null));
-			}
-		}
-	}
-	public class CreatePostHandler : IRequestHandler<CreatePostCommand, int>
-	{
-		private readonly IApplicationDbContext _context;
-		private readonly IMapper _mapper;
-		private readonly IChatbot _chatbot;
+        private class MappingProfile : Profile
+        {
+            public MappingProfile()
+            {
+                CreateMap<CreatePostCommand, Post>()
+                    .ForMember(destination => destination.Slug,
+                                opt => opt.MapFrom(src => src.Title.GenerateSlug()))
+                    .ForMember(destination => destination.PostCategories,
+                                opt => opt.MapFrom(src => src.CategoryIds != null
+                                ? src.CategoryIds.Select(cateId => new PostCategory { CategoryId = cateId })
+                                : null));
+            }
+        }
+    }
+    public class CreatePostHandler : IRequestHandler<CreatePostCommand, int>
+    {
+        private readonly IApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IChatbot _chatbot;
 
-		public CreatePostHandler(IApplicationDbContext context, IMapper mapper, IChatbot chatbot)
-		{
-			_context = context;
-			_mapper = mapper;
-			_chatbot = chatbot;
-		}
+        public CreatePostHandler(IApplicationDbContext context, IMapper mapper, IChatbot chatbot)
+        {
+            _context = context;
+            _mapper = mapper;
+            _chatbot = chatbot;
+        }
 
-		public async Task<int> Handle(CreatePostCommand command, CancellationToken cancellationToken)
-		{
-			var entity = _mapper.Map<Post>(command);
+        public async Task<int> Handle(CreatePostCommand command, CancellationToken cancellationToken)
+        {
+            var entity = _mapper.Map<Post>(command);
 
-			var existedSlug = await _context.Posts
-				.AnyAsync(post => post.Slug == entity.Slug, cancellationToken);
+            var existedSlug = await _context.Posts
+                .AnyAsync(post => post.Slug == entity.Slug, cancellationToken);
 
-			if (existedSlug)
-			{
-				var latestPost = await _context.Posts
-					.OrderByDescending(post => post.Id)
-					.FirstOrDefaultAsync(cancellationToken);
+            if (existedSlug)
+            {
+                var latestPost = await _context.Posts
+                    .OrderByDescending(post => post.Id)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-				if (latestPost != null)
-				{
-					entity.Slug = $"{entity.Slug}-{latestPost.Id + 1}";
-				}
-				else
-				{
-					entity.Slug = $"{entity.Slug}-1";
-				}
-			};
+                if (latestPost != null)
+                {
+                    entity.Slug = $"{entity.Slug}-{latestPost.Id + 1}";
+                }
+                else
+                {
+                    entity.Slug = $"{entity.Slug}-1";
+                }
+            };
 
-			if (command.IsPublished)
-			{
+            if (command.IsPublished)
+            {
 
-				var chunkTexts = new List<string> { command.RawText, command.Title };
-				chunkTexts.AddRange(command.RawText.Split("\n\n").Where(chunk => chunk.Length > 10));
+                var chunkTexts = new List<string> { command.RawText, command.Title };
+                chunkTexts.AddRange(command.RawText.Split("\n\n").Where(chunk => chunk.Length > 10));
 
-				var embeddings = _chatbot.GetEmbeddings(chunkTexts);
+                var embeddings = _chatbot.GetEmbeddings(chunkTexts);
 
-				var embeddingPost = new EmbeddingPost
-				{
-					Embedding = JsonSerializer.Serialize(embeddings[0]),
-					EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
-				};
+                var embeddingPost = new EmbeddingPost
+                {
+                    Embedding = JsonSerializer.Serialize(embeddings[0]),
+                    EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
+                };
 
-				entity.EmbeddingPost = embeddingPost;
-			}
+                entity.EmbeddingPost = embeddingPost;
+            }
 
-			entity.View = new View { Count = 0 };
-			_context.Posts.Add(entity);
+            entity.View = new View { Count = 0 };
+            _context.Posts.Add(entity);
 
-			await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
-			entity.AddDomainEvent(new PostCreatedEvent(entity));
+            entity.AddDomainEvent(new PostCreatedEvent(entity));
 
-			return entity.Id;
-		}
-	}
+            return entity.Id;
+        }
+    }
 }
