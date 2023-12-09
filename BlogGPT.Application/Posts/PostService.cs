@@ -23,14 +23,14 @@ namespace BlogGPT.Application.Posts
             var posts = text.Split("\nArticle: ").Where(part => part.Length > 10).Select(part =>
             {
                 var contentIndex = part.IndexOf("Content: ");
-                var content = part[(contentIndex + 9)..].Replace("\r\n", "\n");
+                var content = part[(contentIndex + 9)..];
                 var title = part[0..contentIndex];
                 return new Post
                 {
                     Title = title,
                     Slug = title.GenerateSlug() + $"-{slugIndex++}",
                     Content = content,
-                    RawText = content,
+                    RawText = content.Replace("\r", "\n"),
                     View = new View { Count = 0 },
                 };
             }).ToList();
@@ -46,11 +46,20 @@ namespace BlogGPT.Application.Posts
 
         public async Task<bool> DeleteEmbeddingPostAsync(CancellationToken cancellationToken = default)
         {
-            var embeddings = await _context.EmbeddingPosts.ToListAsync(cancellationToken);
+            var embeddingPosts = await _context.EmbeddingPosts.ToListAsync(cancellationToken);
+            var embeddingChunks = await _context.EmbeddingChunks.ToListAsync(cancellationToken);
 
-            if (embeddings.Count > 0)
+            if (embeddingPosts.Count > 0)
             {
-                _context.EmbeddingPosts.RemoveRange(embeddings);
+                _context.EmbeddingPosts.RemoveRange(embeddingPosts);
+            }
+
+            if (embeddingChunks.Count > 0)
+            {
+                _context.EmbeddingChunks.RemoveRange(embeddingChunks);
+            }
+            if (embeddingPosts.Count > 0 || embeddingChunks.Count > 0)
+            {
                 await _context.SaveChangesAsync(cancellationToken);
                 return true;
             }
@@ -79,9 +88,9 @@ namespace BlogGPT.Application.Posts
                     posts[i].EmbeddingPost = new EmbeddingPost
                     {
                         Embedding = JsonSerializer.Serialize(embeddingPosts[i][0]),
-                        EmbeddingChunks = embeddingPosts[i].Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
                     };
                     posts[i].IsPublished = true;
+                    posts[i].EmbeddingChunks = embeddingPosts[i].Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList();
                 }
 
                 _context.Posts.UpdateRange(posts);

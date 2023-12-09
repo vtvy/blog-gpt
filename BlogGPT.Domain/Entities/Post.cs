@@ -22,6 +22,8 @@
 
         public EmbeddingPost? EmbeddingPost { get; set; }
 
+        public ICollection<EmbeddingChunk>? EmbeddingChunks { get; set; }
+
         public required View View { get; set; }
     }
 }

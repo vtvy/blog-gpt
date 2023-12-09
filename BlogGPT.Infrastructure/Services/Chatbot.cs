@@ -53,13 +53,13 @@ namespace BlogGPT.Infrastructure.Services
         }
 
 
-        public async IAsyncEnumerable<string> GetAnswerAsync(string question, string chatContext)
+        public async IAsyncEnumerable<string> GetAnswerAsync(string question, string chatContext, string history)
         {
             var modelList = new List<string> {
-                @"D:\code\model\beta\zephyr-q3-k_m.gguf",
-                @"D:\Downloads\zephyr-7b-beta.Q4_K_M.gguf",
-                @"D:\code\model\beta\zephyr-q5-k-m.gguf",
-                @"D:\code\model\beta\zephyr-q4-k_m.gguf",
+                @"D:\code\model\zephyr-q3-k_m.gguf",
+                @"D:\code\model\zephyr-7b-beta.Q4_K_M.gguf",
+                @"D:\code\model\zephyr-q5-k-m.gguf",
+                @"D:\code\model\zephyr-q4-k_m.gguf",
             };
 
             var modelParams = new ModelParams(modelList[0])
@@ -78,10 +78,10 @@ namespace BlogGPT.Infrastructure.Services
 <|system|>
 Some articles:
 {{$facts}}
-======
 Given only some articles above, provide a comprehensive and detailed answer.
 You don't know where the knowledge comes from, just answer.
 If you don't have sufficient information, reply with 'I cannot find relevance information about this question'.</s>
+{{$history}}
 <|user|>
 {{$input}}</s>
 <|assistant|>
@@ -89,15 +89,34 @@ If you don't have sufficient information, reply with 'I cannot find relevance in
 """;
 
             var promptWithInfor = prompt.Replace("{{$facts}}", chatContext);
+            var promptWithHistory = promptWithInfor.Replace("{{$history}}", history);
             if (question[question.Length - 1] != '?') question += '?';
-            var promptWithQuestion = prompt.Replace("{{$input}}", question);
+            var promptWithQuestion = promptWithHistory.Replace("{{$input}}", question);
 
-            var inferenceParams = new InferenceParams() { Temperature = 0.6f, AntiPrompts = new string[] { "<|user|>" }, MaxTokens = 1000 };
+            var inferenceParams = new InferenceParams() { Temperature = 0.6f, AntiPrompts = new string[] { "<|user|>", "</s>" }, MaxTokens = 1000 };
             Console.WriteLine(modelList[0]);
+            var sameToken = "";
+            int count = 0;
             await foreach (var output in modelExecutor.InferAsync(promptWithQuestion, inferenceParams))
             {
-                if (output.Contains("User")) break;
+                if (output.Contains("user")) break;
+                if (output == sameToken)
+                {
+                    count++;
+                    if (count > 10)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    sameToken = output;
+                    count = 0;
+                }
                 Console.Write(output);
+                if (output.Contains(">")) output.Replace(">", "");
+                if (output.Contains("<|")) output.Replace("<|", "");
+                if (output.Contains("</")) output.Replace("</", "");
                 yield return output;
             }
             modelContext.Dispose();

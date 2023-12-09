@@ -37,7 +37,9 @@ namespace BlogGPT.Application.Posts.Commands
 
         public async Task<int> Handle(UpdatePostCommand command, CancellationToken cancellationToken)
         {
-            var entity = await _context.Posts.Include(post => post.EmbeddingPost).FirstOrDefaultAsync(post => post.Id == command.Id, cancellationToken) ?? throw new NotFoundException(nameof(Post), command.Id);
+            var entity = await _context.Posts.Include(post => post.EmbeddingPost)
+                .Include(post => post.EmbeddingChunks)
+                .FirstOrDefaultAsync(post => post.Id == command.Id, cancellationToken) ?? throw new NotFoundException(nameof(Post), command.Id);
             var oldSlug = entity.Slug;
 
             entity.Title = command.Title;
@@ -106,14 +108,19 @@ namespace BlogGPT.Application.Posts.Commands
                     _context.EmbeddingPosts.Remove(entity.EmbeddingPost);
                 }
 
+                if (entity.EmbeddingChunks != null)
+                {
+                    _context.EmbeddingChunks.RemoveRange(entity.EmbeddingChunks);
+                }
+
                 var embeddingPost = new EmbeddingPost
                 {
                     Embedding = JsonSerializer.Serialize(embeddings[0]),
-                    EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
                 };
                 entity.EmbeddingPost = embeddingPost;
                 entity.RawText = command.RawText;
-            }
+                entity.EmbeddingChunks = embeddings.Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList();
+            };
 
             _context.Posts.Update(entity);
 

@@ -69,7 +69,12 @@ const handleChat = async () => {
 		while (true) {
 			const { value, done } = await reader.read();
 
-			if (done) break;
+			if (done) {
+				if (chatBox.lastChild.lastChild.innerText.includes("Loading")) {
+					chatBox.lastChild.lastChild.innerText == "Sorry, this service is not available now. Please come back later!"
+				}
+				break;
+			}
 
 			let nextText = new TextDecoder().decode(value);
 			if (nextText.startsWith("Answered based on")) {

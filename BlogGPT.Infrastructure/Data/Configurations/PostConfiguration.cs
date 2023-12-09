@@ -26,6 +26,8 @@ namespace BlogGPT.Infrastructure.Data.Configurations
 
             builder.HasOne(post => post.View).WithOne(view => view.Post).HasForeignKey<View>(v => v.PostId).OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(post => post.EmbeddingChunks).WithOne(embeddingChunk => embeddingChunk.Post).HasForeignKey(message => message.PostId).OnDelete(DeleteBehavior.Cascade);
+
             //builder.Navigation(post => post.View).AutoInclude();
 
             //builder.Navigation(post => post.Author).AutoInclude();

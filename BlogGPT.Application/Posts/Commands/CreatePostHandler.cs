@@ -83,11 +83,11 @@ namespace BlogGPT.Application.Posts.Commands
                 var embeddingPost = new EmbeddingPost
                 {
                     Embedding = JsonSerializer.Serialize(embeddings[0]),
-                    EmbeddingChunks = embeddings.Skip(1).Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList()
                 };
 
                 entity.EmbeddingPost = embeddingPost;
-            }
+                entity.EmbeddingChunks = embeddings.Select(embedding => new EmbeddingChunk { Embedding = JsonSerializer.Serialize(embedding) }).ToList();
+            };
 
             entity.View = new View { Count = 0 };
             _context.Posts.Add(entity);

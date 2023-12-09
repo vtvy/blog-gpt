@@ -26,63 +26,65 @@ namespace BlogGPT.Application.Posts.Queries
 
         public async Task<PaginatedList<GetAllPost>> Handle(GetAllManagePostQuery request, CancellationToken cancellationToken)
         {
-            var count = await _context.Posts.CountAsync();
+
+            var query = _context.Posts.AsQueryable();
+
+            if (request.Order == "date")
+            {
+                query = request.Direction == "desc" ? query.OrderByDescending(post => post.LastModifiedAt) : query.OrderBy(post => post.LastModifiedAt);
+            }
+            else if (request.Order == "view")
+            {
+                query = request.Direction == "desc" ? query.OrderByDescending(post => post.View.Count) : query.OrderBy(post => post.View.Count);
+            }
+            else if (request.Order == "title")
+            {
+                query = request.Direction == "desc" ? query.OrderByDescending(post => post.Title) : query.OrderBy(post => post.Title);
+            }
+            else if (request.Order == "published")
+            {
+                query = request.Direction == "desc" ? query.OrderByDescending(post => post.IsPublished) : query.OrderBy(post => post.IsPublished);
+            }
+
+            if (request.Search != "")
+            {
+                query = query.Where(post => post.Title.Contains(request.Search) || (post.Description != null && post.Description.Contains(request.Search)));
+            }
+
+            if (request.Categories.Length > 0)
+            {
+                var categoryList = await _context.Categories
+                .ProjectTo<GetAllCategory>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+
+
+                var categoryIds = new HashSet<int>();
+
+                // get category id from slug and all category id of children
+                foreach (var slug in request.Categories)
+                {
+                    var category = categoryList.FirstOrDefault(cate => cate.Slug == slug);
+                    if (category != null)
+                    {
+                        categoryIds.Add(category.Id);
+
+                        var children = categoryList.Where(cate => cate.ParentId == category.Id);
+                        if (children != null)
+                        {
+                            AddChildrenIdToList(categoryIds, categoryList, children);
+                        }
+                    }
+                }
+
+                query = query.Where(post => post.PostCategories != null && post.PostCategories.Any(postCate => categoryIds.Contains(postCate.Category.Id)));
+            }
+
+            var count = await query.CountAsync();
 
             var pagingList = new PaginatedList<GetAllPost>(request.Categories, request.Search, request.Order, request.Direction, request.PageNumber, request.PageSize, count);
 
             if (count > 0)
             {
-                var query = _context.Posts.AsQueryable();
-
-                if (request.Order == "date")
-                {
-                    query = request.Direction == "desc" ? query.OrderByDescending(post => post.LastModifiedAt) : query.OrderBy(post => post.LastModifiedAt);
-                }
-                else if (request.Order == "view")
-                {
-                    query = request.Direction == "desc" ? query.OrderByDescending(post => post.View.Count) : query.OrderBy(post => post.View.Count);
-                }
-                else if (request.Order == "title")
-                {
-                    query = request.Direction == "desc" ? query.OrderByDescending(post => post.Title) : query.OrderBy(post => post.Title);
-                }
-                else if (request.Order == "published")
-                {
-                    query = request.Direction == "desc" ? query.OrderByDescending(post => post.IsPublished) : query.OrderBy(post => post.IsPublished);
-                }
-
-                if (request.Search != "")
-                {
-                    query = query.Where(post => post.Title.Contains(request.Search) || (post.Description != null && post.Description.Contains(request.Search)));
-                }
-
-                if (request.Categories.Length > 0)
-                {
-                    var categoryList = await _context.Categories
-                    .ProjectTo<GetAllCategory>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
-
-
-                    var categoryIds = new HashSet<int>();
-
-                    // get category id from slug and all category id of children
-                    foreach (var slug in request.Categories)
-                    {
-                        var category = categoryList.FirstOrDefault(cate => cate.Slug == slug);
-                        if (category != null)
-                        {
-                            categoryIds.Add(category.Id);
-
-                            var children = categoryList.Where(cate => cate.ParentId == category.Id);
-                            if (children != null)
-                            {
-                                AddChildrenIdToList(categoryIds, categoryList, children);
-                            }
-                        }
-                    }
-
-                    query = query.Where(post => post.PostCategories != null && post.PostCategories.Any(postCate => categoryIds.Contains(postCate.Category.Id)));
-                }
 
                 var pagingPosts = count > 0 ? await query
                     .Select(post => new GetAllPost

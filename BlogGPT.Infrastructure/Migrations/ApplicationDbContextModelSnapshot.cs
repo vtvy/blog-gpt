@@ -191,12 +191,12 @@ namespace BlogGPT.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmbeddingPostId")
+                    b.Property<int>("PostId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmbeddingPostId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("EmbeddingChunks");
                 });
@@ -233,6 +233,7 @@ namespace BlogGPT.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Answer")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AuthorId")
@@ -240,6 +241,10 @@ namespace BlogGPT.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastModifiedAt")
                         .HasColumnType("datetime2");
@@ -526,13 +531,13 @@ namespace BlogGPT.Infrastructure.Migrations
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingChunk", b =>
                 {
-                    b.HasOne("BlogGPT.Domain.Entities.EmbeddingPost", "EmbeddingPost")
+                    b.HasOne("BlogGPT.Domain.Entities.Post", "Post")
                         .WithMany("EmbeddingChunks")
-                        .HasForeignKey("EmbeddingPostId")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("EmbeddingPost");
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingPost", b =>
@@ -665,14 +670,11 @@ namespace BlogGPT.Infrastructure.Migrations
                     b.Navigation("PostCategories");
                 });
 
-            modelBuilder.Entity("BlogGPT.Domain.Entities.EmbeddingPost", b =>
-                {
-                    b.Navigation("EmbeddingChunks");
-                });
-
             modelBuilder.Entity("BlogGPT.Domain.Entities.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("EmbeddingChunks");
 
                     b.Navigation("EmbeddingPost");
 

@@ -8,7 +8,6 @@ namespace BlogGPT.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<EmbeddingPost> builder)
         {
-            builder.HasMany(embeddingPost => embeddingPost.EmbeddingChunks).WithOne(embeddingChunk => embeddingChunk.EmbeddingPost).HasForeignKey(message => message.EmbeddingPostId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace BlogGPT.UI.Areas.Manage.Models.Post
             {
                 CreateMap<EditPostModel, UpdatePostCommand>()
                     .ForMember(destination => destination.RawText,
-                                opt => opt.MapFrom(src => src.RawText.Replace("\r\n", "\n")));
+                                opt => opt.MapFrom(src => src.RawText.Replace("\r", "\n")));
                 CreateMap<GetPost, EditPostModel>();
             }
         }
